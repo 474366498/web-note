@@ -11,7 +11,8 @@ let s1 = `%u4E16%u754C%u7535%u5F71%u53F2%u5206%u5398%u5361%u5341%u4E5D%u70B9%u96
 
 // 是否是质数
 function isPrime(num: number) {
-  for (let k = 2; k <= Math.round(num / 2); k++) {
+  let temp = Math.round(num ** (1 / 2))
+  for (let k = 2; k <= temp; k++) {
     if (num % k === 0) {
       return false
     }
@@ -28,7 +29,7 @@ for (let i: number = 2; i < 100; i++) {
   }
 }
 
-console.log(35, 2 ** 4, primeArr)
+console.log(35, 16, primeArr)
 console.timeEnd()
 
 

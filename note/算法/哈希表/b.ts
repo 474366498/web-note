@@ -21,6 +21,33 @@ function hashFn(str: string, size: number = 10) {
 
 // console.log(a, b, c)
 
+/**
+ * 判断一个数字是否是质数
+ * @param num 
+ * @returns 
+ */
+function isPrime(num: number): boolean {
+  let temp = Math.floor(num ** (1 / 2))
+  for (let i = 2; i <= temp; i++) {
+    if (num % i === 0) {
+      return false
+    }
+  }
+  return true
+}
+/**
+ * 查找一个数字 附近的质数
+ * @param num 
+ * @param flg ture 向上找 false 向下找
+ * @returns 
+ */
+function getPrime(num: number, flg: boolean = true): number {
+  while (!isPrime(num)) {
+    num = flg ? num + 1 : num - 1
+  }
+  return num
+}
+
 
 class HashTable {
   [x: string]: any
@@ -44,6 +71,9 @@ class HashTable {
     bucket.push([key, value])
     this.storage[index] = bucket
     this.count += 1
+    if (this.count > this.limit * .75) {
+      this.resize(this.limit * 2)
+    }
   }
 
   get(key: string) {
@@ -74,7 +104,11 @@ class HashTable {
         bucket.splice(_index, 1)
         console.log(74, _index)
         this.count--
+        if (this.limit > 7 && this.count < this.limit * .25) {
+          this.resize(Math.floor(this.limit / 2))
+        }
         return true
+
       }
     } else {
       return false
@@ -90,10 +124,10 @@ class HashTable {
 
   resize(newLimt: number) {
     let oldStorage = this.storage
-
+    console.log('%c扩容了', "background:pink;color:green;")
     this.storage = []
     this.count = 0
-    this.limit = newLimt
+    this.limit = getPrime(newLimt)
 
     for (let i = 0; i < oldStorage.length; i++) {
       let bucket = oldStorage[i]
@@ -115,20 +149,15 @@ let h = new HashTable()
 h.put('afff', { a: 1, b: 2 })
 h.put('afaf', { a: 1, b: 2, c: 3 })
 h.put('afaaf', 123123123)
-
+h.put('aff1f', { a: 1, b: 2 })
+h.put('wwfaf', { a: 1, b: 2, c: 3 })
+h.put('afqaaf', 123123123)
 console.log(54, h)  // 0 3  6
 console.timeEnd()
 
 
 
-console.time()
-let m = new Map()
-m.set('afff', { a: 1, b: 2 })
-m.set('afaf', { a: 1, b: 2, c: 3 })
-m.set('afaaf', 123123123)
-
-console.log(54, m)  // 0 3  6
-console.timeEnd()
+console.log(158, getPrime(15, false))
 
 
 // h.resize(10)

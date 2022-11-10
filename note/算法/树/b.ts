@@ -1,0 +1,20 @@
+
+
+
+
+
+
+class RedBlankTree {
+  constructor(parameters) {
+    
+  }
+}
+
+
+
+
+
+
+
+
+

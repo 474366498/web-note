@@ -13,12 +13,27 @@
 4. 每个红色节点的两个子节点都是blank (从每个叶子到根的所有路径上不能有两个连续的红节点)
 5. 从根节点到其每个叶子的所有路径都包含相同数目的blank节点
 
+
+* _a. 从根到叶子的最长可能路径，不会超过最短可能路径的两倍_
+
+
 ![二叉树](https://github.com/474366498/web-note/blob/main/note/%E7%AE%97%E6%B3%95/%E6%A0%91/files/red-blcnk-tree.png "红黑")
 
 
 
 
+## 红黑树操作
 
+![旋转](https://github.com/474366498/web-note/blob/main/note/%E7%AE%97%E6%B3%95/%E6%A0%91/files/rotate.png "旋转")
+
+![左旋转](https://github.com/474366498/web-note/blob/main/note/%E7%AE%97%E6%B3%95/%E6%A0%91/files/left-rotate.png "左旋转")
+1. 逆时针旋转红黑树的两个节点，使得父节点被自己的右子节点取代，而自己成为自己的左子节点
+2. 身为右子节点的Y取代了X的位置，而X变成了Y的左子节点
+
+
+![右旋转](https://github.com/474366498/web-note/blob/main/note/%E7%AE%97%E6%B3%95/%E6%A0%91/files/right-rotate.png "右旋转")
+1. 顺时针旋转红黑树的两个节点，使得父节点被自己的左子节点取代，而自己成为自己的右子节点
+2. 身为左子节点的Y取代了X的位置，而X变成了Y的右子节点
 
 
 

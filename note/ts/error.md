@@ -31,7 +31,7 @@
       if (current === this.root) {
         this.root = successor
       } else if (isLeft) {
-        parent.left = successor  // error parent!.left = successor
+        parent.left = successor  // error => parent!.left = successor
       }
     ```
 
@@ -56,4 +56,37 @@
 
   ```
 
+### error TS2345: Argument of type 'void' is not assignable to parameter of type 
+
+  ``` typescript 
+
+    insert(key: any) {
+        if (!this.root) {
+          this.root = new RBNode(key)
+          this.root.color = Colors.B
+        } else {
+          const newNode = this.insertNode(this.root, key)
+          this.fixTreeProperties(newNode)    // error 应该是 insertNode 还没有返回具体内容 l加了return  就没有问题了
+        }
+      }
+      insertNode(node: RBNode, key: any) {
+
+      }
+      fixTreeProperties(node: RBNode | null) {
+
+      }
+  ```
+
+
+### error TS7023: 'insertNode' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions
+
+    ``` json
+    // tsconfig.json 
+    {
+      "compilerOptions": {
+        "suppressExcessPropertyErrors": true  // 加这个 
+      }
+    }
+
+    ```
 

@@ -14,6 +14,9 @@
     a. 循环中的单项  如果比*_A_*大 就往*_A_*里添加 反之就插入到*_A_*之中
 ![插入排序](https://github.com/474366498/web-note/blob/main/note/%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F/files/insertSort.png "插入排序")
 
+### 希尔排序 [link](https://www.cnblogs.com/cc-freiheit/p/10983821.html)
+ 
+![希尔排序](https://github.com/474366498/web-note/blob/main/note/%E7%AE%97%E6%B3%95/%E6%8E%92%E5%BA%8F/files/shellSort.png "希尔排序")
 
 
 
@@ -22,3 +25,4 @@
 
 
 
+### 更多算法 [十大排序](https://www.cnblogs.com/onepixel/articles/7674659.html#4%E5%B8%8C%E5%B0%94%E6%8E%92%E5%BA%8Fshell-sort)

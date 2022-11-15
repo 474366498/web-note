@@ -66,6 +66,39 @@ class ArrayList {
       this.items[j] = temp
     }
   }
+  // 希尔排序
+  shellSort() {
+    let { items } = this
+    let length = this.items.length
+
+    let gap = Math.floor(length / 2)
+
+    while (gap >= 1) {
+      for (let i = gap; i < length; i++) {
+        let temp = this.items[i]
+        let j = i
+        while (this.items[j - gap] > temp && j > gap - 1) {
+          this.items[j] = this.items[j - gap]
+          j -= gap
+        }
+        this.items[j] = temp
+      }
+      gap = Math.floor(gap / 2)
+    }
+
+  }
+
+  quickSort() {
+    this.items = quick(this.items, 0, this.items.length)
+    console.log(93, this.items)
+    // this.items
+  }
+
+
+
+
+
+
 }
 
 function swap(arr: any[], m: number, n: number): any[] {
@@ -75,11 +108,34 @@ function swap(arr: any[], m: number, n: number): any[] {
   return arr
 }
 
+function getPivot(arr: any[], left: number, right: number) {
+  let pivot = left, index = pivot + 1
 
+  for (let i = index; i <= right; i++) {
+    if (arr[i] < arr[pivot]) {
+      swap(arr, i, index)
+      index++
+    }
+  }
+  swap(arr, pivot, index - 1)
+  return index - 1
+}
+
+function quick(arr: any[], left: number, right: number) {
+  let len = arr.length, partitionIndex
+  if (left < right) {
+    partitionIndex = getPivot(arr, left, right)
+    console.log(96, left, right, partitionIndex)
+    quick(arr, left, partitionIndex - 1)
+    quick(arr, partitionIndex + 1, right)
+  }
+  return arr
+}
 
 let a = new ArrayList()
-let arr = [123, 234, 546, 67, 78, 12, 54, 34, 312]
+let arr = [123, 234, 546, 67, 78, 12, 54, 34, 312, 634, 15, 55, 48, 41]
 
+console.log(quick(arr, 0, arr.length - 1))
 for (let i = 0; i < arr.length; i++) {
   a.insert(arr[i])
 }
@@ -87,5 +143,8 @@ for (let i = 0; i < arr.length; i++) {
 // a.bubbleSort()
 
 // a.selectSort()
-a.inserSort()
-console.log(a.items, encodeURI('排序'))
+// a.inserSort()
+
+// a.shellSort()
+a.quickSort()
+console.log(a.items)

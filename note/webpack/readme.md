@@ -190,7 +190,7 @@ mode
 
 
 
-#### 5.字体(ttf|woff)处理
+#### 6.字体(ttf|woff)处理
 
  [webpack](https://www.webpackjs.com/guides/asset-modules/)
 
@@ -272,7 +272,7 @@ mode
 
 
 
-#### 6.其它资源处理
+#### 7.其它资源处理
 
 ``` javascript 
     const path = require('path')
@@ -335,3 +335,138 @@ mode
 
 
 ```
+
+#### 7.项目 eslint 
+*_.eslintrt_*
+##### *_.eslintrc.js_*
+*_.eslintrc.json_*
+
+[更多eslint规则](https://eslint.bootcss.com/docs/user-guide/configuring)
+[规则文档](https://eslint.bootcss.com/docs/rules/)
+```js
+    module.exports = {
+      // 解析选项
+      parserOptions: {
+        ecmaVersion: 6, // ES 语法版本
+        sourceType: "module", // ES 模块化
+        ecmaFeatures: { // ES 其他特性
+          jsx: true // 如果是 React 项目，就需要开启 jsx 语法
+        }
+      },
+
+      // 规则检查
+      rules : {
+
+      }
+      // 引用 继承其它规则
+      extends : []
+    }
+
+
+
+
+
+```
+现有以下较为有名的规则：
+
+- [Eslint 官方的规则](https://eslint.bootcss.com/docs/rules/)：`eslint:recommended`
+- [Vue Cli 官方的规则](https://github.com/vuejs/vue-cli/tree/dev/packages/@vue/cli-plugin-eslint)：`plugin:vue/essential`
+- [React Cli 官方的规则](https://github.com/facebook/create-react-app/tree/main/packages/eslint-config-react-app)：`react-app`
+
+
+
+```:no-line-numbers
+npm i eslint-webpack-plugin eslint -D
+```
+
+
+
+
+``` javascript 
+    const path = require('path')
+    const ESLintWebpackPlugin = require('eslint-webpack-plugin')
+
+    module.exports = {
+      entry : '' ,
+      output : {
+        // js 打包输出文件路径
+        path : path.resolve(__dirname,'js') ,
+        filename :'' ,
+        // 文件(图片)输出  
+        assetModuleFilename :'image/[hash][ext][query]' ,
+        // 清空上次打包内容
+        clean : true    
+      },
+      module : {
+        rules : [
+          {
+              test:/\.css$/ ,
+              use:['style-loader' , 'css-loader']    // npm i style-loader css-loader
+          } ,
+          {
+            test:/\.less$/ ,
+            use:['style-loader','css-loader','less-loader'] // npm i less-loader
+          } ,
+          {
+            test:/\.s[ac]ss$/,
+            use:['style-loader','css-loader','sass-loader'] // npm i sass-loader sass
+          },
+          {
+            test:/\.styl$/,
+            use:['style-loader','css-loader','stylus-loader'] // npm i stylus-loader
+          },
+          {
+            test:/\.(png|gif|jpg)$/,
+            type:'asset' ,    // webpack 5 将  file-loader 和 url-loader 已经内置到webpack中
+            parser:{
+              dataUrlCondition : {
+                maxSize:10 * 1024  // 小于10kb的文件转成base64 
+              }
+            },
+            generator : {
+              // 文件输出
+              filename : 'static/image/[hash][ext][query]'
+            }
+          },
+          {
+            test:/\.(ttf|woff2?|mp3|mp4|avi)$/ ,   //字体文件 其它音视频文件  原文件转出
+            type:'asset/resource' ,
+            generator : {
+              filename : 'static/font/[hash][ext][query]'
+
+            }
+          }
+        ]
+      },
+      plugins : [
+        new ESLintWebpackPlugin({
+          // 指定检查的文件目录
+          context : path.resolve(__dirname,'src')
+        })
+      ] ,
+      mode:''
+    } 
+
+```
+
+##### 新建文件 .eslintignore 配置忽略的文件
+
+```:no-line-numbers
+dist 
+node-modules
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

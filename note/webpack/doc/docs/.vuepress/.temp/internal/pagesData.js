@@ -35,6 +35,14 @@ export const pagesData = {
   "v-5e3bb631": () => import(/* webpackChunkName: "v-5e3bb631" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/base/server.html.js").then(({ data }) => data),
   // path: /base/summary.html
   "v-ce2194d0": () => import(/* webpackChunkName: "v-ce2194d0" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/base/summary.html.js").then(({ data }) => data),
+  // path: /origin/loader.html
+  "v-1cfd2df6": () => import(/* webpackChunkName: "v-1cfd2df6" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/origin/loader.html.js").then(({ data }) => data),
+  // path: /origin/plugin.html
+  "v-2d7562d6": () => import(/* webpackChunkName: "v-2d7562d6" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/origin/plugin.html.js").then(({ data }) => data),
+  // path: /origin/
+  "v-2259a8b0": () => import(/* webpackChunkName: "v-2259a8b0" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/origin/index.html.js").then(({ data }) => data),
+  // path: /origin/summary.html
+  "v-860cdcba": () => import(/* webpackChunkName: "v-860cdcba" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/origin/summary.html.js").then(({ data }) => data),
   // path: /intro/asset.html
   "v-0670fc65": () => import(/* webpackChunkName: "v-0670fc65" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/intro/asset.html.js").then(({ data }) => data),
   // path: /intro/group.html
@@ -45,14 +53,6 @@ export const pagesData = {
   "v-10b408dc": () => import(/* webpackChunkName: "v-10b408dc" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/intro/pre.html.js").then(({ data }) => data),
   // path: /intro/
   "v-f9e30908": () => import(/* webpackChunkName: "v-f9e30908" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/intro/index.html.js").then(({ data }) => data),
-  // path: /origin/loader.html
-  "v-1cfd2df6": () => import(/* webpackChunkName: "v-1cfd2df6" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/origin/loader.html.js").then(({ data }) => data),
-  // path: /origin/plugin.html
-  "v-2d7562d6": () => import(/* webpackChunkName: "v-2d7562d6" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/origin/plugin.html.js").then(({ data }) => data),
-  // path: /origin/
-  "v-2259a8b0": () => import(/* webpackChunkName: "v-2259a8b0" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/origin/index.html.js").then(({ data }) => data),
-  // path: /origin/summary.html
-  "v-860cdcba": () => import(/* webpackChunkName: "v-860cdcba" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/origin/summary.html.js").then(({ data }) => data),
   // path: /project/react-cli.html
   "v-61413f94": () => import(/* webpackChunkName: "v-61413f94" */"E:/web-note/note/webpack/doc/docs/.vuepress/.temp/pages/project/react-cli.html.js").then(({ data }) => data),
   // path: /project/

@@ -11,7 +11,9 @@
   git pull origin master(分支名) --allow-unrelated-histories 
   git push origin master(分支名) --allow-unrelated-histories 
 
+####  OpenSSL SSL_read: Connection was aborted, errno 10053 
+####  Failed to connect to github.com port 443: Timed out
 
-
+一般都是网络不行 
 
 

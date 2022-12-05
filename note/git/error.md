@@ -13,7 +13,7 @@
 
 ####  OpenSSL SSL_read: Connection was aborted, errno 10053 
 ####  Failed to connect to github.com port 443: Timed out
-
-一般都是网络不行 
+10053   原因:Git默认限制推送的大小，运行命令更改限制大小即可 增加缓冲 git config --global http.postBuffer 524288000
+443  一般都是网络不行 
 
 

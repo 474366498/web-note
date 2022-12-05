@@ -6,29 +6,57 @@ import '../style/index.less'
 import '../style/index.scss'
 import '../style/index.styl'
 
-import jdImg from '../assets/images/jd.jpg'
-const logoImg = require('../assets/images/logo.png')
+
+import "antd/dist/reset.css";
+
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+
+import Home from './home'
+
+console.log(21, BrowserRouter, Routes, Route)
+
+// class Home extends React.Component {
+//   constructor(props) {
+//     super(props)
+//     this.state = {}
+//   }
+//   render() {
+//     return (<h1>Home</h1>)
+//   }
+// }
+
+class About extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {}
+  }
+  render() {
+    return (<h1>About</h1>)
+  }
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      jdImg,
-      logoImg,
-
-    }
+    this.state = {}
   }
   render() {
-    console.log(18, this.state)
-    let { jdImg, logoImg, } = this.state
-    return (
-      <div>
 
-        <h1>Hello </h1>
-        <img src={jdImg} alt='jdImg' />
-        <img src={logoImg} alt='logoImg' />
-        <img src={require('../assets/images/user-avatar.jpg')} alt='userImg' />
-        <i className='iconfont txuanzhongshangcheng'></i>
-      </div>
+    return (
+      <BrowserRouter>
+        <section>
+          <ul>
+            <li><Link to="/">home</Link></li>
+            <li><Link to="/about">about</Link></li>
+          </ul>
+        </section>
+        <section>
+          <Routes>
+            <Route path='/' element={<Home />} > </Route>
+            <Route path='/about' element={<About />} > </Route>
+          </Routes>
+        </section>
+      </BrowserRouter>
     )
   }
 }

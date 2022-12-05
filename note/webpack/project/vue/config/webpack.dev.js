@@ -1,13 +1,14 @@
 
+
 const path = require('path')
 const ESLintWebpackPlugin = require('eslint-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
-const CopyPlugin = require('copy-webpack-plugin')
+const { VueLoaderPlugin } = require('vue-loader')
+
 
 const getStyleLoaders = (pre) => {
   return [
-    'style-loader',
+    'vue-style-loader',
     'css-loader',
     {
       loader: 'postcss-loader',
@@ -21,15 +22,13 @@ const getStyleLoaders = (pre) => {
   ].filter(Boolean)
 }
 
-console.log(24, process.env.NODE_ENV)
-
 module.exports = {
   entry: './src/index.js',
   output: {
     path: undefined,
     filename: 'js/[name].js',
     chunkFilename: 'js/[name].chunk.js',
-    assetModuleFilename: 'asset/[hash:4][ext][query]'  // 静态资源
+    assetModuleFilename: 'asset/[hash:4][ext][query]'
   },
   module: {
     rules: [
@@ -56,7 +55,7 @@ module.exports = {
             type: 'asset',
             parser: {
               dataUrlCondition: {
-                maxSize: 10 * 1024
+                maxSize: 1.24E4
               }
             }
           },
@@ -65,16 +64,25 @@ module.exports = {
             type: 'asset/resource'
           },
           {
-            test: /\.(js|jsx)$/,
+            test: /\.(jsx?)$/,
             include: path.resolve(__dirname, '../src'),
             loader: 'babel-loader',
             options: {
               cacheDirectory: true,
               cacheCompression: false,
-              plugins: ['react-refresh/babel']
+              plugins: [
+                // "@babel/plugin-transform-runtime" // presets中包含了
+              ]
             }
-          }
-        ]
+          },
+        ] // oneOf end 
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          cacheDirectory: path.resolve(__dirname, 'node_module/.cache/vue-loader')
+        }
       }
     ]
   }, // module end 
@@ -82,40 +90,19 @@ module.exports = {
     new ESLintWebpackPlugin({
       context: path.resolve(__dirname, '../src'),
       exclude: 'node_module',
-      // include: path.resolve(__dirname, '../src'),
       cache: true,
       cacheLocation: path.resolve(__dirname, '../node_modules/.cache/.eslintcache')
     }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../index.html')
+      template: path.resolve(__dirname, '../public/index.html')
     }),
-    new CopyPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, '../assets'),
-          to: path.resolve(__dirname, '../dist'),
-          toType: 'dir',
-          noErrorOnMissing: true,
-          globOptions: {
-            ignore: []
-          },
-          info: {
-            minimized: true
-          }
-        }
-      ]
-    })
-  ], // plugins end 
-  optimization: {
-    splitChunks: {
-      chunks: 'all'
-    },
-    runtimeChunk: {
-      name: entry => `runtime~${entry.name}`
-    }
-  },
+    new VueLoaderPlugin()
+  ], // plugins end
   resolve: {
-    extensions: ['.jsx', '.js', '.json']
+    extensions: ['.vue', '.js', '.json'],
+    alias: {
+      '@': path.resolve(__dirname, '../src')
+    }
   },
   devServer: {
     open: false,
@@ -128,12 +115,5 @@ module.exports = {
   mode: 'development',
   devtool: 'cheap-module-source-map'
 }
-
-
-
-
-
-
-
 
 

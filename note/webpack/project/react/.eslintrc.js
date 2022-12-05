@@ -7,6 +7,9 @@ module.exports = {
         'babel-preset-react-app/prod'
       ]
     }
+  },
+  rules: {
+    "no-unused-vars": 'off'
   }
 }
 

@@ -1,13 +1,16 @@
 
+
 const path = require('path')
 const ESLintWebpackPlugin = require('eslint-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
-const CopyPlugin = require('copy-webpack-plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const TerserWebpackPlugin = require("terser-webpack-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const TerserWebpackPlugin = require('terser-webpack-plugin')
+const { DefinePlugin } = require('webpack')
+const CopyPlugin = require('copy-webpack-plugin')
+const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin')
+
 
 const getStyleLoaders = (pre) => {
   return [
@@ -25,17 +28,13 @@ const getStyleLoaders = (pre) => {
   ].filter(Boolean)
 }
 
-console.log(24, process.env.NODE_ENV)
-
-// console.log(30, TerserWebpackPlugin)
-
 module.exports = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, '../dist'),
-    filename: 'js/[name].[contenthash:4].js',
-    chunkFilename: 'js/[name].[contenthash:4].chunk.js',
-    assetModuleFilename: 'assets/[hash:4][ext][query]',  // 静态资源 非js文件
+    filename: 'js/[name].[contenthash:6].js',
+    chunkFilename: 'js/[name].[contenthash:6].chunk.js',
+    assetModuleFilename: 'asset/[hash:4][ext][query]',
     clean: true
   },
   module: {
@@ -63,7 +62,7 @@ module.exports = {
             type: 'asset',
             parser: {
               dataUrlCondition: {
-                maxSize: 10 * 1024
+                maxSize: 1.24E4
               }
             }
           },
@@ -72,66 +71,70 @@ module.exports = {
             type: 'asset/resource'
           },
           {
-            test: /\.(js|jsx)$/,
+            test: /\.(jsx?)$/,
             include: path.resolve(__dirname, '../src'),
             loader: 'babel-loader',
             options: {
               cacheDirectory: true,
               cacheCompression: false,
-              plugins: ['@babel/plugin-transform-runtime'
-                // 'react-refresh/babel'
+              plugins: [
+                // "@babel/plugin-transform-runtime" // presets中包含了
               ]
             }
-          }
-        ]
+          },
+        ] // oneOf end 
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+        options: {
+          cacheDirectory: path.resolve(__dirname, 'node_module/.cache/vue-loader')
+        }
       }
     ]
   }, // module end 
   plugins: [
     new ESLintWebpackPlugin({
       context: path.resolve(__dirname, '../src'),
-      exclude: 'node_modules',
-      // include: path.resolve(__dirname, '../src'),
+      exclude: 'node_module',
       cache: true,
       cacheLocation: path.resolve(__dirname, '../node_modules/.cache/.eslintcache')
     }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../index.html'),
-      filename: 'index.html',
-      // chunks: [ 'react', 'common']
+      template: path.resolve(__dirname, '../public/index.html'),
+      filename: 'index.html'
     }),
+    new VueLoaderPlugin(),
     new MiniCssExtractPlugin({
-      filename: 'css/[name].[contenthash:8].css',
-      chunkFilename: 'css/[name].[contenthash:8].chunk.css'
+      filename: 'css/[name].[contenthash:6].css',
+      chunkFilename: 'css/[name].[contenthash:6].chunk.css'
     }),
-    new ReactRefreshWebpackPlugin(),
-    // 将public下面的资源复制到dist目录去（除了index.html）
     new CopyPlugin({
       patterns: [
         {
           from: path.resolve(__dirname, '../public'),
-          to: path.resolve(__dirname, '../dist/assets'),
+          to: path.resolve(__dirname, '../dist'),
           toType: 'dir',
           noErrorOnMissing: true,
           globOptions: {
-            // ignore: []
+            ignore: ['**/index.html']
           },
           info: {
             minimized: true
           }
         }
       ]
+    }),
+    new DefinePlugin({
+      __VUE_OPTIONS_API__: true,
+      __VUE_PROD_DEVTOOLS__: false
     })
-  ], // plugins end 
+  ], // plugins end
   optimization: {
-    // 压缩的操作
+    // minimize: true,
     minimizer: [
       new CssMinimizerPlugin(),
-      new TerserWebpackPlugin({
-        terserOptions: {
-          compress: {},
-        }
-      }),
+      new TerserWebpackPlugin(),
       new ImageMinimizerPlugin({
         minimizer: {
           implementation: ImageMinimizerPlugin.imageminGenerate,
@@ -155,42 +158,30 @@ module.exports = {
                   ],
                 },
               ],
-            ],
-          },
-        },
-      }),
+            ]
+          }
+        }
+      })
     ],
-    // 代码分割
     splitChunks: {
-      chunks: "all",
+      chunks: 'all',
       cacheGroups: {
-
-        react: {
-          name: 'react',
+        vue: {
+          name: 'vue',
           priority: 1,
-          test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+          test: /[\\/]node_modules[\\/]vue/,
           minSize: 10,
           minChunks: 1,
           reuseExistingChunk: true
         },
-        //   "react-router": "^6.3.0",
-        // "react-router-dom": "^6.3.0",
-        router: {
-          name: 'react-router',
-          priority: 1,
-          test: /[\\/]node_modules[\\/](react-router|react-router-dom)[\\/]/,
-          minSize: 10,
-          minChunks: 1,
-          reuseExistingChunk: true
-        },
-        antd: {
-          name: 'antd',
-          priority: 1,
-          test: /[\\/]node_modules[\\/]antd/,
-          minSize: 10,
-          minChunks: 1,
-          reuseExistingChunk: true
-        },
+        // router: {
+        //   name: 'router',
+        //   priority: 1,
+        //   test: /[\\/]node_modules[\\/]vue-router/,
+        //   minSize: 10,
+        //   minChunks: 1,
+        //   reuseExistingChunk: true
+        // },
         common: {
           name: 'common',
           priority: 0,
@@ -201,21 +192,26 @@ module.exports = {
       }
     },
     runtimeChunk: {
-      name: (entrypoint) => `runtime~${entrypoint.name}`,
+      name: entry => `runtime~${entry.name}`
     },
   },
+
   resolve: {
-    extensions: [".jsx", ".js", ".json"],
+    extensions: ['.vue', '.js', '.json'],
+    alias: {
+      '@': path.resolve(__dirname, '../src')
+    }
+  },
+  devServer: {
+    open: false,
+    host: 'localhost',
+    port: '9999',
+    hot: true,
+    compress: true,
+    historyApiFallback: true
   },
   mode: 'production',
   devtool: 'source-map'
 }
-
-
-
-
-
-
-
 
 

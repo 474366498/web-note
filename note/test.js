@@ -55,13 +55,10 @@ function getRandomRGBA(flg) {
 }
 
 
-let h = `
+let h = `http://47.108.226.58:8081/static/tender/9365752870…rformance/3c9d17da090643d684686d9f5c3e066a.jpg?i0`
 
-`
 
-// h = h.replace(/<div>[\s\S]*?(<\/div>[\s\S]*?<\/div>{1,})/g, $ => {
-// 	console.log(313, $)
-// })
+console.log(313, h.indexOf('http://47.108.226.58:8081/static/tender/9365752870…rformance/3c9d17da090643d684686d9f5c3e066a.jpg'))
 
 
 

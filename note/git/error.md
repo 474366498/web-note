@@ -16,4 +16,12 @@
 10053   原因:Git默认限制推送的大小，运行命令更改限制大小即可 增加缓冲 git config --global http.postBuffer 524288000
 443  一般都是网络不行 
 
-
+#### git 项目过大，无法克隆
+*_ error: 446 bytes of body are still expected64 MiB | 12.00 KiB/s _*
+*_ fetch-pack: unexpected disconnect while reading sideband packet _*
+*_ fatal: early EOF _*
+*_ fatal: fetch-pack: invalid index-pack output _*
+1. 第一步：克隆深度设置为1     git clone [git code address] --depth 1   cd project目录
+2. 第二部：拉去当前完整分支    git fetch --unshallow 
+3. 第三步：跟踪所有其他远程分支 git remote set-branches origin '*'
+4. 第四步：拉去所有远程分支  git fetch -v 

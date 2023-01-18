@@ -55,13 +55,13 @@ function getRandomRGBA(flg) {
 }
 
 
-let h = `http://47.108.226.58:8081/static/tender/9365752870…rformance/3c9d17da090643d684686d9f5c3e066a.jpg?i0`
+let h = ` asdf asdf asdfg`
 
-
-console.log(313, h.indexOf('http://47.108.226.58:8081/static/tender/9365752870…rformance/3c9d17da090643d684686d9f5c3e066a.jpg'))
-
-
-
+const trimArr = function (s) {
+	return (s || '').split(' ').filter(item => !!item.trim())
+}
+let v = trimArr(h)
+console.log(v)
 
 
 

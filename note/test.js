@@ -1,5 +1,6 @@
 let arr = [1, 2, 3, 4]
 let s = new Set([...arr])
+let { log, error, warning } = console
 // console.log(s.entries())
 // console.log(arr)
 
@@ -55,15 +56,46 @@ function getRandomRGBA(flg) {
 }
 
 
-let h = ` asdf asdf asdfg`
+let h = ``
 
-const trimArr = function (s) {
-	return (s || '').split(' ').filter(item => !!item.trim())
+// let t = new Date(1674958430000)
+
+let time = new Date(new Date().getTime()),
+	timeStr = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ' ' + (time.getHours()) + ':' + (time.getMinutes())
+function formatTime(d, fmt) {
+
 }
-let v = trimArr(h)
-console.log(v)
+
+log(timeStr)
 
 
+let verifyData = ['e', 'v', 's', 'ee']
+	.map((item, i, all) => {
+		let radius = 360 / all.length, w = 400 / 2, h = 300 / 2, r = h, pi = Math.PI / 180
+		let translate = {
+			x: Math.cos(pi * 90),
+			y: Math.sin(pi * radius)
+		}
+		console.log(36, all, r, radius, pi, translate)
+
+		// let scale = {
+		// 	x: (80 + Math.random() * 40) / 100,
+		// 	y: (90 + Math.random() * 40) / 100
+		// }
+		// let rotate = 360 * Math.random() + 'deg'
+		// let style = {
+		// 	backgroundColor: 'rgba(255,255,255,.2)',
+		// 	// transform : `translate(${translate.x},${translate.y}) scale(${scale.x},${scale.y}) rotate(${rotate})`
+		// }
+		return {
+			label: item,
+			sort: i,
+			point: null,
+			// style
+		}
+	})
+
+log(5 ** 5, verifyData)
 
 
 

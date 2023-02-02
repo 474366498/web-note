@@ -56,51 +56,145 @@ function getRandomRGBA(flg) {
 }
 
 
-let h = ``
+let h = `
+<code class="prism language-js has-numbering" onclick="mdcp.signin(event)" style="position: unset;"><span class="token comment">// 获取浏览器类型</span>
+<span class="token keyword">function</span> <span class="token function">getBrowserType</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span>
 
-// let t = new Date(1674958430000)
+  <span class="token comment">// 获取浏览器 userAgent</span>
+  <span class="token keyword">var</span> ua <span class="token operator">=</span> navigator<span class="token punctuation">.</span>userAgent
+  
+  <span class="token comment">// 是否为 Opera</span>
+  <span class="token keyword">var</span> isOpera <span class="token operator">=</span> ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'Opera'</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span>
+  <span class="token comment">// 返回结果</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>isOpera<span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'Opera'</span> <span class="token punctuation">}</span>
 
-let time = new Date(new Date().getTime()),
-	timeStr = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ' ' + (time.getHours()) + ':' + (time.getMinutes())
-function formatTime(d, fmt) {
+  <span class="token comment">// 是否为 IE</span>
+  <span class="token keyword">var</span> isIE <span class="token operator">=</span> <span class="token punctuation">(</span>ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'compatible'</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'MSIE'</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>isOpera
+  <span class="token keyword">var</span> isIE11 <span class="token operator">=</span> <span class="token punctuation">(</span>ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">'Trident'</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"rv:11.0"</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token comment">// 返回结果</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>isIE11<span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'IE11'</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>isIE<span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span>
+    <span class="token comment">// 检测是否匹配</span>
+    <span class="token keyword">var</span> re <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">RegExp</span><span class="token punctuation">(</span><span class="token string">'MSIE (\\d+\\.\\d+);'</span><span class="token punctuation">)</span>
+    re<span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>ua<span class="token punctuation">)</span>
+    <span class="token comment">// 获取版本</span>
+    <span class="token keyword">var</span> ver <span class="token operator">=</span> <span class="token function">parseFloat</span><span class="token punctuation">(</span>RegExp<span class="token punctuation">[</span><span class="token string">"$1"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token comment">// 返回结果</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ver <span class="token operator">==</span> <span class="token number">7</span><span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'IE7'</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>ver <span class="token operator">==</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'IE8'</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>ver <span class="token operator">==</span> <span class="token number">9</span><span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'IE9'</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>ver <span class="token operator">==</span> <span class="token number">10</span><span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'IE10'</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">"IE"</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
 
+  <span class="token comment">// 是否为 Edge</span>
+  <span class="token keyword">var</span> isEdge <span class="token operator">=</span> ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"Edge"</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span>
+  <span class="token comment">// 返回结果</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>isEdge<span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'Edge'</span> <span class="token punctuation">}</span>
+
+  <span class="token comment">// 是否为 Firefox</span>
+  <span class="token keyword">var</span> isFirefox <span class="token operator">=</span> ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"Firefox"</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span>
+  <span class="token comment">// 返回结果</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>isFirefox<span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'Firefox'</span> <span class="token punctuation">}</span>
+
+  <span class="token comment">// 是否为 Safari</span>
+  <span class="token keyword">var</span> isSafari <span class="token operator">=</span> <span class="token punctuation">(</span>ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"Safari"</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"Chrome"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token comment">// 返回结果</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>isSafari<span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">"Safari"</span> <span class="token punctuation">}</span>
+
+  <span class="token comment">// 是否为 Chrome</span>
+  <span class="token keyword">var</span> isChrome <span class="token operator">=</span> <span class="token punctuation">(</span>ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"Chrome"</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"Safari"</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"Edge"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token comment">// 返回结果</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>isChrome<span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'Chrome'</span> <span class="token punctuation">}</span>
+
+  <span class="token comment">// 是否为 UC</span>
+  <span class="token keyword">var</span> isUC<span class="token operator">=</span> ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"UBrowser"</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span>
+  <span class="token comment">// 返回结果</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>isUC<span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'UC'</span> <span class="token punctuation">}</span>
+
+  <span class="token comment">// 是否为 QQ</span>
+  <span class="token keyword">var</span> isQQ<span class="token operator">=</span> ua<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span><span class="token string">"QQBrowser"</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token operator">-</span><span class="token number">1</span>
+  <span class="token comment">// 返回结果</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>isUC<span class="token punctuation">)</span> <span class="token punctuation">{<!-- --></span> <span class="token keyword">return</span> <span class="token string">'QQ'</span> <span class="token punctuation">}</span>
+
+  <span class="token comment">// 都不是</span>
+  <span class="token keyword">return</span> <span class="token string">''</span>
+<span class="token punctuation">}</span>
+<div class="hljs-button signin" data-title="登录后复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4334&quot;}"></div></code>
+`
+h = h.replace(/<\/?[a-z]{1,}[^>]*?>/g, '')
+console.log(h)
+
+
+
+// 获取浏览器类型
+function getBrowserType() {
+
+	// 获取浏览器 userAgent
+	var ua = navigator.userAgent
+
+	// 是否为 Opera
+	var isOpera = ua.indexOf('Opera') > -1
+	// 返回结果
+	if (isOpera) { return 'Opera' }
+
+	// 是否为 IE
+	var isIE = (ua.indexOf('compatible') > -1) && (ua.indexOf('MSIE') > -1) && !isOpera
+	var isIE11 = (ua.indexOf('Trident') > -1) && (ua.indexOf("rv:11.0") > -1)
+	// 返回结果
+	if (isIE11) {
+		return 'IE11'
+	} else if (isIE) {
+		// 检测是否匹配
+		var re = new RegExp('MSIE (\d+\.\d+);')
+		re.test(ua)
+		// 获取版本
+		var ver = parseFloat(RegExp["$1"])
+		// 返回结果
+		if (ver == 7) {
+			return 'IE7'
+		} else if (ver == 8) {
+			return 'IE8'
+		} else if (ver == 9) {
+			return 'IE9'
+		} else if (ver == 10) {
+			return 'IE10'
+		} else { return "IE" }
+	}
+
+	// 是否为 Edge
+	var isEdge = ua.indexOf("Edg") > -1
+	// 返回结果
+	if (isEdge) { return 'Edge' }
+
+	// 是否为 Firefox
+	var isFirefox = ua.indexOf("Firefox") > -1
+	// 返回结果
+	if (isFirefox) { return 'Firefox' }
+
+	// 是否为 Safari
+	var isSafari = (ua.indexOf("Safari") > -1) && (ua.indexOf("Chrome") == -1)
+	// 返回结果
+	if (isSafari) { return "Safari" }
+
+	// 是否为 Chrome
+	var isChrome = (ua.indexOf("Chrome") > -1) && (ua.indexOf("Safari") > -1) && (ua.indexOf("Edge") == -1)
+	// 返回结果
+	if (isChrome) { return 'Chrome' }
+
+	// 是否为 UC
+	var isUC = ua.indexOf("UBrowser") > -1
+	// 返回结果
+	if (isUC) { return 'UC' }
+
+	// 是否为 QQ
+	var isQQ = ua.indexOf("QQBrowser") > -1
+	// 返回结果
+	if (isUC) { return 'QQ' }
+
+	// 都不是
+	return ''
 }
-
-log(timeStr)
-
-
-let verifyData = ['e', 'v', 's', 'ee']
-	.map((item, i, all) => {
-		let radius = 360 / all.length, w = 400 / 2, h = 300 / 2, r = h, pi = Math.PI / 180
-		let translate = {
-			x: Math.cos(pi * 90),
-			y: Math.sin(pi * radius)
-		}
-		console.log(36, all, r, radius, pi, translate)
-
-		// let scale = {
-		// 	x: (80 + Math.random() * 40) / 100,
-		// 	y: (90 + Math.random() * 40) / 100
-		// }
-		// let rotate = 360 * Math.random() + 'deg'
-		// let style = {
-		// 	backgroundColor: 'rgba(255,255,255,.2)',
-		// 	// transform : `translate(${translate.x},${translate.y}) scale(${scale.x},${scale.y}) rotate(${rotate})`
-		// }
-		return {
-			label: item,
-			sort: i,
-			point: null,
-			// style
-		}
-	})
-
-log(5 ** 5, verifyData)
-
-
-
-
-
 
 
 

@@ -122,3 +122,21 @@ const downloadData = function (data, fileName) {
   document.body.removeChild(link)
 }
 
+
+// 深拷贝
+export const deepCopy = function (obj) {
+  var newObj = obj && obj.constructor === Array ? [] : {}
+  if (typeof obj !== 'object') {
+    return obj
+  } else {
+    for (var i in obj) {
+      if (typeof obj[i] === 'object') {
+        //判断对象的这条属性是否为对象
+        newObj[i] = deepCopy(obj[i]) //若是对象进行嵌套调用
+      } else {
+        newObj[i] = obj[i]
+      }
+    }
+  }
+  return newObj //返回深度克隆后的对象
+}

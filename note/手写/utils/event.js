@@ -97,3 +97,59 @@ colorDepth: 24
 height: 1080
 isExtended: true
 */
+
+
+/**
+ * 防抖
+ * @param {*} fn function 
+ * @param {*} wait timeout 时间间隔
+ * @param {*} immediate 单次执行 boolean 
+ * @returns 
+ */
+function debounce(fn, wait, immediate) {
+  let timer
+  return function () {
+    if (timer) clearTimeout(timer)
+    if (immediate) {
+      let callNow = !timer
+      timer = setTimeout(() => {
+        timer = null
+      }, wait);
+      if (callNow) {
+        fn.apply(this, arguments)
+      }
+    } else {
+      setTimeout(() => {
+        fn.apply(this, arguments)
+      }, wait);
+    }
+  }
+}
+
+/**
+ * 节流
+ * @param {*} fn function 
+ * @param {*} wait timer
+ */
+function throttle(fn, wait) {
+  let timer,
+    previous = 0
+  return function () {
+    let now = +new Date()
+    let remaining = wait - (now - previous)
+    if (remaining < 0) {
+      if (timer) {
+        clearTimeout(timer)
+        timer = null
+      }
+      previous = now
+      fn.apply(this, arguments)
+    } else if (!timer) {
+      timer = setTimeout(() => {
+        previous = new Date().getTime()
+        timer = null
+        fn.apply(this, arguments)
+      }, remaining);
+    }
+  }
+}

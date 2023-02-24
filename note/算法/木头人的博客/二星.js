@@ -187,6 +187,15 @@ const one = (arr, fn) => arr.filter(fn)
 // log(one([1, 3, 5, 6, 99, 88, 3], item => item % 2));
 // log(one([1, 3, 5, 6, 5, 1, 3], item => item > 5));
 
+// 寻找连续5位数中的最大数
+/*
+给定一个较大数的字符串
+该字符串的长度大于等于五
+从该数字字符串中找出连续五位数并且是其中最大的
+例如：”1234567890” => 67890
+例如：”987644” => 98764
+方法的返回值是一个数字
+*/
 function solution(digits) {
   let answer = 0
   for (let i = 0; i < digits.length - 4; i++) {
@@ -204,5 +213,75 @@ function recursiveSolution(digits) {
 
 // log(solution('123456'), recursiveSolution('123456'))
 
-// 
+
+
+// 字母加法算法
+/*
+实现一个函数，能够将字母进行想加并返回想加之后的字母
+该还是能够将传入的参数全部进行相加
+说明：
+传入的参数字母总是小写。
+字母可能溢出
+如果没有给出字母，该函数应返回 ‘z’
+例子：
+    addLetters('a', 'b', 'c') // 'f'
+    addLetters('a', 'b') // 'c'
+    addLetters('z') // 'z'
+    addLetters('z', 'a') // 'a'
+    addLetters('y', 'c', 'b') // 'd'
+    addLetters() // 'z'
+ */
+
+function addLetters(...letters) {
+  return String.fromCharCode((letters.reduce((a, b) => a + b.charCodeAt(0) - 96, 0) + 25) % 26 + 97)
+}
+
+log(addLetters('a', 'b', 'c'))// 'f'
+log(addLetters('a', 'b'))// 'c'
+log(addLetters('z'))// 'z'
+log(addLetters('z', 'a'))// 'a'
+log(addLetters('y', 'c', 'b'))// 'd'
+log(addLetters())// 'z'
+
+// 唯一的字符串字符
+/*
+实现一个函数，该函数有两个参数
+函数的两个参数都为字符串
+该函数返回这两个字符串中没有同时存在的字符
+例如:
+solve("xyab","xzca") // "ybzc"
+    solve("acd","agf") // "cdgf"
+*/
+
+function solve(a, b) {
+  return (a + b).split('').filter(item => !a.includes(item) || !b.includes(item))
+}
+
+log(solve("xyab", "xzca"))// "ybzc"
+log(solve("acd", "agf"))// "cdgf"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

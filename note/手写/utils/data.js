@@ -2,6 +2,7 @@
 
 
 
+const { log } = console
 
 // https://blog.csdn.net/u012915128/article/details/79634670
 /**
@@ -84,13 +85,6 @@ console.log(70, href)
 
 
 
-
-
-
-
-
-
-
 /**
  * 通过链接下载文件
  * @param {*} url 
@@ -124,7 +118,7 @@ const downloadData = function (data, fileName) {
 
 
 // 深拷贝
-export const deepCopy = function (obj) {
+const deepCopy = function (obj) {
   var newObj = obj && obj.constructor === Array ? [] : {}
   if (typeof obj !== 'object') {
     return obj
@@ -140,3 +134,64 @@ export const deepCopy = function (obj) {
   }
   return newObj //返回深度克隆后的对象
 }
+
+// function deepCopy(source) {
+//   let target = Array.isArray(source) ? [] : {}
+//   for (let key in source) {
+//     if (source.hasOwnProperty(key)) {
+//       if (typeof source[key] === 'object' && source) {
+//         target[key] = deepCopy(source[key])
+//       } else {
+//         target[key] = source[key]
+//       }
+//     }
+//   }
+//   return target
+// }
+
+// json 转formData
+function jsonToFormData(obj) {
+  let formData = new FormData()
+  Object.keys(obj).forEach(key => {
+    formData.append(key, obj[key])
+  })
+  return formData
+}
+
+// json 转 query-string 
+function jsonToQueryString(obj) {
+  if (!obj) return ''
+  return Object.keys(obj).map(key => {
+    if (obj[key] === undefined) return ''
+    return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key])
+  }).join('&')
+}
+// formData 转json
+function formDataToJson(formData) {
+  let json = {}
+  formData.forEach((v, k) => json[k] = v)
+  return json
+}
+// query-string 转 json 
+function queryStringToJson(query) {
+  let json = {}
+  query.split('&').forEach(item => {
+    let s = item.split('=')
+    let key = s[0], value = decodeURIComponent(s[1]) || undefined
+    json[key] = value
+  })
+  return json
+}
+
+let a = {
+  b: 1,
+  c: 2,
+  e: 'kadflaksdkasdf中存在的',
+  f: null
+}
+
+let s = jsonToQueryString(a)
+
+log(queryStringToJson(s))
+
+

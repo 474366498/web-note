@@ -20,7 +20,7 @@ function getAdapter(options) {
     adapter = httpAdapter
   }
   console.log(22, adapter)
-  return adapter
+  return adapter(options)
 }
 
 function xhrAdapter(options) {
@@ -54,6 +54,8 @@ function xhrAdapter(options) {
 }
 
 function httpAdapter(options) {
-
+  return new Promise(function (resolve, reject) {
+    resolve(options)
+  })
 }
 

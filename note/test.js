@@ -78,3 +78,26 @@ function isReadOnly(eventName) {
 	return eventHandlerNames.indexOf(eventName) !== -1;
 }
 console.log(events, eventHandlerNames)
+
+
+
+
+
+let positions = [], count = 256
+for (let i = 0; i < count; i++) {
+	for (let m = 0; m < count; m++) {
+		for (let n = 0; n < 1; n++) {
+			positions.push({
+				i: i * m,
+				id: `id_${i},${m},${n}`,
+				value: `rgba(${i},${m},${n},1)`
+			})
+		}
+	}
+
+}
+
+
+console.log(102, positions)
+
+

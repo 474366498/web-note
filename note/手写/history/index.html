@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+</head>
+<body>
+  123123
+  <p> JavaScript实现history路由变化监听及一个对应的应用场景 https://www.jianshu.com/p/21d1fdd72276 <br>
+  JavaScript如何实现history路由变化监听   https://blog.csdn.net/sinat_17775997/article/details/88400750
+  </p>
+  <a href="./index.html?a=123">123</a>
+  <a href="./index.html?a=234">234</a>
+</body>
+<script>
+  //  JavaScript实现history路由变化监听及一个对应的应用场景 https://www.jianshu.com/p/21d1fdd72276
+    class Dep { // 订阅池
+      constructor(name) {
+        this.subs = [] //该事件下被订阅对象的集合
+      }
+      defined(watch) {
+        console.log(22,watch)
+        this.subs.push(watch)
+      }
+      notify() { //通知订阅者有变化
+        console.log('this.subs',this.subs)
+        this.subs.forEach((e, i) => {
+          if (typeof e.update === 'function') {
+            try {
+              e.update.apply(e) //触发订阅者更新函数
+            } catch (err) {
+              console.error(err)
+            }
+          }
+        })
+      }
+    }
+
+    class Watch {
+      constructor(name, fn) {
+        this.name = name; //订阅消息的名称
+        this.callBack = fn; //订阅消息发送改变时->订阅者执行的回调函数     
+      }
+      add(dep) { //将订阅者放入dep订阅池
+        dep.subs.push(this);
+      }
+      update() { //将订阅者更新方法
+        var cb = this.callBack; //赋值为了不改变函数内调用的this
+        cb(this.name);
+      }
+    }
+
+    function addMethod() {
+      let historyDep = new Dep();
+      return function (name) {
+        if (name === 'historychange') {
+          return function (name, fn) {
+            let event = new Watch(name, fn)
+            historyDep.defined(event);
+          }
+        } else if (name === 'pushState' ) {
+          let method = history[name];
+          return function () {
+            console.log('pushState','arguments',arguments[2])
+            method.apply(history, arguments);
+            console.log(65,historyDep)
+            historyDep.notify();
+          }
+        }else if ( name === 'replaceState') {
+          let method = history[name];
+          return function () {
+            console.log('replaceState','arguments',arguments[2])
+            method.apply(history, arguments);
+            historyDep.notify();
+          }
+        }
+        console.log(75,historyDep)
+      }
+    }
+    let addHistoryMethod = new addMethod()
+    window.addHistoryListener = addHistoryMethod('historychange');
+    history.pushState = addHistoryMethod('pushState');
+    history.replaceState = addHistoryMethod('replaceState');              
+    window.addHistoryListener('history',function (e){
+      console.log(88,e)
+    })
+    let array = ['a','b','c']
+   
+    for(let i = 1 ; i <= array.length;i++) {
+      setTimeout(() => {
+        history.pushState(i,'Hello '+array[i-1] , '/hello/'+array[i-1])
+        console.log(i,array[i-1])
+      }, i * 1500);
+    }
+
+    
+    /**
+  class Dep {
+    constructor (name) {
+      this.id = new Date() 
+      this.subs = [] 
+    }
+
+    defined () {
+      Dep.watch.add(this)
+    }
+
+    notify () {
+      this.subs.forEach((e,i) => {
+        if(typeof e.update === 'function') {
+          try {
+            e.update.apply(e)
+          }catch(err) {
+            console.warn(err)
+          }
+        }
+      })
+    }
+
+  }
+
+  Dep.watch = null 
+
+  class Watch {
+    constructor (name , fn) {
+      this.name = name 
+      this.id = new Date() 
+      this.callback = fn
+    }
+    add (dep) {
+      dep.subs.push(this)
+    }
+
+    update () {
+      let cb = this.callback 
+      cb(this.name)
+    }
+
+  }
+
+  var addHistoryMethod = (function () {
+    var historyDep = new Dep() 
+    return function (name) {
+
+      if(name === 'historychange') {
+        return function (name , fn) {
+          var event = new Watch(name , fn) 
+          Dep.watch = event 
+          historyDep.defined() 
+          console.log(154,historyDep)
+          Dep.watch = null 
+        }
+      }else if (name === 'pushState' || name === 'replaceState') {
+        var method = history[name] 
+        return function () {
+          method.apply(history,arguments)
+          historyDep.notify()
+        }
+      }
+
+    }
+  }())
+
+  window.addHistoryListener = addHistoryMethod('historychange')
+  history.pushState = addHistoryMethod('pushState')
+  history.replaceState = addHistoryMethod('replaceState')
+
+  window.addHistoryListener('history',function (e) {
+    console.log('change ',e)
+  })
+
+  window.addHistoryListener ('history',function (e) {
+    console.log('change ~~~~~',e)
+  })
+
+    let array = ['a','b','c']
+   
+    for(let i = 1 ; i <= array.length;i++) {
+      setTimeout(() => {
+        history.pushState(i,'Hello '+array[i-1] , '/hello/'+array[i-1])
+        console.log(i,array[i-1])
+      }, i * 1500);
+    }
+
+    **/
+</script>
+</html>

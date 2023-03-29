@@ -183,15 +183,33 @@ function queryStringToJson(query) {
   return json
 }
 
-let a = {
-  b: 1,
-  c: 2,
-  e: 'kadflaksdkasdf中存在的',
-  f: null
+// let a = {
+//   b: 1,
+//   c: 2,
+//   e: 'kadflaksdkasdf中存在的',
+//   f: null
+// }
+
+// let s = jsonToQueryString(a)
+
+// log(queryStringToJson(s))
+
+// 随机色三位或六位
+function getRandomColor(length) {
+  let l = length || (Math.random() < .5 ? 3 : 6)
+  return '#' + (function setColor(c) {
+    return (c += '0123456789abcdef'[Math.floor(Math.random() * 16)]) && c.length === l ? c : setColor(c)
+  })('')
 }
+// 0.2.2.0.1.0.2.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.2.0.1.0.1.0.1.0.2.0.1.0.1.0.1.0.2.0.1.0.1.0.1
 
-let s = jsonToQueryString(a)
-
-log(queryStringToJson(s))
-
-
+// 随机色三位或六位
+function getRandomRGBA(flg) {
+  let rgba = ''
+  for (let i = 0; i < 3; i++) {
+    let r = Math.floor(Math.random() * 256) + (i < 2 ? ',' : '')
+    console.log(r)
+    rgba += r
+  }
+  return flg ? `rgba(${rgba},${Math.floor(Math.random() * 100) / 100})` : `rgb(${rgba})`
+}

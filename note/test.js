@@ -60,7 +60,7 @@ let h = `
 110kV 碾柏线起于 220kV 水碾变电站，止于 220kV 柏树堡变电站。本工程在现状 110kV 碾柏线 26#小号侧约 14m 处新立NB1 塔与原 110kV 碾柏线 25#连通，然后线路左转在规划绿地边缘新立NB2 塔、NB3 塔，接着线路右转跨过公路后沿中小学规划用地边缘向东南方向走线，在中小学规划用地红线边缘新立NB4 塔、NB5 塔与 110 千伏碾柏线 28 号至30 号线路迁改已建钢管塔 G1塔连通。新建架空线路 0.404km，新立单回路耐张钢管塔 5 基，导线采用JL/G1A-150/25 钢芯铝绞线，地线采用两根 JLB20A-50 铝包钢绞线。拆除原110kV 碾柏线 26#-G1#线路长度 0.3Km,拆除原线路杆塔 2 基。重新调整弧垂0.502km，更换原 110kV 碾柏线 G1-G2 耐张段B 相导线长度 0.068km。
 `
 console.log(h.length)
-
+/*
 const manageAndEmit = ["Start", "Add", "Remove", "Update", "End"];
 const emit = ["Choose", "Unchoose", "Sort", "Filter", "Clone"];
 const manage = ["Move"];
@@ -99,5 +99,50 @@ for (let i = 0; i < count; i++) {
 
 
 console.log(102, positions)
+*/
 
 
+function getSequence(arr) {
+	const p = arr.slice()
+	const result = [0]
+	let i, j, u, v, c
+	const len = arr.length
+	for (i = 0; i < len; i++) {
+		const arrI = arr[i]
+		if (arrI !== 0) {
+			j = result[result.length - 1]
+			if (arr[j] < arrI) {
+				p[i] = j
+				result.push(i)
+				continue
+			}
+			u = 0
+			v = result.length - 1
+			while (u < v) {
+				c = (u + v) >> 1
+				if (arr[result[c]] < arrI) {
+					u = c + 1
+				} else {
+					v = c
+				}
+			}
+			if (arrI < arr[result[u]]) {
+				if (u > 0) {
+					p[i] = result[u - 1]
+				}
+				result[u] = i
+			}
+		}
+	}
+	u = result.length
+	v = result[u - 1]
+	while (u-- > 0) {
+		result[u] = v
+		v = p[v]
+	}
+	return result
+}
+
+let a = getSequence([5, 4, 3])
+
+console.log(148, a)

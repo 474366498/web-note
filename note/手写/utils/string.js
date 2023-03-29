@@ -17,9 +17,9 @@ function toThousandFilter(num) {
  */
 function toLowerLine(str, sp = '-') {
   let temp = str.replace(/[A-Z]/g, function (m) {
-    return (sp || '_') + m.toLowerCase()
+    return sp + m.toLowerCase()
   })
-  return temp.slice(0, 1) === (sp || '_') ? temp.slice(1) : temp
+  return temp.slice(0, 1) === sp ? temp.slice(1) : temp
 }
 
 // let arr = ['ExpandList', 'expandList']

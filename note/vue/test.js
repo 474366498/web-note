@@ -1,4 +1,4 @@
 const { log } = console
-console.log((1 << 2 | 1 << 1).toString(2));
+log((1 << 2 | 1 << 1).toString(2));
 
 

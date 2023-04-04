@@ -17,7 +17,9 @@ class ReactiveEffect {
   run() {
     try {
       activeEffect = this
-      return this.fn()
+      console.log(this)
+      let fn = typeof this.fn === 'function' ? this.fn : (this.fn?.get || null)
+      return fn && fn()
     } finally {
       activeEffect = null
     }
@@ -69,6 +71,7 @@ module.exports = {
   ReactiveEffect,
   effect,
   track,
+  trackEffects,
   trigger
 }
 

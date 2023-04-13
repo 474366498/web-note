@@ -33,9 +33,9 @@ let __r = computed({
     return true
   }
 })
-console.log('before', _r.val)
+log('before', _r.val, r)
 r.value = 20
-console.log(`%c 27 ~ ${_r.value} %c ~ %c ${__r.value}  `, 'color:#f00;', 'font-size:20px;', 'color:blue;background:yellow;')
+log(`%c 27 ~ ${_r.value} %c ~ %c ${__r.value}  `, 'color:#f00;', 'font-size:20px;', 'color:blue;background:yellow;')
 
 
 // proxy.a = 10

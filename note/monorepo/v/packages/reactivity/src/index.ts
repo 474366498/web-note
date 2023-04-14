@@ -6,5 +6,11 @@ const reactivity = {
   shared
 }
 
+const add = (a, b) => a + b
+
+export {
+  add
+}
+
 
 export default reactivity

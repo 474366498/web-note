@@ -3,8 +3,8 @@
   "workspaces": [
     "packages/*"
   ],
-  "scripts" :{
-    "build":"node scripts/build"
+  "scripts": {
+    "build": "node scripts/build"
   },
   "name": "v~3",
   "version": "1.0.0",
@@ -13,6 +13,7 @@
   "devDependencies": {
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.2",
+    "@types/jest": "^29.5.0",
     "execa": "^7.1.1",
     "rollup": "^3.20.2",
     "rollup-plugin-typescript2": "^0.34.1",

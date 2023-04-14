@@ -5,6 +5,7 @@
   "license": "MIT" ,
   "buildOptions" : {
     "name" : "VueShared" ,
+    "filename":"shared",
     "formats" : [
       "esm-bundler" ,
       "esm-browser" ,

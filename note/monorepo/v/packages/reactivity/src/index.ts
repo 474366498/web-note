@@ -1,16 +1,31 @@
 
-import shared from "@vue/shared"
 
-const reactivity = {
-  a: 1,
-  shared
-}
-
-const add = (a, b) => a + b
 
 export {
-  add
-}
+  reactive,
+  readonly,
+  isReactive,
+  isReadonly,
+  shallowReactive,
+  shallowReadonly,
+  toRaw
+} from './reactive'
 
+export {
+  effect,
+  stop,
+  trigger,
+  track
+} from './effect'
 
-export default reactivity
+export {
+  ref,
+  shallowRef,
+  toRef,
+  toRefs
+} from './ref'
+
+export {
+  computed
+} from './computed'
+

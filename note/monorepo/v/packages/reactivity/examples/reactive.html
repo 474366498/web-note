@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">app</div>
+</body>
+<script type="text/javascript" src="../dist/reactivity.global.js"></script>
+<script >
+console.log(14,VueReactivity)
+const {reactive , effect ,toRaw } = VueReactivity
+let  data = {name:'auq sse ' ,list:[1,2,3,4]}
+let state = reactive(data)
+// console.log(state )
+effect(() => {
+  state.name = 'aaa'
+  state.list.push(6)
+  console.log(state)
+  setTimeout(() => {
+    state.name = 'asafasaa'
+    state.list[0]=7776
+    console.log('set',state)
+  }, 5000);
+})
+console.log(28,toRaw(state), toRaw(data))
+// setTimeout(() => {
+//   state.name ='aaaa'
+//   console.log(21,state.name)
+// }, 3000);
+</script>
+</html>

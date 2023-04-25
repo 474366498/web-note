@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vue computed</title>
+</head>
+<body>
+  <div id="app" ></div>
+</body>
+<script type="text/javascript" src="../dist/reactivity.global.js"></script>
+<script>
+  const {ref , computed } = VueReactivity
+  let age = ref(10) 
+
+  let Age = computed(() => {
+    console.log('computed !!')
+    return  age.value + 20
+  })
+  
+  console.log(22,age , Age , Age.value)
+
+  setTimeout(() => {
+    age.value += 10
+  }, 5e3);
+ 
+</script>
+</html>

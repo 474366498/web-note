@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vue ref</title>
+</head>
+<body>
+  <div id="app" ></div>
+</body>
+<script type="text/javascript" src="../dist/reactivity.global.js"></script>
+<script>
+  console.log(14,VueReactivity)
+  const {reactive , effect ,toRaw , ref , toRef , toRefs } = VueReactivity
+  /*
+  let name = ref('auq sse ')
+  
+  effect(() => {
+    name.value = '~123123'
+    app.innerHTML = name.value
+    console.log(17,ref , name )
+
+  })
+  */
+
+  let obj = { name : 'auq ' , age :22} 
+  let _name = toRef(obj,'name')
+  _name.value = 'auq sse'
+  let {name,age} = toRefs(obj)
+  
+  console.log(29, _name , name , age ) // iterable 
+ 
+ 
+</script>
+</html>

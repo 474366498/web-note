@@ -4,7 +4,8 @@ const fs = require('fs')
 
 // 获取packages中的文件夹
 const dirs = fs.readdirSync('packages').filter(p => {
-  if (!fs.statSync(`packages/${p}`).isDirectory()) {
+  console.log(7, p)
+  if (!fs.statSync(`packages/${p}`).isDirectory() || p === 'v3') {
     return false
   }
   return true

@@ -4,6 +4,7 @@
     "packages/*"
   ],
   "scripts": {
+    "dev":"node scripts/dev",
     "build": "node scripts/build"
   },
   "name": "v~3",

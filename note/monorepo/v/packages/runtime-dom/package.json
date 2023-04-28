@@ -1,0 +1,19 @@
+{
+  "name": "@vue/runtime-dom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  },
+  "buildOptions" : {
+    "name" : "VueRuntimeDom" ,
+    "filename" :"runtime" ,
+    "formats":[
+      "esm-browser" ,
+      "global"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

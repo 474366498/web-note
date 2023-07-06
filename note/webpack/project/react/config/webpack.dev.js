@@ -73,6 +73,11 @@ module.exports = {
               cacheCompression: false,
               plugins: ['react-refresh/babel']
             }
+          },
+          {
+            test: /\.tsx?$/,
+            exclude: /node_modules/,
+            loader: 'ts-loader'
           }
         ]
       }
@@ -115,7 +120,7 @@ module.exports = {
     }
   },
   resolve: {
-    extensions: ['.jsx', '.js', '.json']
+    extensions: ['.tsx', '.jsx', '.js', '.json']
   },
   devServer: {
     open: false,

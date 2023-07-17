@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div style="display:flex;align-content:space-between;">
+    <input type="text" id="message" /> <button id="send">发送</button> 
+  </div>
+  <ul class="message-list" id="msgList">
+
+  </ul>
+  <script>
+    let message = document.getElementById('message') ,
+      send = document.getElementById('send') ,
+      list = document.getElementById('msgList')
+    var ws = new WebSocket('ws://192.168.2.100:9999')
+    console.log(18,ws)
+    ws.onopen = function () {
+      console.log('加入')
+      send.onclick = function () {
+        let msg = message.value 
+        if(msg) {
+          ws.send(msg)
+        }
+      }
+    }
+    ws.onmessage = function (e) {
+      let msg = JSON.parse(e.data)
+      console.log(32,msg)
+      showMessage(msg)
+    }
+    ws.onclose = function () {
+      console.log('ws close')
+    }
+
+    function showMessage(msg) {
+      let li = document.createElement('li') 
+      li.innerHTML = `${msg.type} : ${msg.data}`
+      list.appendChild(li)
+    }
+  </script>
+</body>
+</html>

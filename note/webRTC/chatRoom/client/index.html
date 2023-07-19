@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div style="display:flex;flex-direction:column">
+    <div style="display: flex ; ">
+      <input id="room" placeholder="输入房间号" /> 
+      <button id="join" >加入</button>
+      <button id="leave" >离开</button>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      <audio id="locAudio" controls></audio>
+      <audio id="audio" controls></audio>
+    </div>
+  </div>
+</body>
+<script src="./adapter-latest.js"></script>
+  <script>
+    const SIGNAL_TYPE_JOIN = "join";
+    const SIGNAL_TYPE_RESP_JOIN = "resp-join";  // 告知加入者对方是谁
+    const SIGNAL_TYPE_LEAVE = "leave";
+    const SIGNAL_TYPE_NEW_PEER = "new-peer";
+    const SIGNAL_TYPE_PEER_LEAVE = "peer-leave";
+    const SIGNAL_TYPE_OFFER = "offer";
+    const SIGNAL_TYPE_ANSWER = "answer";
+    const SIGNAL_TYPE_CANDIDATE = "candidate";
+  </script>
+  <script>
+    class RTCWebsocket {
+      constructor (url ) {
+        this.url =  url
+        this.create()
+      }
+      create () {
+        let url = this.url
+        var ws = new WebSocket(url)
+        this.ws = ws 
+        ws.onopen = this.onOpen ()
+        ws.onerror = error=>this.onError(error)
+        ws.onmessage = (data) =>this.onMessage(data) 
+        ws.close = this.onClose()
+      }
+      onOpen () {
+        console.log('open' ,this.ws)
+      }
+      onError (error) {
+        console.log('error',error)
+      }
+      onMessage (event) {
+        var jsonMsg = null 
+        try {
+          jsonMsg = JSON.parse(event.data)
+        } catch (error) {
+          console.log('event data 无法用json进行解析')
+          return 
+        }
+        console.log(62,jsonMsg)
+        switch (jsonMsg.cmd) {
+          case SIGNAL_TYPE_JOIN:
+            console.log('我开房了')
+            break;
+            // 来新客了 
+          case SIGNAL_TYPE_NEW_PEER :
+            onHandleRemoteNewPeer(jsonMsg)
+            break
+          case SIGNAL_TYPE_RESP_JOIN:
+            onHandleResponseJoin(jsonMsg)
+            function onHandleResponseJoin (json) {
+              remoteUserId = json.remoteUid
+            }
+            break;
+          case SIGNAL_TYPE_PEER_LEAVE:
+            onHandleRemotePeerLeave(jsonMsg)
+            function onHandleRemotePeerLeave(json) {
+              audio.srcObject = null 
+              if(pc) {
+                pc.close() 
+                pc = null 
+              }
+            }
+            break;
+          case SIGNAL_TYPE_OFFER:
+            onHandleRemoteOffer(jsonMsg)
+            break;
+          case SIGNAL_TYPE_ANSWER:
+            onHandleRemoteAnswer(jsonMsg)
+            function onHandleRemoteAnswer(json) {
+              let desc = JSON.parse(json.msg)
+              pc.setRemoteDescription(desc)
+            }
+            break;
+          case SIGNAL_TYPE_CANDIDATE:
+            onHandleRemoteCandidate(jsonMsg)
+            function onHandleRemoteCandidate (json) {
+              let jsonMsg = JSON.parse(json.msg) 
+              let info = {
+                sdpMLineIndex : jsonMsg.label ,
+                sdpMid : jsonMsg.id ,
+                candidate : jsonMsg.candidate
+              }
+              var candidate = new RTCIceCandidate(info) 
+              pc.addIceCandidate(candidate).catch(error=>{
+                console.log('addIceCandidate error ' , error)
+              })
+            }
+            break;
+        }
+      }
+      onClose () {
+        console.log('close')
+      }
+    }
+  </script>
+  
+  <script>
+    const locAudio = document.getElementById('locAudio') ,
+          audio = document.getElementById('audio'),
+          room = document.getElementById('room') ;
+
+    let locUserId = Math.random().toString(32).substr(2)
+
+    var roomId = null , 
+      remoteUserId = -1 ,
+      locStream = null ,
+      remoteStream = null ,
+      pc = null  
+    
+    function createPeerConnection  () { 
+      // WebRTC 网络中继 Coturn 服务安装及部署 https://blog.csdn.net/ruiye99/article/details/130992960
+      let defaultConfiguration = {
+        bundlePolicy : 'max-bundle' ,
+        rtcpMuxPolicy : 'require' ,
+        iceTransportPolicy :'all' ,
+        iceServers : [
+          {urls: "stun:stun.l.google.com:19302"}
+        ],
+        sdpSemantics:'plan-b'
+      }
+
+      pc = new RTCPeerConnection(defaultConfiguration) 
+
+      pc.onicecandidate = function (event) {
+        console.log(158,event)
+        if(event.candidate) {
+          var candidateJson = {
+            label : event.candidate.sdpMLineIndex ,
+            id : event.candidate.sdpMid ,
+            candidate : event.candidate.candidate
+          }
+          var jsonMsg = {
+            cmd : SIGNAL_TYPE_CANDIDATE ,
+            roomId , 
+            uid : locUserId ,
+            remoteUid : remoteUserId ,
+            msg : JSON.stringify(candidateJson)
+          }
+          ws.send(JSON.stringify(jsonMsg))
+        }else{
+          console.warn("End of candidates");
+        }
+      }
+      pc.ontrack = function (event) {
+        console.log(177,event)
+        remoteStream = event.streams[0]
+        audio.srcObject = remoteStream 
+      }
+      pc.onconnectionstatechange = function () { }
+
+      pc.oniceconnectionstatechange = function () { }
+    }
+
+
+    var W = new RTCWebsocket('ws://192.168.2.100:9999')
+    let ws = W.ws 
+    
+    function onHandleRemoteNewPeer(json) {
+      remoteUserId = json.remoteUid
+      doOffer()
+    }
+    function onHandleRemoteOffer (json){
+      if(!pc) {
+        createPeerConnection()
+      }
+      let desc = JSON.parse(json.msg)
+      pc.setRemoteDescription(desc)
+      doAnswer()
+    }
+
+    function doOffer () {
+      if(!pc) {
+        createPeerConnection()
+      }
+      pc.createOffer()
+      .then(session => {
+        pc.setLocalDescription(session)
+        .then(function () {
+          let jsonMsg = {
+            cmd:'offer' ,
+            roomId ,
+            uid : locUserId ,
+            remoteUid : remoteUserId ,
+            msg : JSON.stringify(session)
+          }
+          ws.send(JSON.stringify(jsonMsg))
+        })
+        .catch(error => {
+          console.log('doOffer createOffer error ' , error)
+          // 当遇到 NAT 之间无法打通的情况下，会使用 TURN 协议通过中转的方式实现端与端之间的通信  https://blog.csdn.net/ruiye99/article/details/130992960
+        })
+      })
+      .catch(error => {
+        console.log('doOffer error ' , error)
+      })
+    }
+    
+    function doAnswer () {
+      pc.createAnswer()
+      .then(session => {
+        pc.setLocalDescription(session)
+        .then(() => {
+          let jsonMsg = {
+            cmd : 'answer' ,
+            roomId ,
+            uid : locUserId ,
+            remoteUid : remoteUserId ,
+            msg : JSON.stringify(session)
+          }
+          ws.send(JSON.stringify(jsonMsg))
+        })
+        .catch(error => {
+          console.log('doAnswer createAnswer error ' , error)
+        })
+      })
+      .catch(error=> {
+        console.log('doAnswer error ' , error)
+      })
+    }
+
+    // 创建房间
+    function joinRoom (roomId) {
+      let jsonMsg = {
+        cmd:'join' ,
+        roomId ,
+        uid : locUserId 
+      }
+      let msg = JSON.stringify(jsonMsg) 
+      ws.send(msg)
+    }
+
+
+    function initLocalStream (roomId) {
+      navigator.mediaDevices.getUserMedia({
+        audio : true ,
+        video : false 
+      })
+      .then(stream => {
+        locAudio.srcObject = stream 
+        locAudio.play()
+        locStream = stream 
+        joinRoom(roomId)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    } 
+    
+    
+    document.getElementById('join').onclick = function () {
+      console.log('join click')
+      let roomId = room.value 
+      if(!roomId) {
+        alert('请输入房间号')
+        return 
+      }
+      initLocalStream(roomId)
+    }
+
+  </script>
+
+</html>

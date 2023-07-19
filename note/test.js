@@ -299,3 +299,27 @@ originurl_a ">原文链接</a>
 
 str.replace(/<(style)[^>]*?>[\s\s\S]*?<\/(style)>/gi)
 
+const _permute = string => {
+  const result = []
+  const map = new Map()
+  const dfs = (path) => {
+    if (path.length === string.length) {
+      result.push(path)
+      return
+    }
+    for (let i = 0; i < string.length; i++) {
+      if (map.get(string[i])) continue
+      map.set(string[i], true)
+      path += string[i]
+      console.log('before:', path, i)
+      dfs(path)
+      path = path.substring(0, path.length - 1)
+      console.log('after:', path, i)
+      map.set(string[i], false)
+    }
+  }
+  dfs('')
+  console.log(320, map)
+  return result
+}
+console.log(322, _permute('ab'))

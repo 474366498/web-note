@@ -13,14 +13,16 @@
 <script type="importmap">
   {
     "imports" : {
-      "three" : "../three/build/three.module.js"
+      "three" : "../three/build/three.module.js",
+      "three/addons/": "../three/jsm/"
     }
   }
 </script>
 
 <script type="module">
   import * as THREE from 'three'
-  console.log(23,THREE)
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+  console.log(23,THREE , OrbitControls)
 
 
   const width = 800 , height = 600

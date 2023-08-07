@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  body{
+    margin:0;
+  }
+</style>
+<body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three":"../three/build/three.module.js" ,
+        "three/plugins/":"../three/jsm/"
+      }
+    }
+    
+  </script>
+
+  <script type="module">
+    import * as T from 'https://unpkg.com/three/build/three.module.js' ;
+    // import * as W from 'https://unpkg.com/three/jsm/capabilities/WebGL.js' ;
+    import WebGL from 'three/plugins/capabilities/WebGL.js'
+    console.log(17,T ,WebGL )
+    console.log('浏览器是否支持 WebGL：',WebGL.isWebGLAvailable() ? '支持' :'不支持')
+
+    const scene = new T.Scene()
+
+    const camera = new T.PerspectiveCamera(75,window.innerWidth / window.innerHeight , .1 , 1000 )
+
+    const render = new T.WebGLRenderer() 
+
+    render.setSize(window.innerWidth , window.innerHeight)
+
+    document.body.appendChild(render.domElement)
+
+    const geometry = new T.BoxGeometry(2,2,2) 
+    const material = new T.MeshBasicMaterial({color:0xff0000})
+    const cube = new T.Mesh(geometry,material)
+
+    scene.add(cube)
+
+    camera.position.z = 5 
+
+    function animate() {
+      requestAnimationFrame(animate)
+      cube.rotation.x += 0.1 
+      cube.rotation.y += .1 
+      render.render(scene,camera)
+    }
+    animate()
+
+
+  </script>
+</body>
+</html>

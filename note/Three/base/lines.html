@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  html,body{
+    margin:0 ;
+    padding:0;
+  }
+</style>
+<body>
+  <script type="importmap">
+    {
+      "imports":{
+        "three" : "../three/build/three.module.js" 
+      }
+    }
+  </script>
+  <script type="module">
+    import * as T from 'three'
+
+    console.log(20,T)
+
+    const renderer = new T.WebGLRenderer() 
+    renderer.setSize(window.innerWidth , window.innerHeight)
+    document.body.appendChild(renderer.domElement)
+
+    const camera = new T.PerspectiveCamera(45,window.innerWidth/window.innerHeight , 1, 500) 
+    camera.position.set(100,100,100)
+    camera.lookAt(0,0,0)
+
+    const scene = new T.Scene() 
+
+    const material = new T.LineBasicMaterial({color:0xff0000})
+
+    const points = [] 
+
+    points.push(new T.Vector3(0,0,10))
+    points.push(new T.Vector3(0,10,0))
+    points.push(new T.Vector3(10,0,0))
+
+    const geometry = new T.BufferGeometry().setFromPoints(points)
+
+    const line = new T.Line(geometry,material)
+
+    const axesHelper = new T.AxesHelper(500)
+    scene.add(axesHelper)
+
+    scene.add(line)
+    renderer.render(scene,camera)
+
+  </script>
+</body>
+</html>

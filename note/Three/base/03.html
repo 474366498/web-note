@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  html , body {
+    margin:0;
+    padding:0;
+  }
+</style>
+<body>
+  
+</body>
+
+<script type="importmap">
+  {
+    "imports" : {
+      "three" : "../three/build/three.module.js" ,
+      "three/plugins/":"../three/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+
+  import * as T from 'three' 
+  import { OrbitControls } from 'three/plugins/controls/OrbitControls.js' 
+  import Stats from 'three/plugins/libs/stats.module.js'
+
+  let width = window.innerWidth ,
+      height = window.innerHeight
+
+  const scene = new T.Scene() 
+  const box = new T.BoxGeometry(100,100,100)
+
+  const lambert = new T.MeshLambertMaterial({
+    color:0xff0000 ,
+    transparent:true ,
+    opacity:1
+  })
+
+  const phong = new T.MeshPhongMaterial({
+    color:0x00ff00 ,
+    shininess: 20, //高光部分的亮度，默认30
+    specular: 0x444444, //高光部分的颜色
+  })
+  
+  const mesh = new T.Mesh(box,lambert)
+  scene.add(mesh)
+  
+  let length = 3e1 , meshData = []
+  for(let i = 0 ; i < length;i++ ){
+    for(let j = 0 ; j < length; j++) {
+      let geo 
+      switch (i%6) {
+        case 0:
+          geo = new T.BoxGeometry(100,100,100)
+          break;
+        case 1 :
+          geo = new T.CylinderGeometry(50,50,100)
+          break ;
+        case 2 : 
+          geo = new T.SphereGeometry(100)
+          break ;
+        case 3 : 
+          geo = new T.ConeGeometry(100,100)    
+          break ;
+        case 4: 
+          geo = new T.PlaneGeometry(100,100)  
+          break;
+        default:
+          geo = new T.CircleGeometry(50)
+          break;
+      }
+      let _mesh = new T.Mesh(geo,j % 2 ==0 ?lambert:phong) 
+      _mesh.position.set(i* 200 , 0 , j* 200)
+      scene.add(_mesh)
+      meshData.push(_mesh)
+    }
+  }
+
+
+  const axes = new T.AxesHelper(5e3)
+  scene.add(axes)
+
+  const perspective = new T.PerspectiveCamera(90,width/height , 1, 5e2 * length)
+  perspective.position.set(1e2*length,900,1e2*length)
+    
+
+  if(length <= 2e1){
+    perspective.lookAt(0,0,0)
+  }else{
+    perspective.lookAt(2e2*length / 2 ,0,2e2*length / 2)
+    
+  }
+  
+  const spot = new T.SpotLight('rgba(255,255,255,.2)')
+  spot.position.set(2e2*length,600,0)
+  scene.add(spot)
+  const spotHelper = new T.SpotLightHelper(spot)
+  scene.add(spotHelper)
+
+  const _spot = new T.SpotLight(0xffffff)
+  _spot.position.set(-2e2*length,-600,2e2*length)
+  scene.add(_spot)
+  console.log(76,_spot)
+  const _spotHelper = new T.SpotLightHelper(_spot)
+  scene.add(_spotHelper)
+
+  const renderer  = new T.WebGLRenderer({
+    antialias:true 
+  })
+  renderer.setClearColor(0x333333,1)
+  renderer.setSize(width,height)
+  renderer.render(scene,perspective)
+  document.body.appendChild(renderer.domElement)
+
+  const orbit = new OrbitControls(perspective,renderer.domElement)
+
+  orbit.addEventListener('change',()=>{
+     renderer.render(scene,perspective)
+  })
+  
+  if(length > 2e1){
+    orbit.target.set(2e2*length / 2 ,0,2e2*length / 2)
+    orbit.update()
+  }
+
+  const stats = new Stats()
+  document.body.appendChild(stats.domElement)
+
+  console.log(93,meshData)
+
+  function animation() {
+    stats.update() 
+    renderer.render(scene,perspective)
+    meshData.forEach(mesh=>{
+      mesh.rotateX(.01)
+      mesh.rotateY(.01)
+      mesh.rotateZ(.01)
+    })
+    requestAnimationFrame(animation)
+  }
+
+  animation()
+</script>
+
+</html>

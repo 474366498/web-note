@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  html , body {
+    margin:0;
+    padding:0;
+  }
+</style>
+<body>
+  
+</body>
+
+<script type="importmap">
+  {
+    "imports" : {
+      "three" : "../three/build/three.module.js" ,
+      "three/plugins/" : "../three/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+  import * as T from 'three' 
+  import TWEEN from 'three/plugins/libs/tween.module.js'
+  import { OrbitControls } from 'three/plugins/controls/OrbitControls.js' 
+
+  const renderer = new T.WebGLRenderer({ antialias : true }) 
+  renderer.setPixelRatio(window.devicePixelRatio)
+  renderer.setSize(window.innerWidth , window.innerHeight)
+
+  const perspective = new T.PerspectiveCamera(35,window.innerWidth / window.innerHeight , .1 , 100 )
+
+  const controls = new OrbitControls(perspective,renderer.domElement)
+
+  const scene = new T.Scene() 
+
+  const matFloor = new T.MeshPhongMaterial({color:0x808080}) ,
+        matBox = new T.MeshPhongMaterial({color:0xaaaaaa}) ,
+        geoFloor = new T.PlaneGeometry(100,100) ,
+        geoBox = new T.BoxGeometry(.3,.1,.2) 
+  
+  const mshFloor = new T.Mesh(geoFloor , matFloor) ,
+        mshBox = new T.Mesh(geoBox,matBox) 
+  mshFloor.rotation.x = -Math.PI * 0.5 
+  
+  const ambient = new T.AmbientLight(0x444444)
+
+//  function createSpotLight (color) {
+//     const newObj = new T.SpotLight(color,10) 
+//     newObj.castShadow = true 
+//     newObj.angle = .3 
+//     newObj.penumbra = .2 
+//     newObj.decay = 2 
+//     newObj.distance = 50 
+//     return newObj 
+//   }
+
+
+//   const spotLight1 = createSpotlight(0xff7f00);
+//   const spotLight2 = createSpotLight(0x00ff7f);
+//   const spotLight3 = createSpotLight(0x7f00ff);
+  
+  const spotLight1 = new T.SpotLight(0xff7f00,1);
+  spotLight1.castShadow = true 
+  spotLight1.angle = .3 
+  spotLight1.penumbra = .2 
+  spotLight1.decay = 2 
+  spotLight1.distance = 50
+
+  const spotLight2 = new T.SpotLight(0x00ff7f,1);
+  spotLight2.castShadow = true 
+  spotLight2.angle = .3 
+  spotLight2.penumbra = .2 
+  spotLight2.decay = 2 
+  spotLight2.distance = 50
+
+  const spotLight3 = new T.SpotLight(0x7f00ff,1);
+  spotLight3.castShadow = true 
+  spotLight3.angle = .3 
+  spotLight3.penumbra = .2 
+  spotLight3.decay = 2 
+  spotLight3.distance = 50
+
+  let lightHelper1 , lightHelper2 , lightHelper3 
+  
+   
+
+
+  function init () {
+    renderer.shadowMap.enabled = true 
+    renderer.shadowMap.type = T.PCFSoftShadowMap 
+    perspective.position.set(4.6,2.2,-2.1)
+    spotLight1.position.set(1.5,4,4.5)
+    spotLight2.position.set( 0, 4, 3.5 );
+		spotLight3.position.set( - 1.5, 4, 4.5 );
+
+    lightHelper1 = new T.SpotLightHelper(spotLight1) 
+    lightHelper2 = new T.SpotLightHelper(spotLight2)
+    lightHelper3 = new T.SpotLightHelper(spotLight3)
+    
+    mshFloor.receiveShadow = true 
+    mshFloor.position.set(0,-0.05,0)
+
+    mshBox.castShadow = true 
+    mshBox.receiveShadow = true 
+    mshBox.position.set(0,0.5,0)
+
+    scene.add(mshFloor)
+    scene.add(mshBox)
+    scene.add(ambient)
+    scene.add(spotLight1,spotLight2,spotLight3)
+    scene.add(lightHelper1,lightHelper2,lightHelper3)
+
+    document.body.appendChild(renderer.domElement)
+    window.addEventListener('resize',onWindowResize)
+
+    controls.target.set(0,0.5,0)
+    controls.maxPolarAngle = Math.PI / 2 
+    controls.minDistance = 1 
+    controls.maxDistance = 10 
+    controls.update()
+
+  }
+
+  function onWindowResize () {
+    perspective.aspect = window.innerWidth / window.innerHeight 
+    perspective.updateProjectionMatrix() 
+    renderer.setSize(window.innerWidth / window.innerHeight)
+  }
+  function render() {
+    TWEEN.update()
+    if(lightHelper1) lightHelper1.update()
+    if(lightHelper2) lightHelper2.update()
+    if(lightHelper3) lightHelper3.update()
+
+    renderer.render(scene,perspective)
+    requestAnimationFrame(render)
+  }
+  
+  function tween (light) {
+    new TWEEN.Tween( light ).to( {
+					angle: ( Math.random() * 0.7 ) + 0.1,
+					penumbra: Math.random() + 1
+				}, Math.random() * 3000 + 2000 )
+					.easing( TWEEN.Easing.Quadratic.Out ).start();
+
+				new TWEEN.Tween( light.position ).to( {
+					x: ( Math.random() * 3 ) - 1.5,
+					y: ( Math.random() * 1 ) + 1.5,
+					z: ( Math.random() * 3 ) - 1.5
+				}, Math.random() * 3000 + 2000 )
+					.easing( TWEEN.Easing.Quadratic.Out ).start();
+  }
+
+  function animate () {
+    tween(spotLight1)
+    tween(spotLight2)
+    tween(spotLight3)
+    setTimeout(() => {
+      animate()
+    }, 5e3);
+  }
+
+  
+  init()
+  render()
+  animate()
+
+
+</script>
+
+
+
+</html>

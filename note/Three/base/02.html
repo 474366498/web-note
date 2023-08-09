@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  html , body {
+    margin:0;
+  }
+</style>
+<body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" : "../three/build/three.module.js" ,
+        "three/plugins/":"../three/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as T from 'three'
+    import { OrbitControls } from 'three/plugins/controls/OrbitControls.js'
+
+    const width = window.innerWidth ,
+          height = window.innerHeight
+
+    const scene = new T.Scene()
+
+    const box = new T.BoxGeometry(100,100,100,4,4,4)
+    const boxEdges = new T.EdgesGeometry(box)
+    const line = new T.LineSegments(boxEdges,new T.LineBasicMaterial({
+      color:0xffffff
+    }))
+    line.position.set(50,50,50)
+    const lambert = new T.MeshLambertMaterial({
+      color:0xff0000 ,
+      transparent:true ,
+      opacity:1
+    })
+    const lambertMesh = new T.Mesh(box,lambert)
+    lambertMesh.position.set(50,50,50)
+    scene.add(lambertMesh)
+    scene.add(line)
+
+    const capsule = new T.CapsuleGeometry(20,20,4,4)
+    const capsuleEdges = new T.EdgesGeometry(capsule)
+    const capsuleLine = new T.LineSegments(capsuleEdges,new T.LineBasicMaterial({
+      color:0xffffff,
+      transparent:true
+    }))
+    capsuleLine.position.set(0,200,0)
+    const capsuleMesh = new T.Mesh(capsule,new T.MeshBasicMaterial({color:0x00ff00,transparent:true,opacity:.5}))
+    capsuleMesh.position.set(0,200,0)
+    scene.add(capsuleMesh)
+    scene.add(capsuleLine)
+
+     
+
+    const axesHelper = new T.AxesHelper(1500)
+    scene.add(axesHelper)
+
+    const point = new T.PointLight(0xffffff,1)
+    point.position.set(200,200,-110)
+    scene.add(point)
+    const pointHelper = new T.PointLightHelper(point,1)
+    scene.add(pointHelper)
+
+    const ambient = new T.AmbientLight(0x00ff00)
+    scene.add(ambient)
+
+    const directional = new T.DirectionalLight(0xffffff,1)
+    directional.position.set(-200,-200,100)
+    scene.add(directional)
+    const dirHelper = new T.PointLightHelper(directional,1)
+    scene.add(dirHelper)
+
+    const spot = new T.SpotLight(0x999999,.6)
+    spot.position.set(400,400,300)
+    scene.add(spot)
+    const spotHelper = new T.PointLightHelper(spot,1)
+    scene.add(spotHelper)
+  
+
+    const perspective = new T.PerspectiveCamera(60,width / height , 1 ,3000)
+    perspective.position.set(600,600,600)
+    perspective.lookAt(0,0,0)
+
+    const renderer = new T.WebGLRenderer()
+    renderer.setSize(width,height)
+    renderer.render(scene , perspective)
+    document.body.appendChild(renderer.domElement)
+
+
+  
+    function animation () {
+      renderer.render(scene,perspective)
+      lambertMesh.rotateX(.01)
+      lambertMesh.rotateY(.01)
+      lambertMesh.rotateZ(.01)
+
+      capsuleMesh.rotateX(.01)
+      capsuleMesh.rotateY(.01)
+      // lambertMesh.rotateZ(.01)
+      requestAnimationFrame(animation)
+    }
+
+    animation()
+
+    const orbit = new OrbitControls(perspective,renderer.domElement)
+
+    orbit.addEventListener('change',function () {
+      renderer.render(scene,perspective)
+    })
+
+    window.addEventListener('resize',function () {
+      let w = window.innerWidth ,
+      h = window.innerHeight 
+      console.log(122,w)
+      renderer.setSize(w,h)
+      perspective.aspect = w / h 
+      perspective.updateProjectionMatrix()
+    })
+
+    window.addEventListener('visibilitychange',function () {
+      console.log(document.visibilityState)
+      if(document.visibilityState ==='visible') {
+        console.log('最大化')
+      }else{
+        console.log('最小化')
+      }
+    })
+
+
+  </script>
+
+</body>
+</html>

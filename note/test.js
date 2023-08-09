@@ -323,3 +323,178 @@ const _permute = string => {
   return result
 }
 console.log(322, _permute('ab'))
+
+
+
+let html = `
+<div class="ewb-shade"> 
+ <div class="ewb-info-hd"> 
+  <h2 id="titlecontent">围场县第二中学（分校）新建工程项目—宿舍楼工程中标公告</h2> 
+  <p>项目编号：<span id="PROJECTNO"></span></p> 
+ </div> 
+ <div class="ewb-info-intro"> 
+  <span>发布时间：2023-08-08 06:27:33<span></span></span>
+  <span>信息来源：<span id="infod">围场满族蒙古族自治县</span><span id="zhuanzai" class="hidden">围场满族蒙古族自治县</span></span> 
+  <span>阅读次数：<span id="infoViewCount"></span></span> 
+ </div> 
+ <div class="tabview ewb-bulid"> 
+  <div class="ewb-bulid-hd" data-role="head"> 
+   <ul class="clearfix" id="liucheng"> 
+   </ul> 
+  </div> 
+  <div data-role="body"> 
+   <div data-role="tab-content" data-id="a" class="ewb-bulid-panel"> 
+    <div class="ewb-countdown"> 
+     <div class="ewb-count-start"> 
+      <span class="hidden" id="youxiaodate"></span> 
+      <p class="ewb-count-tt">报名倒计时</p> 
+      <div class="ewb-count-info"> 
+       <span class="ewb-count-num" id="day"></span> 
+       <span class="ewb-count-name">天</span> 
+       <span class="ewb-count-num" id="hour"></span> 
+       <span class="ewb-count-name">小时</span> 
+       <span class="ewb-count-num" id="minute"></span> 
+       <span class="ewb-count-name last">分钟</span> 
+      </div> 
+     </div> 
+      
+     <div class="ewb-count-end"> 
+      <p>报名已结束</p> 
+     </div> 
+    </div> 
+    <div class="ewb-copy"> 
+     <span> 
+      <table border="1" cellspacing="0" style="border:currentColor;width:700.8pt;border-collapse:collapse;"> 
+       <tbody> 
+        <tr> 
+         <td style="background:#FFFFFF;border:0px #000000;" width="1401"><p style="text-align:center;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:18pt;font-weight:bold;"> <span>围场县第二中学（分校）新建工程项目</span> <span>—宿舍楼工程</span> </span> </b> <b> <span style="color:#4C4948;font-family:宋体;font-size:18pt;font-weight:bold;"> <span>中标公告</span> </span> </b> </p> </td>
+        </tr> 
+        <tr> 
+         <td style="background:#FFFFFF;border:0px #000000;" width="1401">
+          <table border="1" cellspacing="0" style="border:currentColor;width:693pt;border-collapse:collapse;"> 
+           <tbody> 
+            <tr> 
+             <td colspan="4" style="background:#F3F3F3;border:0px #000000;"><p style="text-align:left;text-indent:21pt;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>基本信息</span> </span> </b> </p> </td>
+            </tr> 
+            <tr> 
+             <td style="background:#F3F3F3;border:0px #000000;"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>标段</span> <span>(包)</span> </span> </b> </p> </td>
+             <td colspan="3" style="border:0px #000000;background-color:transparent;"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>围场县第二中学（分校）新建工程项目</span> <span>—宿舍楼工程</span> </span> </p> </td>
+            </tr> 
+            <tr> 
+             <td style="background:#F3F3F3;border:0px #000000;"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>所属行业：</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="478"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>建筑业</span> </span> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="269"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>所属地区：</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="416"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>围场满族蒙古族自治县</span> </span> </p> </td>
+            </tr> 
+            <tr> 
+             <td style="background:#F3F3F3;border:0px #000000;"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>开标时间</span> <span>:</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="478"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>2023-08-03 09:30</span> </span> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="269"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>公示发布日期</span> <span>:</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="416"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>2023-08-08</span> </span> </p> </td>
+            </tr> 
+           </tbody> 
+          </table> <p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;">&nbsp;</span> </p> </td>
+        </tr> 
+        <tr> 
+         <td style="background:#FFFFFF;border:0px #000000;" width="1401">
+          <table border="1" cellspacing="0" style="border:currentColor;width:693.3pt;border-collapse:collapse;"> 
+           <tbody> 
+            <tr> 
+             <td style="background:#F3F3F3;border:0px #000000;"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>排名</span> </span> </b> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="135"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>统一社会信用代码</span> </span> </b> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="216"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>中标单位名称</span> </span> </b> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="197"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>中标价格</span> </span> </b> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="308"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>大写中标价格</span> </span> </b> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="181"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>质量标准</span> </span> </b> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="313"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>工期</span> <span>/交货期</span> </span> </b> </p> </td>
+            </tr> 
+            <tr> 
+             <td style="border:0px #000000;background-color:transparent;"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>1</span> </span> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="135"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>9113082810924237XA</span> </span> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="216"><p style="text-align:left;vertical-align:middle;"> <span style="color:#000000;font-family:宋体;font-size:11pt;font-style:normal;"> <span>围场满族蒙古族自治县鑫亚建筑安装有限公司</span> </span> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="197"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>33459334.7元人民币</span> </span> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="308"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>叁仟叁佰肆拾伍万玖仟叁佰叁拾肆元柒角</span> </span> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="181"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>合格</span> </span> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="313"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>405日历天</span> </span> </p> </td>
+            </tr> 
+           </tbody> 
+          </table> <p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;">&nbsp;</span> </p> </td>
+        </tr> 
+        <tr> 
+         <td style="background:#FFFFFF;border:0px #000000;" width="1401">
+          <table border="1" cellspacing="0" style="border:currentColor;width:693.05pt;border-collapse:collapse;"> 
+           <tbody> 
+            <tr> 
+             <td colspan="4" style="background:#F3F3F3;border:0px #000000;" width="1386"><p style="text-align:left;text-indent:21pt;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>联系方式</span> </span> </b> </p> </td>
+            </tr> 
+            <tr> 
+             <td style="background:#F3F3F3;border:0px #000000;" width="139"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>招标人：</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="527"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>围场满族蒙古族自治县第二中学</span> </span> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="261"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>招标代理机构：</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="457"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>河北省成套招标有限公司</span> </span> </p> </td>
+            </tr> 
+            <tr> 
+             <td style="background:#F3F3F3;border:0px #000000;" width="139"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>联系人</span> <span>:</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="527"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>朱建龙</span> </span> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="261"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>联系人</span> <span>:</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="457"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>张衷川、刘靖超</span> </span> </p> </td>
+            </tr> 
+            <tr> 
+             <td style="background:#F3F3F3;border:0px #000000;" width="139"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>地址</span> <span>:</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="527"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>围场满族蒙古族自治县</span> </span> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="261"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>地址</span> <span>:</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="457"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>石家庄市工农路</span> <span>486号</span> </span> </p> </td>
+            </tr> 
+            <tr> 
+             <td style="background:#F3F3F3;border:0px #000000;" width="139"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>电话</span> <span>:</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="527"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>03147516563</span> </span> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="261"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>电话</span> <span>:</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="457"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>0311-83086883</span> </span> </p> </td>
+            </tr> 
+            <tr> 
+             <td style="background:#F3F3F3;border:0px #000000;" width="139"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>电子邮箱</span> <span>:</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="527"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>/</span> </span> </p> </td>
+             <td style="background:#F3F3F3;border:0px #000000;" width="261"><p style="text-align:left;"> <b> <span style="color:#4C4948;font-family:宋体;font-size:12pt;font-weight:bold;"> <span>电子邮箱</span> <span>:</span> </span> </b> </p> </td>
+             <td style="border:0px #000000;background-color:transparent;" width="457"><p style="text-align:left;"> <span style="color:#4C4948;font-family:宋体;font-size:12pt;"> <span>931649958@qq.com</span> </span> </p> </td>
+            </tr> 
+           </tbody> 
+          </table> <p style="text-align:left;"> <br> </p> </td>
+        </tr> 
+       </tbody> 
+      </table> </span> 
+     <span>附件信息:<br> </span>
+    </div> 
+    <div class="ewb-file"> 
+     <h3 id="fujian">附件</h3> 
+    </div> 
+   </div> 
+  </div> 
+ </div> 
+</div>
+
+
+`
+
+
+html = html.replace(/<table[^>]*?>[.]*(\s*<tbody[^>]*>)?/g, function ($p) {
+  // console.log(480, $p)
+  return `<div class='table-tbody'>`
+})
+  .replace(/<\/tbody[^>]*>/g, function (p) {
+    // console.log(484, p)
+    return ''
+  })
+  .replace(/<\/table[^>]*>/g, function (p) {
+    // console.log(484, p)
+    return `</div>`
+  })
+  .replace(/<tr[.]*>/g, `<div class='tr'>`)
+  .replace(/<\/tr>/g, '</div>')
+  .replace(/<t(d|h)[^>]*>[\s\S]*?<\/t(d|h)>/g, td => {
+    let str = td.replace(/<[a-zA-Z]*[^>]*?>/g, '')
+    console.log(494, td, '内容是：', str)
+    return `<p class='td-p'>${str}</p>`
+  })
+
+console.log(html)
+

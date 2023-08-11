@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  html , body {
+    margin: 0;
+  }
+</style>
+<body>
+  
+</body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" : "../three/build/three.module.js" ,
+        "plugins/" : "../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+
+    import * as T from 'three' 
+    import { OrbitControls } from 'plugins/controls/OrbitControls.js' 
+    console.log(OrbitControls)
+    const width = window.innerWidth , height = window.innerHeight 
+
+    const scene = new T.Scene() 
+    
+    const geo = new T.BufferGeometry()
+    const vertices = new Float32Array([
+      0,0,0,
+      50 ,0,0,
+      50,50,0 ,
+      0,0,50,
+      0,50,0,
+      0,50,50,
+    ])
+    const attribute = new T.BufferAttribute(vertices,3) 
+
+    geo.attributes.position = attribute 
+
+    const material = new T.MeshBasicMaterial({
+      color:0xfff000 ,
+      side : 2 
+    })
+    
+    const mesh = new T.Mesh(geo,material) 
+   
+    scene.add(mesh)
+
+    
+    const shapeGeo = new T.BufferGeometry()
+    const shapePosition = new Float32Array([
+      10 , 0,0,
+      10 , 0 , 50,
+      60,0,50 ,
+      10 , 0,0,
+      60,0,50 ,
+      60,0,0 
+    ])
+    shapeGeo.attributes.position = new T.BufferAttribute(shapePosition,3)
+    const shapeMaterial = new T.MeshBasicMaterial({
+      color:0xff0000,
+      side:2
+    })
+    const shape = new T.Mesh(shapeGeo,shapeMaterial)
+    scene.add(shape)
+   
+    // console.log(74,shapePosition)
+
+    const squaresGeo = new T.BufferGeometry()
+    const squaresPosition = new Float32Array([
+      50 , 0,50,
+      50,0,250,
+      250 , 0 , 250,
+      // 0,0,0,
+      // 200 , 0 , 200,
+      250 , 0 , 50,
+    ])
+
+    squaresGeo.attributes.position = new T.BufferAttribute(squaresPosition,3)
+    const indexes = new Uint16Array([
+      0,1,2,0,2,3
+    ])
+    squaresGeo.index = new T.BufferAttribute(indexes,1)
+    const squaresMaterial = new T.MeshBasicMaterial({
+      color:0x00ffff
+    })
+    const squares = new T.Mesh(squaresGeo,squaresMaterial)
+    scene.add(squares)
+    // console.log(squaresPosition)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    const axes = new T.AxesHelper(15e2)
+    scene.add(axes)
+
+    const camera = new T.PerspectiveCamera(60,width / height , .1 , 3e3) 
+    camera.position.set(400,400,400)
+    camera.lookAt(0,0,0)
+    const webgl = new T.WebGLRenderer({
+      antialias : true 
+    }) 
+    webgl.setClearColor(0x333333)
+    webgl.setSize(width,height)
+    webgl.setPixelRatio(window.devicePixelRatio)
+    webgl.render(scene,camera)
+
+    document.body.appendChild(webgl.domElement)
+    
+    const orbit = new OrbitControls(camera,webgl.domElement)
+    orbit.addEventListener('change',() => {
+      webgl.render(scene,camera)
+    })
+
+    window.addEventListener('resize',()=>{
+      camera.aspect = window.innerWidth / window.innerHeight 
+      webgl.setSize(window.innerWidth , window.innerHeight)
+      webgl.render(scene,camera)
+      camera.updateProjectionMatrix()
+    })
+
+  </script>
+</html>

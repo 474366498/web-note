@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  html , body {
+    margin: 0;
+  }
+</style>
+<body>
+  
+</body>
+
+<script type="importmap">
+  {
+    "imports" : {
+      "three" : "../three/build/three.module.js" ,
+      "three/plugins/" : "../three/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+
+  import * as T from 'three' 
+  import { OrbitControls } from 'three/plugins/controls/OrbitControls.js' 
+  import { GUI } from 'three/plugins/libs/dat.gui.module.js'
+
+  console.log(33,T , GUI)
+
+  var width = window.innerWidth , height = window.innerHeight 
+
+  const scene = new T.Scene() 
+  // 球 材质 入景 
+  const sphere = new T.SphereGeometry(50,32,16) 
+  const sphereLambert = new T.MeshLambertMaterial(0xffff00)
+  const sphereMesh = new T.Mesh(sphere,sphereLambert)
+  sphereMesh.position.set(25,25,25)
+  scene.add(sphereMesh) 
+
+  const sphere1 = new T.SphereGeometry(50,32,16) 
+  const spherePhong = new T.MeshPhongMaterial({color:0xffff00})
+  const sphereMesh1 = new T.Mesh(sphere1,spherePhong)
+  sphereMesh1.position.set(0,200,0)
+  scene.add(sphereMesh1)
+  // 环境光
+  const ambient = new T.AmbientLight(0xff0000)
+  scene.add(ambient)
+ 
+  // 点光 
+  const point = new T.PointLight('rgba(255,255,255,.3)')
+  point.position.set(50 , 300 , 50 )
+  scene.add(point)
+  const pointHelper = new T.PointLightHelper(point)
+  scene.add(pointHelper)
+
+  // 聚光
+  const spot = new T.SpotLight(0x00ff00,1)
+  spot.position.set(50,-300,50)
+  scene.add(spot)
+  const spotHelper = new T.SpotLightHelper(spot)
+  scene.add(spotHelper)
+
+
+  // 辅助线
+  const axes = new T.AxesHelper(3e3) 
+  scene.add(axes)
+
+
+  const perspective = new T.PerspectiveCamera(60,width/height,.1,2000) 
+  perspective.position.set(400,400,400)
+  perspective.lookAt(0,0,0)
+
+  const renderer = new T.WebGLRenderer({antialias:true }) 
+  renderer.setPixelRatio(window.devicePixelRatio)
+  renderer.setSize(width , height) 
+  renderer.render(scene,perspective)
+  renderer.setClearColor('#444444',1)
+  document.body.appendChild(renderer.domElement)
+ 
+  const orbit = new OrbitControls(perspective,renderer.domElement)
+  
+  orbit.addEventListener('change',()=>{
+    renderer.render(scene,perspective)
+  })
+  window.addEventListener('resize',()=>{
+    renderer.setSize(window.innerWidth,window.innerHeight)
+    perspective.aspect = window.innerWidth / window.innerHeight
+    perspective.updateProjectionMatrix()
+    renderer.render(scene,perspective)
+  })
+
+
+  let positions = ['x','y','z']
+  let obj = {
+    color:'#ff0000' ,
+    scale:1
+  }
+  let lightOptions = {
+    color:0xffffff ,
+    intensity : 1 ,
+    distance : 1 ,
+    decay : 2 ,
+    angle : Math.PI / 3
+  }
+  const gui = new GUI()
+  console.log(91,sphereMesh)
+
+  const sphereFolder = gui.addFolder('sphere')
+  const spherePosition = sphereFolder.addFolder('sphere 位置')
+  positions.forEach(item=>{
+    spherePosition.add(sphereMesh.position,item,-200,200,1).onChange(val=>{
+      sphereMesh.position[item] = val
+      renderer.render(scene,perspective)
+    })
+  })
+  sphereFolder.addColor(obj,'color').onChange(val => {
+    sphereMesh.material.color.set(val)
+    renderer.render(scene,perspective)
+  })
+  sphereFolder.add(obj,'scale',[.5,1,2]).onChange(s => {
+     sphere.scale(s,s,s)
+    renderer.render(scene,perspective)
+  })
+
+  const sphere1Folder = gui.addFolder('sphere1')
+  const sphere1Position =  sphere1Folder.addFolder('sphere1 位置')
+   positions.forEach(item=>{
+    sphere1Position.add(sphereMesh1.position,item,-200,200,1).onChange(val=>{
+      sphereMesh1.position[item] = val
+      renderer.render(scene,perspective)
+    })
+  })
+  sphere1Folder.addColor(obj,'color').onChange(val => {
+    sphereMesh1.material.color.set(val) 
+    renderer.render(scene,perspective)
+  })
+  sphere1Folder.add(obj,'scale',{缩小:.5, 不变:1 , 放大:2}).name('缩放').onChange(val=>{
+    sphere1.scale(val,val,val)
+    renderer.render(scene,perspective)
+  })
+  
+  const pointFolder = gui.addFolder('点光')
+  const pointPosition = pointFolder.addFolder('位置')
+  pointPosition.open()
+  const spotFolder = gui.addFolder('聚光')
+  const spotPosition = spotFolder.addFolder('位置')
+  spotPosition.open()
+  positions.forEach(item=>{
+    pointPosition.add(point.position,item,-300,300).onChange(v => {
+      point.position[item] = v 
+      renderer.render(scene,perspective)
+    })
+    spotPosition.add(spot.position,item,-300,300).onChange(v => {
+      spot.position[item] = v 
+      renderer.render(scene,perspective)
+    })
+  })
+  const pointParams = pointFolder.addFolder('属性参数') ,
+        spotParams = spotFolder.addFolder('属性参数')
+  pointParams.open()
+  spotParams.open()      
+  Object.keys(lightOptions).forEach(key => {
+    if(key !== 'color'){
+      if(key !== 'angle'){
+
+        let min = key == 'intensity' ? 0 : key == 'distance' ? 1 :2 ,
+            max = key == 'intensity' ? 1 :  10 ,
+            // step = key == 'intensity' ? .1 : 1 
+            step = .1 
+        console.log(key , min , max )    
+        pointParams.add(lightOptions,key,min,max,step).onChange(v=>{
+          point[key] = v 
+          renderer.render(scene,perspective)
+        })
+        spotParams.add(lightOptions,key,min,max,step).onChange(v=>{
+
+          spot[key] = v 
+          renderer.render(scene,perspective)
+        })
+      }else{
+        spotParams.add(lightOptions,key,-1,1,.1).name('角度').onChange(r=>{
+          spot[key] = r
+          renderer.render(scene,perspective)
+        })
+      }
+    }else{
+      pointParams.addColor(lightOptions,key).onChange(c => {
+        point.color = new T.Color(c)
+        renderer.render(scene,perspective)
+      })
+      spotParams.addColor(lightOptions,key).onChange(c => {
+        console.log('color',c , new T.Color(c))
+        spot.color = new T.Color(c)
+        console.log(spot)
+        renderer.render(scene,perspective)
+      })
+    }
+  })
+ 
+  console.log(140,point)
+
+</script>
+
+
+</html>

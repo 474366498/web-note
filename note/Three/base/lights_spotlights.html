@@ -34,7 +34,7 @@
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(window.innerWidth , window.innerHeight)
 
-  const perspective = new T.PerspectiveCamera(35,window.innerWidth / window.innerHeight , .1 , 100 )
+  const perspective = new T.PerspectiveCamera(35,window.innerWidth / window.innerHeight , .1 , 1000 )
 
   const controls = new OrbitControls(perspective,renderer.domElement)
 
@@ -89,6 +89,9 @@
 
   let lightHelper1 , lightHelper2 , lightHelper3 
   
+
+  const axes = new T.AxesHelper(100)
+  scene.add(axes)
    
 
 
@@ -119,7 +122,6 @@
 
     document.body.appendChild(renderer.domElement)
     window.addEventListener('resize',onWindowResize)
-
     controls.target.set(0,0.5,0)
     controls.maxPolarAngle = Math.PI / 2 
     controls.minDistance = 1 
@@ -127,6 +129,11 @@
     controls.update()
 
   }
+  
+    // controls.addEventListener('change',()=>{
+    //   render()
+    // })
+
 
   function onWindowResize () {
     perspective.aspect = window.innerWidth / window.innerHeight 

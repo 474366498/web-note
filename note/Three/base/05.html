@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  html , body {
+    margin: 0;
+  }
+</style>
+<body>
+  
+</body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" : "../three/build/three.module.js" ,
+        "three/plugins/" : "../three/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as T from 'three' 
+    import { OrbitControls } from 'three/plugins/controls/OrbitControls.js' 
+
+    const width = window.innerWidth , height = window.innerHeight 
+    
+    const pointsGeo = new T.BufferGeometry()
+    const pointsPosition = new Float32Array([
+      0,0,0,
+      50,0,0,
+      50,50,0 ,
+      100,100,0,
+    ])
+    const pointsAttribute = new T.BufferAttribute(pointsPosition,3)
+    pointsGeo.setAttribute('position',pointsAttribute) 
+    const pointsMaterial = new T.PointsMaterial({
+      color:0xffffff ,
+      size : 4
+    })
+    const points = new T.Points(pointsGeo,pointsMaterial)
+    console.log(pointsGeo , pointsPosition , pointsAttribute , points)
+    const scene = new T.Scene()
+    scene.add(points)
+
+
+    const lineGeo = new T.BufferGeometry()
+    const linePosition = new Float32Array([
+      0,10,0,
+      0,10,50 ,
+      0,60 ,50 ,
+      50,60,50
+    ])
+    const lineAttribute = new T.BufferAttribute(linePosition,3)
+    lineGeo.attributes.position = lineAttribute
+    const lineMaterial = new T.LineBasicMaterial({
+      color : 0xfff000 ,
+      linewidth:4 ,
+      linecap:'round' ,
+      linejoin:'round'
+    })
+    const line = new T.Line(lineGeo,lineMaterial)
+    // console.log(lineGeo,lineMaterial , line)
+    scene.add(line)
+
+
+    const lineLoopGeo = new T.BufferGeometry()
+    const lineLoopPosition = new Float32Array([
+      0,20,10,
+      0,20,60 ,
+      0,70 ,60 ,
+      50,70,60
+    ])
+    const lineLoopAttribute = new T.BufferAttribute(lineLoopPosition,3)
+    lineLoopGeo.attributes.position = lineLoopAttribute
+    const lineLoopMaterial = new T.LineBasicMaterial({
+      color : 0x00ffff ,
+      linewidth:4 ,
+      linecap:'round' ,
+      linejoin:'round'
+    })
+    const lineLoop = new T.LineLoop(lineLoopGeo,lineLoopMaterial)
+    scene.add(lineLoop)
+
+
+    const lineSegmentsGeo = new T.BufferGeometry()
+    const lineSegmentsPosition = new Float32Array([
+      10 , 0 , 20 ,
+      10, 0, 80 , 
+      90 , 10 , 80 ,
+      90 , 90 , 80
+    ])
+    const lineSegmentsAttribute = new T.BufferAttribute(lineSegmentsPosition , 3)
+    lineSegmentsGeo.attributes.position = lineSegmentsAttribute
+    const lineSegments = new T.LineSegments(lineSegmentsGeo,lineMaterial)
+    console.log(lineSegments)
+    scene.add(lineSegments)
+
+
+
+    const axes = new T.AxesHelper(1e3)
+    scene.add(axes)
+    const camera = new T.PerspectiveCamera(60,width/height , .5,3000) 
+    camera.position.set(400,400,400)
+    camera.lookAt(0,0,0)
+
+    const renderer = new T.WebGLRenderer({
+      antialias:true
+    }) 
+    renderer.setSize(width,height)
+    renderer.setClearColor(0x333333)
+    renderer.render(scene,camera)
+
+    document.body.appendChild(renderer.domElement)
+    
+    const orbit = new OrbitControls(camera,renderer.domElement)
+    orbit.addEventListener('change',()=>{
+      renderer.render(scene,camera)
+    })
+
+
+
+
+  </script>
+
+</html>

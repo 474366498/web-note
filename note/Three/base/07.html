@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  html , body {
+    margin:0;
+  }
+</style>
+<body>
+  
+</body>
+<script type="importmap" >
+  {
+    "imports" : {
+      "three" : "../three/build/three.module.js" ,
+      "plugins/" : "../three/jsm/"
+    }
+  }
+</script>
+
+
+<script type="module">
+  import * as T from 'three' 
+  import {OrbitControls } from 'plugins/controls/OrbitControls.js' 
+  import GUI from 'plugins/libs/lil-gui.module.min.js' 
+  
+  const width = window.innerWidth , height = window.innerHeight 
+
+  const scene = new T.Scene()
+  
+  const box = new T.BoxGeometry(100,100,100,8,4)
+  const lambert = new T.MeshLambertMaterial({
+    color :0xff0000 ,
+    // wireframe:true
+  })
+
+  const mesh = new T.Mesh(box,lambert)
+  scene.add(mesh)
+
+  const spot = new T.SpotLight(0xffffff)
+  spot.position.set(500,400,-300)
+  scene.add(spot)
+  const spotHelper = new T.SpotLightHelper(spot)
+  scene.add(spotHelper)
+
+  const spot1 = new T.SpotLight(0xeeeeee) 
+  spot1.position.set(-500,-400,300)
+  scene.add(spot1)
+  const spotHelper1 = new T.SpotLightHelper(spot1,0xffff00)
+  scene.add(spotHelper1)
+
+  const axes = new T.AxesHelper(1e3)
+  scene.add(axes)
+
+  const camera = new T.PerspectiveCamera(45,width / height , 1 , 2e4)
+  camera.position.set(1e3,1e3,1e3)
+  camera.lookAt(0,0,0)
+
+  const webgl = new T.WebGLRenderer({
+    antialias : true 
+  })
+  webgl.setSize(width,height)
+  webgl.setPixelRatio(window.devicePixelRatio)
+  webgl.render(scene,camera)
+  
+  document.body.appendChild(webgl.domElement)
+
+  const orbit = new OrbitControls(camera,webgl.domElement)
+  orbit.addEventListener('change',()=>{
+    webgl.render(scene,camera)
+  })
+  // console.log(OrbitControls,orbit , GUI)
+  
+  const r = [
+    {key:'x' , name:'X轴',x:0},
+    {key:'y' , name:'Y轴',y:0},
+    {key:'z' , name:'Z轴',z:0},
+  ]
+  const s = [
+    {key:'val' , name:'X',val:1},
+    {key:'val' , name:'Y',val:1},
+    {key:'val' , name:'Z',val:1},
+  ]
+  const t = [
+    {key:'value' , name:'X方向',value:0},
+    {key:'value' , name:'Y方向',value:0},
+    {key:'value' , name:'Z方向',value:0},
+  ]
+  const gui = new GUI () 
+  console.log(box)
+  const guiR = gui.addFolder('旋转')
+  r.forEach(item => {
+    guiR.add(item,item.key,-180,180,1).name(item.name).onChange(v=>{
+      let fn = `rotate${item.key.toUpperCase()}`
+      console.log(r)
+      // console.log(89,v,item.key,fn,Math.PI/(180 / v),T.MathUtils.degToRad(v))
+      box[fn](T.MathUtils.degToRad(v))
+      webgl.render(scene,camera)
+    })
+  })
+  const guiS = gui.addFolder('缩放')
+  s.forEach(item=> {
+    guiS.add(item,item.key,.1,2,.1).name(item.name).onChange(v=>{
+      let [x,y,z] = s.map(s1=>s1.val)
+      console.log(110,x,y,z,box.parameters.width)
+      box.scale(x,y,z)
+      webgl.render(scene,camera)
+
+    })
+  })
+  const guiT = gui.addFolder('平移')
+
+  t.forEach(item=> {
+    guiT.add(item,item.key,-100,100,1).name(item.name).onChange(v=>{
+      let [x,y,z] = t.map(s1=>s1.value)
+      console.log(110,x,y,z)
+      box.translate(x,y,z)
+      webgl.render(scene,camera)
+    })
+  })
+  console.log(guiR)
+
+
+</script>
+
+
+</html>

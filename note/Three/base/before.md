@@ -49,7 +49,7 @@ import * as THREE from './build/three.module.js';
   "imports" : {
     "three": "three相对当前文件的相对路径" ,
     "three":"./build/three.module.js" ,
-    "three/addons/": "../three/jsm/" , // 功能扩展库(当前Three 目录下的引用)
+    "three/addons/": "../../three/jsm/" , // 功能扩展库(当前Three 目录下的引用)
     "three/addons/":"./three.js/examples/jsm/" // 功能扩展库
   }
 }

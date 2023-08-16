@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  body{
+    margin:0;
+  }
+</style>
+<body>
+  
+</body>
+<script type="importmap">
+   {
+    "imports" : {
+      "three" : "../../three/build/three.module.js" ,
+      "plugins/" : "../../three/jsm/"
+    }
+  } 
+</script>
+
+<script type="module">
+
+  import * as T from 'three' 
+  import {OrbitControls} from 'plugins/controls/OrbitControls.js' 
+
+  var a = {}
+  const scene = new T.Scene() 
+
+  const plane = new T.PlaneGeometry(100,200)
+  const basic = new T.MeshBasicMaterial({
+    color:0xff0000 ,
+    side : 2 
+  })
+
+  const mesh = new T.Mesh(plane,basic) 
+  scene.add(mesh) 
+
+
+  const box = new T.BoxGeometry(100,100,100) 
+  const lambert = new T.MeshLambertMaterial({
+    color:0x00ffff ,
+    opacity:1
+  })
+  const boxMesh = new T.Mesh(box,lambert)
+  boxMesh.position.set(100,0,0)
+  scene.add(boxMesh)
+
+  const directional = new T.DirectionalLight(0xffffff,.75)
+  directional.position.set(50,300,-300)
+  scene.add(directional)
+
+  const dirHelper = new T.DirectionalLightHelper(directional)
+  scene.add(dirHelper)
+
+  const point = new T.PointLight({color:0xff0000})
+  point.position.set(250,-300,300) 
+  scene.add(point)
+
+  const pointHelper = new T.PointLightHelper(point)
+  scene.add(pointHelper)
+
+
+  console.log(42,mesh , directional)
+
+  mesh.position.z = 50
+  mesh.rotation.x = Math.PI / 4
+
+  const axes = new T.AxesHelper(3e3) 
+  scene.add(axes)
+
+  const camera = new T.PerspectiveCamera(45,window.innerWidth / window.innerHeight , 1 , 5e3) 
+  camera.position.set(300,300,300) 
+  camera.lookAt(0,0,0)
+  const webgl = new T.WebGLRenderer({
+    antialias : true 
+  }) 
+  webgl.setSize(window.innerWidth , window.innerHeight) 
+  webgl.setPixelRatio(window.devicePixelRatio)
+
+  webgl.render(scene,camera) 
+
+  document.body.appendChild(webgl.domElement) 
+
+  const orbit = new OrbitControls(camera,webgl.domElement)
+  orbit.addEventListener('change' ,() => {
+    webgl.render(scene,camera) 
+  })
+
+
+
+</script>
+
+<script type="module">
+  import * as T from 'three' 
+
+  console.log(T)
+</script>
+
+
+</html>

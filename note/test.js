@@ -498,3 +498,25 @@ html = html.replace(/<table[^>]*?>[.]*(\s*<tbody[^>]*>)?/g, function ($p) {
 
 console.log(html)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

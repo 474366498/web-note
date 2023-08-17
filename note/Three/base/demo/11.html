@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    console.log(T , OrbitControls)
+
+    const scene = new T.Scene() 
+
+    const plan = new T.PlaneGeometry(100,100) 
+    const planMat = new T.MeshLambertMaterial({
+      // color:0xff0000 ,
+      map : new T.TextureLoader().load('../../three/textures/lee/ia_100000002491.jpg')
+    })
+    const planMesh = new T.Mesh(plan,planMat)
+    planMesh.position.set(0,50,0)
+    scene.add(planMesh)
+
+    const plane = new T.BufferGeometry()
+    plane.setAttribute('position', new T.BufferAttribute(new Float32Array([
+      200,0,0,
+      300,0 , 0 ,
+      300,100,0,
+      200,0,0,
+      300,100,0,
+      200,100,0,
+    ]),3))
+    plane.attributes.uv = new T.BufferAttribute(new Float32Array([
+      0, 0, //图片左下角
+      1, 0, //图片右下角
+      1, 1, //图片右上角
+      0, 0 ,
+      1 , 1,
+      0, 1, //图片左上角
+    ]),2)
+    const planeMat = new T.MeshBasicMaterial({color:0xff0000, map : new T.TextureLoader().load('../../three/textures/lee/ia_100000002491.jpg')})
+    const planeMesh = new T.Mesh(plane,planeMat)
+    scene.add(planeMesh)
+    console.log(planeMesh)
+
+    const circle = new T.CircleGeometry(100,100) 
+    const circleMesh = new T.Mesh(circle,new T.MeshLambertMaterial({color:0xffff00 , map : new T.TextureLoader().load('../../three/textures/lee/ia_100000002492.jpg')}))
+    circleMesh.position.set(0,100,400)
+    circleMesh.rotateY(Math.PI / 2)
+    scene.add(circleMesh)
+
+
+    const texture = new T.TextureLoader().load('../../three/textures/ia_100000039.jpg')
+    console.log(texture)
+    texture.wrapS = T.RepeatWrapping 
+    texture.wrapT = T.RepeatWrapping 
+    texture.repeat.set(Math.floor(1.2e3 / 400) ,Math.floor(1.2e3 / 400))
+    const planes = new T.PlaneGeometry(1.2e3,1.2e3) 
+    const planesMat = new T.MeshLambertMaterial({
+      color:0xffffff,
+      map : texture
+    })
+    const planesMesh = new T.Mesh(planes,planesMat)
+    planesMesh.position.set(10,-1,10)
+    planesMesh.rotateX(-Math.PI / 2 )
+    scene.add(planesMesh)
+
+    const axes = new T.AxesHelper(1e3) 
+    scene.add(axes) 
+
+
+    // const ambient = new T.AmbientLight(0xffffff)
+    // scene.add(ambient)
+
+    const spot = new T.SpotLight({color:0xffffff}) 
+    spot.position.set(900,900,900) 
+    const target = new T.Object3D() 
+    target.position.set(9e1,9e1,9e1)
+    spot.target = target
+    scene.add(target)
+    scene.add(spot) 
+    scene.add(new T.SpotLightHelper(spot))
+    
+    const camera = new T.PerspectiveCamera(45,window.innerWidth / window.innerHeight , 1 ,3e3) 
+    camera.position.set(9e2,9e2,45e1) 
+    camera.lookAt(0,0,0)
+
+    const webgl = new T.WebGLRenderer({antialias:true})
+    webgl.setSize(window.innerWidth,window.innerHeight) 
+    webgl.setClearColor(0x444444) 
+    webgl.setPixelRatio(window.devicePixelRatio)
+
+    document.body.appendChild(webgl.domElement) 
+
+    const orbit = new OrbitControls(camera,webgl.domElement)
+
+    var timerId 
+
+    orbit.addEventListener('change',()=>{
+      cancelAnimationFrame(timerId)
+      render()
+    })
+
+    render()
+    
+    function render () {
+      webgl.render(scene,camera)
+      timerId = requestAnimationFrame(render)
+    }
+
+    window.addEventListener('mousewheel' , function (event) {
+      let factor = 3 
+      let w = window.innerWidth ,
+          h = window.innerHeight 
+      let mx = (event.clientX / w ) * 2 - 1 ,
+          my = -(event.clientY / h) * 2 + 1
+      let vector = new T.Vector3(mx,my,.5) 
+      vector.unproject(camera)
+      vector.sub(camera.position).normalize() 
+      // console.log(event.deltaY,vector)
+      if(event.deltaY < 0) {
+        camera.position.x += vector.x * factor 
+        camera.position.y += vector.y * factor 
+        camera.position.z += vector.z * factor 
+      }else{
+        camera.position.x -= vector.x * factor 
+        camera.position.y -= vector.y * factor 
+        camera.position.z -= vector.z * factor 
+      }
+    })
+
+  </script>
+</html>

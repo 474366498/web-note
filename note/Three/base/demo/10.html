@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  body{
+    margin:0;
+  }
+</style>
+<body>
+  
+</body>
+
+<script type="importmap">
+  {
+    "imports" : {
+      "three" : "../../three/build/three.module.js" ,
+      "plugins/":"../../three/jsm/"
+    }
+  }
+</script>
+<script type="module" >
+  import * as T from 'three' 
+  import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+  console.log(T , OrbitControls)
+
+  const scene = new T.Scene() 
+  const plane = new T.PlaneGeometry(200,100)
+  const textLoader = new T.TextureLoader() 
+  const texture = textLoader.load('../../three/textures/uv_grid_directx.jpg')
+  // MeshLambertMaterial
+  console.log(texture)
+  const planeMat = new T.MeshLambertMaterial({
+    color:0xffffff,
+    map : texture
+  })
+  const planMesh = new T.Mesh(plane,planeMat) 
+  planMesh.rotation.x = -Math.PI / 4
+  planMesh.rotation.z = Math.PI / 4
+  scene.add(planMesh)
+
+  
+
+  const sphere = new T.SphereGeometry(100) 
+  const sphereMat = planeMat.clone() 
+  const sphereMesh = new T.Mesh(sphere,sphereMat)
+  sphereMesh.position.set(200,100,400)
+  scene.add(sphereMesh)
+
+  const box = new T.BoxGeometry(200,200,200) 
+  const boxMat = new T.MeshLambertMaterial() 
+  boxMat.copy(planeMat)
+  boxMat.map = new T.TextureLoader().load('../../three/textures/lee/ia_100000002498.jpg')
+  const boxMesh = new T.Mesh(box,boxMat)
+   boxMesh.position.set(400,100,200)
+  scene.add(boxMesh) 
+
+  // 光源  
+  const ambient = new T.AmbientLight(0x999999)
+  scene.add(ambient)
+
+  const spot = new T.SpotLight({color:0xffffff}) 
+  spot.position.set(300,600,300)
+  scene.add(spot) 
+
+  const spotHelper = new T.SpotLightHelper(spot) 
+  scene.add(spotHelper)
+
+  const axes = new T.AxesHelper(1e3)
+  scene.add(axes)
+
+
+
+  const camera = new T.PerspectiveCamera(45,window.innerWidth / window.innerHeight , 1 , 3e3) 
+  camera.position.set(6e2,6e2,6e2)
+  camera.lookAt(0,0,0) 
+
+  const webgl = new T.WebGLRenderer({
+    antialias : true 
+  }) 
+
+  webgl.setSize(window.innerWidth , window.innerHeight) 
+  webgl.setClearColor(0x444444) 
+  webgl.setPixelRatio(window.devicePixelRatio)
+  
+ 
+  document.body.appendChild(webgl.domElement)
+  
+  const orbit = new OrbitControls(camera,webgl.domElement)
+
+  orbit.addEventListener('change' , () => {
+    // webgl.render(scene,camera)
+  })
+
+  render()
+  function render() {
+    webgl.render(scene,camera) 
+    requestAnimationFrame(render)
+  }
+
+
+
+
+</script>
+</html>

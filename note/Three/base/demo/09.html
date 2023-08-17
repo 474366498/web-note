@@ -28,8 +28,14 @@
 <script type="module">
   import * as T from 'three' 
   import { OrbitControls } from 'plugins/controls/OrbitControls.js'
+  import { EffectComposer  } from "plugins/postprocessing/EffectComposer.js";
+  import { RenderPass  } from "plugins/postprocessing/RenderPass.js";
+  import { OutlinePass } from 'plugins/postprocessing/OutlinePass.js'
+  import { ShaderPass } from 'plugins/postprocessing/ShaderPass.js'
+  import { FXAAShader } from 'plugins/shaders/FXAAShader.js'
 
-  console.log(T , OrbitControls);
+
+  console.log(T , OrbitControls , OutlinePass);
 
   const scene = new T.Scene() 
 
@@ -78,6 +84,7 @@
   webgl.render(scene,camera) 
   console.log(webgl , scene)
   document.body.appendChild(webgl.domElement)
+  webgl.domElement.addEventListener('click',domElementClick,true) 
 
   let flg = true
   wiggle()
@@ -99,17 +106,67 @@
   }
 
 
+  var nameNode , faguang = false 
+  var composer , renderPass
+  function domElementClick(event) {
+    let raycaster = new T.Raycaster() 
+    let mouse = new T.Vector2()
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1 
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + .8 
+
+    raycaster.setFromCamera(mouse,camera) 
+
+    const intersects = raycaster.intersectObjects(scene.children) 
+
+    console.log(112,intersects)
+    if(!intersects.length) return 
+    if(nameNode == intersects[0].object) {
+      faguang = !faguang
+    }else{
+      faguang = false
+    }
+    nameNode = intersects[0].object
+
+    outlineObj(intersects[0].object)
+
+  }
+  function outlineObj (obj) {
+    composer = new EffectComposer(webgl)
+    renderPass = new RenderPass(scene,camera)
+    composer.addPass(renderPass)
+    let outlinePass = new OutlinePass(new T.Vector2(window.innerWidth,window.innerHeight),scene,camera,obj)
+    console.log(outlinePass)
+    outlinePass.edgeStrength = 15
+    outlinePass.edgeGlow = 2 
+    outlinePass.usePatternTexture = false 
+    outlinePass.edgeThickness = 1 
+    outlinePass.downSampleRatio = 1 
+    outlinePass.pulsePeriod = 0 
+    outlinePass.visibleEdgeColor.set(parseInt(0x000000)) 
+    outlinePass.hiddenEdgeColor = new T.Color(0xff0000) 
+    outlinePass.clear = true
+    composer.addPass(outlinePass)
+    let effectFXAA = new ShaderPass(FXAAShader)
+    effectFXAA.uniforms.resolution.value.set(1/window.innerWidth , 1/window.innerHeight)
+    effectFXAA.renderToScreen = true 
+    composer.addPass(effectFXAA)
+    console.log(composer)
+  }
+
+
+
   const orbit = new OrbitControls(camera,webgl.domElement)
   orbit.addEventListener('change',()=>{
     webgl.render(scene,camera)
   })
 
-  // scene.traverse(function (item) {
-  //   console.log(103,item,'场景',item.isScene, '组合',item.isGroup,'网格',item.isMesh,'name',item.name)
-  //   let v3Position = new T.Vector3() 
-  //   item.getWorldPosition(v3Position)
-  //   console.log(106,'worldPosition',v3Position)
-  // })
+  scene.traverse(function (item) {
+    // console.log(103,item,'场景',item.isScene, '组合',item.isGroup,'网格',item.isMesh,'name',item.name)
+    let v3Position = new T.Vector3() 
+    item.getWorldPosition(v3Position)
+    // console.log(106,'worldPosition',v3Position)
+    // console.log(item,item instanceof T.Mesh,item.isMesh)
+  })
 
 </script>
 

@@ -31,7 +31,7 @@
     const plan = new T.PlaneGeometry(100,100) 
     const planMat = new T.MeshLambertMaterial({
       // color:0xff0000 ,
-      map : new T.TextureLoader().load('../../three/textures/lee/ia_100000002491.jpg')
+      map : new T.TextureLoader().load('../../textures/lee/ia_100000002491.jpg')
     })
     const planMesh = new T.Mesh(plan,planMat)
     planMesh.position.set(0,50,0)
@@ -54,19 +54,19 @@
       1 , 1,
       0, 1, //图片左上角
     ]),2)
-    const planeMat = new T.MeshBasicMaterial({color:0xff0000, map : new T.TextureLoader().load('../../three/textures/lee/ia_100000002491.jpg')})
+    const planeMat = new T.MeshBasicMaterial({color:0xff0000, map : new T.TextureLoader().load('../../textures/lee/ia_100000002491.jpg')})
     const planeMesh = new T.Mesh(plane,planeMat)
     scene.add(planeMesh)
     console.log(planeMesh)
 
     const circle = new T.CircleGeometry(100,100) 
-    const circleMesh = new T.Mesh(circle,new T.MeshLambertMaterial({color:0xffff00 , map : new T.TextureLoader().load('../../three/textures/lee/ia_100000002492.jpg')}))
+    const circleMesh = new T.Mesh(circle,new T.MeshLambertMaterial({color:0xffff00 , map : new T.TextureLoader().load('../../textures/lee/ia_100000002492.jpg')}))
     circleMesh.position.set(0,100,400)
     circleMesh.rotateY(Math.PI / 2)
     scene.add(circleMesh)
 
 
-    const texture = new T.TextureLoader().load('../../three/textures/ia_100000039.jpg')
+    const texture = new T.TextureLoader().load('../../textures/ia_100000039.jpg')
     console.log(texture)
     texture.wrapS = T.RepeatWrapping 
     texture.wrapT = T.RepeatWrapping 
@@ -84,6 +84,8 @@
     const axes = new T.AxesHelper(1e3) 
     scene.add(axes) 
 
+
+    
 
     // const ambient = new T.AmbientLight(0xffffff)
     // scene.add(ambient)

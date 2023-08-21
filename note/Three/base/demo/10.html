@@ -31,7 +31,7 @@
   const scene = new T.Scene() 
   const plane = new T.PlaneGeometry(200,100)
   const textLoader = new T.TextureLoader() 
-  const texture = textLoader.load('../../three/textures/uv_grid_directx.jpg')
+  const texture = textLoader.load('../../textures/uv_grid_directx.jpg')
   // MeshLambertMaterial
   console.log(texture)
   const planeMat = new T.MeshLambertMaterial({
@@ -54,7 +54,7 @@
   const box = new T.BoxGeometry(200,200,200) 
   const boxMat = new T.MeshLambertMaterial() 
   boxMat.copy(planeMat)
-  boxMat.map = new T.TextureLoader().load('../../three/textures/lee/ia_100000002498.jpg')
+  boxMat.map = new T.TextureLoader().load('../../textures/lee/ia_100000002498.jpg')
   const boxMesh = new T.Mesh(box,boxMat)
    boxMesh.position.set(400,100,200)
   scene.add(boxMesh) 

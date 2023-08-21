@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import { GLTFLoader } from 'plugins/loaders/GLTFLoader.js'
+    import { KTX2Loader } from 'plugins/loaders/KTX2Loader.js'
+    import { MeshoptDecoder  } from 'plugins/libs/meshopt_decoder.module.js'
+    // console.log(T , OrbitControls , GLTFLoader)
+
+    const scene = new T.Scene() 
+
+    const loader = new GLTFLoader()
+    loader.setKTX2Loader(new KTX2Loader() )
+    loader.setMeshoptDecoder(MeshoptDecoder)
+    const wordGroup = new T.Group()
+    loader.load('../../models/gltf/collision-world.glb',function (g){
+      console.log(35,g)
+      wordGroup.position.set(50,0,0)
+      wordGroup.add(g.scene)
+    })
+    scene.add(wordGroup)
+
+    const coffGroup = new T.Group() 
+    loader.load('../../models/gltf/coffeemat.glb',function (g) {
+      console.log(48,g)
+      coffGroup.position.set(0,0,100)
+      coffGroup.add(g.scene)
+    },function(xhr) {
+      console.log('loaded:' , (xhr.loaded / xhr.total * 100) + '%' )
+    },function (err) {
+      console.log(err)
+    })
+    scene.add(coffGroup)
+
+    const boomGroup = new T.Group() 
+    new GLTFLoader().load('../../models/gltf/BoomBox.glb',function (g) {
+      console.log(60,g)
+      boomGroup.position.set(200,0,0)
+      boomGroup.add(g.scene)
+    },function(xhr) {
+      console.log('loaded:' , (xhr.loaded / xhr.total * 100) + '%' )
+    },function (err) {
+      console.log(66,err)
+    })
+    scene.add(boomGroup)
+    
+    const axes = new T.AxesHelper(2e3)
+    scene.add(axes)
+    const grid = new T.GridHelper(1e3,50)
+    scene.add(grid)
+
+    const spot = new T.SpotLight(0xffffff)
+    spot.position.set(3e2,3e2,3e2)
+    scene.add(spot)
+
+    scene.add(new T.SpotLightHelper(spot))
+
+
+    const camera = new T.PerspectiveCamera(60,window.innerWidth / window.innerHeight , .1 , 3e3)
+    camera.position.set(6e2,6e2,6e2)
+    const webgl = new T.WebGLRenderer({
+      antialias : true 
+    }) 
+    webgl.setSize(window.innerWidth , window.innerHeight)
+    webgl.setClearColor(0x333333)
+    webgl.render(scene,camera)
+    console.log(58,webgl)
+    webgl.outputEncoding = T.sRGBEncoding
+    webgl.outputColorSpace = T.SRGBColorSpace
+
+    document.body.appendChild(webgl.domElement)
+    
+    const orbit = new OrbitControls(camera ,webgl.domElement)
+    orbit.addEventListener('change',()=>{
+      webgl.render(scene,camera)
+    })
+
+
+
+  </script>
+</html>

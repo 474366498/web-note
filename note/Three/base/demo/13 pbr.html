@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import { GLTFLoader } from 'plugins/loaders/GLTFLoader.js'
+    
+    const scene = new T.Scene() 
+
+    const gLoader = new GLTFLoader()
+    // const horseGroup = new T.Group()
+    // gLoader.load('../../models/gltf/Horse.glb',horse => {
+    //   console.log(horse)
+    //   horseGroup.add(horse.scene)
+    // },xhr=>{
+    //   console.log('progress' ,xhr,xhr.loaded/xhr.total)
+    // },error=>{
+    //   console.log(error)
+    // })
+    // scene.add(horseGroup)
+    const geo = new T.SphereGeometry(50,32,24)
+    const material = new T.MeshStandardMaterial({
+          color:0x049EF4 ,
+          metalness : 1 ,
+          roughness : .9
+        })
+    const sphere = new T.Mesh(geo ,material )
+
+
+    scene.add(sphere)
+
+    const spot = new T.SpotLight(0x999999)
+    spot.position.set(0,4e2,0)
+    scene.add(spot)
+
+    scene.add(new T.SpotLightHelper(spot))
+
+    scene.add(new T.GridHelper(50,5))
+    scene.add(new T.AxesHelper(2e3))
+
+    const camera = new T.PerspectiveCamera(45,window.innerWidth/window.innerHeight,.1,2e3)
+    camera.position.set(3e2,3e2,3e2)
+
+    const webgl = new T.WebGLRenderer({antialias:true}) 
+    webgl.setSize(window.innerWidth , window.innerHeight)
+    webgl.setClearColor(0x444444)
+
+    document.body.appendChild(webgl.domElement)
+    
+    render()
+    var reqId 
+    function render () {
+      reqId = requestAnimationFrame(render)
+      webgl.render(scene,camera)
+    }
+
+    const orbit = new OrbitControls(camera,webgl.domElement)
+    orbit.addEventListener('change',()=>{
+      clearAnimationFrame(reqId)
+      render()
+      
+    })
+
+
+    console.log(T , OrbitControls)
+  </script>
+</html>

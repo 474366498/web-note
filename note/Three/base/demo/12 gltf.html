@@ -47,6 +47,14 @@
     loader.load('../../models/gltf/coffeemat.glb',function (g) {
       console.log(48,g)
       coffGroup.position.set(0,0,100)
+      g.scene.traverse(obj => {
+        if(obj.isMesh){
+          obj.material = new T.MeshLambertMaterial({
+            color:0xffff00
+          }) 
+          console.log('coff',obj.material.map?.encoding||'没有')
+        }
+      })
       coffGroup.add(g.scene)
     },function(xhr) {
       console.log('loaded:' , (xhr.loaded / xhr.total * 100) + '%' )
@@ -55,17 +63,17 @@
     })
     scene.add(coffGroup)
 
-    const boomGroup = new T.Group() 
-    new GLTFLoader().load('../../models/gltf/BoomBox.glb',function (g) {
+    const horseGroup = new T.Group() 
+    new GLTFLoader().load('../../models/gltf/Horse.glb',function (g) {
       console.log(60,g)
-      boomGroup.position.set(200,0,0)
-      boomGroup.add(g.scene)
+      horseGroup.position.set(200,0,0)
+      horseGroup.add(g.scene)
     },function(xhr) {
       console.log('loaded:' , (xhr.loaded / xhr.total * 100) + '%' )
     },function (err) {
       console.log(66,err)
     })
-    scene.add(boomGroup)
+    scene.add(horseGroup)
     
     const axes = new T.AxesHelper(2e3)
     scene.add(axes)
@@ -81,6 +89,7 @@
 
     const camera = new T.PerspectiveCamera(60,window.innerWidth / window.innerHeight , .1 , 3e3)
     camera.position.set(6e2,6e2,6e2)
+    camera.lookAt(0,0,0)
     const webgl = new T.WebGLRenderer({
       antialias : true 
     }) 

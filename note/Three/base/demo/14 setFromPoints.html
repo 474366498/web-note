@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    console.log(T , OrbitControls)
+
+    const scene = new T.Scene() 
+    const circularGeo = new T.BufferGeometry()
+    const R = 1e2 , N = 50
+    const sp = 2*Math.PI / N 
+
+    const arr = [] 
+    for(let i = 0 ; i < N ; i++) {
+      let angle = sp * i 
+      const x = R * Math.cos(angle) ,
+            y = R * Math.sin(angle) 
+      arr.push(x,y,0) 
+
+    }
+    circularGeo.attributes.position = new T.BufferAttribute(new Float32Array(arr),3) 
+    const circular = new T.LineLoop(circularGeo,new T.LineBasicMaterial({color:0xff0000}))
+
+    scene.add(circular)
+    
+    const boxMesh = new T.Mesh(new T.BoxGeometry(50,50,50),new T.MeshLambertMaterial(0xff0000))
+    boxMesh.position.set(1e2,0,0)
+    scene.add(boxMesh)
+
+    const b = new T.BufferGeometry() 
+    b.setFromPoints([ 
+      new T.Vector3(0,0,0),
+      new T.Vector3(0,100,0),
+      new T.Vector3(0,100,100),
+      new T.Vector3(10,0,0),
+      new T.Vector3(10,100,100),
+      new T.Vector3(10,0,100),
+    ])
+    scene.add(new T.Mesh(b,new T.MeshBasicMaterial({color:0xff0000 ,side:2})))
+
+    const ambient = new T.AmbientLight(0xcccccc)
+    scene.add(ambient)
+
+    scene.add(new T.AxesHelper(1e3))
+
+    const camera = new T.PerspectiveCamera(60,window.innerWidth/window.innerHeight,.1,3e3)
+    camera.position.set(1e2,1e2,1e2)
+    camera.lookAt(0,0,0)
+
+    const webgl = new T.WebGLRenderer({antialias:true})
+    webgl.setSize(window.innerWidth,window.innerHeight)
+    webgl.render(scene,camera)
+    document.body.appendChild(webgl.domElement)
+
+    const orbit = new OrbitControls(camera,webgl.domElement)
+    orbit.addEventListener('change',()=>{
+      webgl.render(scene,camera)
+    })
+
+  </script>
+</html>

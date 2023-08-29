@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import {HDRCubeTextureLoader } from 'plugins/loaders/HDRCubeTextureLoader.js'
+    import Stats from 'plugins/libs/stats.module.js'
+    import { FlakesTexture } from 'plugins/textures/FlakesTexture.js'
+
+    console.log(T , OrbitControls)
+
+    var container , stats 
+    var camera , scene , webgl 
+    var particleLight 
+    var group 
+    var axes , grid 
+
+    init () 
+    animation() 
+
+    function init() {
+      container = document.createElement('div')
+      document.body.appendChild(container)
+
+      camera = new T.PerspectiveCamera(27,window.innerWidth/window.innerHeight , 1,1e4)
+      camera.position.z = 1e3 
+
+      scene = new T.Scene() 
+      group = new T.Group() 
+      scene.add(group)
+
+      axes = new T.AxesHelper(2e3)  
+      grid = new T.GridHelper(2e3,1e2)
+      scene.add(axes)
+      // scene.add(grid) 
+
+
+      new HDRCubeTextureLoader()
+        .setPath('../../textures/cube/pisaHDR/')
+        .load(['px.hdr', 'nx.hdr', 'py.hdr', 'ny.hdr', 'pz.hdr', 'nz.hdr'],function (texture) {
+          const geo = new T.SphereGeometry(80,64,32) 
+          const textureLoader = new T.TextureLoader() 
+
+          const diffuse = textureLoader.load('../../textures/carbon/Carbon.png')
+          diffuse.encoding = T.sRGBEncoding 
+          diffuse.wrapS = T.RepeatWrapping 
+          diffuse.wrapT = T.RepeatWrapping 
+          diffuse.repeat.x = 10 
+          diffuse.repeat.y = 10 
+
+          const normalMap = textureLoader.load('../../textures/carbon/Carbon_Normal.png')
+          normalMap.wrapS = T.RepeatWrapping 
+          normalMap.wrapT = T.RepeatWrapping 
+
+          const normalMap2 = textureLoader.load('../../textures/water/Water_1_M_Normal.jpg')
+
+          const normalMap3 = new T.CanvasTexture(new FlakesTexture())
+          normalMap3.wrapS = T.RepeatWrapping 
+          normalMap3.wrapT = T.RepeatWrapping 
+          normalMap3.repeat.x = 10 
+          normalMap3.repeat.y = 6 
+          normalMap3.anisotropy = 16 
+
+          const normalMap4 = textureLoader.load('../../textures/golfball.jpg')
+          const clearcoatNormalMap = textureLoader.load('../../textures/pbr/Scratched_gold/Scratched_gold_01_1K_Normal.png')
+
+          let material = new T.MeshPhysicalMaterial({
+            clearcoat : 1 ,
+            clearcoatRoughness:.1 ,
+            metalness : .9 ,
+            roughness : .5 ,
+            color: 0x0000ff ,
+            normalMap : normalMap3 ,
+            normalScale : new T.Vector2(.15,.15)
+          })
+
+          let mesh = new T.Mesh(geo,material)
+          mesh.position.x = -100 
+          mesh.position.y = 100 
+          group.add(mesh) 
+
+          material = new T.MeshPhysicalMaterial({
+            roughness : .5 ,
+            clearcoat : 1 ,
+            clearcoatRoughness : .1 ,
+            map : diffuse ,
+            normalMap : normalMap 
+          })
+          mesh = new T.Mesh(geo,material) 
+          mesh.position.x = 100
+          mesh.position.y = 100
+          group.add(mesh)
+
+          material = new T.MeshPhysicalMaterial({
+            metalness : 0 ,
+            roughness : .1 ,
+            clearcoat:1 ,
+            normalMap : normalMap4 ,
+            clearcoatNormalMap : clearcoatNormalMap ,
+            clearcoatNormalScale : new T.Vector2(2,-2)
+          })
+          mesh = new T.Mesh(geo,material) 
+          mesh.position.x = -100 
+          mesh.position.y = -100 
+          group.add(mesh) 
+
+          material = new T.MeshPhysicalMaterial({
+            clearcoat : 1 ,
+            metalness : 1 ,
+            color : 0xff0000 ,
+            normalMap : normalMap2 ,
+            normalScale : new T.Vector2(.15,.15) ,
+            clearcoatNormalMap : clearcoatNormalMap ,
+            clearcoatNormalScale : new T.Vector2(2,-2)
+          })
+          mesh = new T.Mesh(geo,material) 
+          mesh.position.x = 100 
+          mesh.position.y = -100 
+          group.add(mesh) 
+
+          scene.background = texture 
+          scene.environment = texture 
+        })
+
+        particleLight = new T.Mesh(
+          new T.SphereGeometry(4,8,8) ,
+          new T.MeshBasicMaterial({color:0xffffff})
+        )
+        scene.add(particleLight)
+        particleLight.add(new T.PointLight(0xffffff,1,1e3))
+
+        webgl = new T.WebGLRenderer() 
+        webgl.setPixelRatio(window.devicePixelRatio)
+        webgl.setSize(window.innerWidth,window.innerHeight)
+        container.appendChild(webgl.domElement)
+
+        webgl.toneMapping = T.ACESFilmicToneMapping
+        webgl.toneMappingExposure = 1.25 
+        webgl.outputEncoding = T.sRGBEncoding 
+        
+        stats = new Stats() 
+        container.appendChild(stats.dom)
+
+        new OrbitControls(camera,webgl.domElement)
+        window.addEventListener('resize',onWindowResize)
+    }
+
+
+    function animation () {
+      requestAnimationFrame(animation)
+      render() 
+      stats.update()
+    }
+    
+    function render () {
+      let timer = Date.now() * .00025 
+      particleLight.position.x = Math.sin(timer * 7) * 3e2 
+      particleLight.position.y = Math.cos(timer * 5 ) * 4e2 
+      particleLight.position.z = Math.cos(timer * 3) * 3e2 
+      
+      for(let i = 0 ; i < group.children.length ; i++) {
+        const child = group.children[i] 
+        child.rotation.y += 0.005 
+      }
+      webgl.render(scene,camera)
+    }
+    function onWindowResize () {
+      const width = window.innerWidth ,
+        height = window.innerHeight 
+      camera.aspect = width / height
+      camera.updateProjectionMatrix() 
+      webgl.setSize(width,height)  
+    }
+
+
+  </script>
+</html>

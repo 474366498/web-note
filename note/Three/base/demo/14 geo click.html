@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    console.log(T , OrbitControls)
+    
+    const scene = new T.Scene() 
+
+    const group = new T.Group() 
+
+    for(let i = 0 ; i < 3;i++) {
+      const groupI = new T.Group() 
+      groupI.name = 'group'+(i+1)
+      for(let j = 0 ; j < 3;j++) {
+        for(let k= 0 ; k < 3;k++) {
+          let mesh = new T.Mesh(new T.BoxGeometry(40,40,40), new T.MeshLambertMaterial({color:new T.Color(16-i,j,k)}) )
+          console.log('color',new T.Color(16-i,j,k))
+          mesh.position.set(i*50+20 , j * 50+20 , k * 50+20) 
+          mesh.name = `mesh_i:${i}_j:${j}_k:${k}`
+          groupI.add(mesh)
+        }
+      }
+
+      group.add(groupI)
+    }
+    console.log(47,group)
+    scene.add(group)
+    scene.add(new T.AxesHelper(5e2)) 
+    scene.add(new T.GridHelper(1e3,50,50))
+    
+    const spot = new T.SpotLight(0xffffff)
+    spot.position.set(3e2,70,70)
+    scene.add(spot)
+    scene.add(new T.SpotLightHelper(spot))
+
+
+    const camera = new T.PerspectiveCamera(45,window.innerWidth / window.innerHeight , .1,1e3)
+    camera.position.z = 1e2
+    camera.lookAt(0,0,0)
+
+    const webgl = new T.WebGLRenderer({ antialias : true })
+    webgl.setPixelRatio(window.devicePixelRatio)
+    webgl.setSize(window.innerWidth,window.innerHeight)
+    webgl.render(scene,camera) 
+    document.body.appendChild(webgl.domElement) 
+
+    const orbit = new OrbitControls(camera,webgl.domElement)
+    orbit.addEventListener('change',()=>{
+      webgl.render(scene,camera) 
+    })
+    const meshes = []
+    group.traverse(obj => {
+      if(obj.isMesh)(
+        meshes.push(obj)
+      )
+    })
+    console.log(81,meshes)
+    webgl.domElement.addEventListener('click',function (event) {
+      console.log(77)
+      const px = event.offsetX , py = event.offsetY 
+      const x = (px / window.innerWidth) * 2 - 1 , y = -(py / window.innerHeight) * 2 + 1 
+
+      const raycaster = new T.Raycaster() 
+      raycaster.setFromCamera(new T.Vector2(x,y),camera)
+      const intersects = raycaster.intersectObjects(meshes)
+      if(intersects.length > 0) {
+        console.log(intersects)
+      }else{
+        console.log('没有geo')
+      }
+    })
+   
+
+  </script>
+</html>

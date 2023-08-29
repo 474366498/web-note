@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import { RGBELoader } from 'plugins/loaders/RGBELoader.js' 
+    import { GUI } from 'plugins/libs/lil-gui.module.min.js' 
+    import Stats from 'plugins/libs/stats.module.js'
+    console.log(T , OrbitControls)
+
+    var camera , scene ,webgl , stats 
+    var cube , sphere , torus , material , axes  
+
+    var cubeCamera , cubeRenderTarget 
+
+    let controls 
+
+    init() 
+
+    function init () {
+      webgl = new T.WebGLRenderer({ antialias : true }) 
+      webgl.setPixelRatio(window.devicePixelRatio)
+      webgl.setSize(window.innerWidth,window.innerHeight) 
+      webgl.setAnimationLoop(animation)
+      webgl.outputEncoding = T.sRGBEncoding 
+      webgl.toneMapping = T.ACESFilmicToneMapping 
+      document.body.appendChild(webgl.domElement)
+
+      window.addEventListener('resize',onWindowResize)
+
+      stats = new Stats() 
+      document.body.appendChild(stats.dom)
+
+      camera = new T.PerspectiveCamera(60,window.innerWidth / window.innerHeight,1,1e3)
+      camera.position.y = 20
+      camera.position.z = 75 
+
+      scene = new T.Scene() 
+      scene.rotation.y = .5 
+
+      new RGBELoader()
+        .setPath('../../textures/equirectangular/')
+        .load('quarry_01_1k.hdr',function (text) {
+          console.log(65,text) 
+          text.mapping = T.EquirectangularReflectionMapping
+          scene.background = text 
+          scene.environment = text 
+        })
+      cubeRenderTarget = new T.WebGLCubeRenderTarget(256)
+      cubeRenderTarget.texture.type = T.HalfFloatType 
+
+      cubeCamera = new T.CubeCamera(1,1e3,cubeRenderTarget)
+      
+      material = new T.MeshStandardMaterial({
+        color:0xff0000,
+        envMap : cubeRenderTarget.texture ,
+        roughness : .05,
+        metalness : 1 
+      })
+      console.log(81,material)
+      const gui = new GUI()
+      gui.add(material,'roughness',0,1,0.01)
+      gui.add(material,'metalness',0,1,0.01) 
+      gui.addColor(material,'color')
+      gui.add(webgl,'toneMappingExposure',0,2).name('exposure')
+
+      sphere = new T.Mesh(new T.IcosahedronGeometry(15,8),material) 
+      scene.add(sphere) 
+
+      const material2 = new T.MeshStandardMaterial({
+        roughness: .1 ,
+        metalness : 0
+      })
+      cube = new T.Mesh(new T.BoxGeometry(16,16,16),material2) 
+      scene.add(cube)
+
+      torus = new T.Mesh(new T.TorusKnotGeometry(10,3,128,16,4),material2)
+      scene.add(torus)
+
+      axes = new T.AxesHelper(4e2)
+      scene.add(axes)
+      scene.add(new T.GridHelper(1e3,50))
+
+      controls = new OrbitControls(camera,webgl.domElement)
+      controls.autoRotate = true 
+    }
+
+    function animation (msTime) {
+      // console.log(msTime)
+      const time = msTime / 1e3 
+      cube.position.x = Math.cos(time) * 30 
+      cube.position.y = Math.sin(time) * 30 
+      cube.position.z = Math.sin(time) * 30 
+
+      cube.rotation.x += 0.02 
+      cube.rotation.y += 0.03 
+
+      torus.position.x = Math.cos(time + 10) * 30 
+      torus.position.y = Math.sin(time + 10) * 30 
+      torus.position.z = Math.sin(time + 10) * 30 
+
+      torus.rotation.x += 0.02
+      torus.rotation.y += 0.02
+
+      cubeCamera.update(webgl,scene) 
+      controls.update() 
+
+      webgl.render(scene,camera)
+
+      stats.update()
+
+    }
+
+    function onWindowResize () {
+      webgl.setSize(window.innerWidth,window.innerHeight)
+      camera.aspect = window.innerWidth / window.innerHeight 
+      camera.updateProjectionMatrix()
+    }
+
+
+
+
+
+  </script>
+</html>

@@ -9,6 +9,7 @@
   <style>
     body{
       margin:0;
+      /* background-image: url('../../textures/cube/skyboxsun25deg/nx.jpg'); */
     }
   </style>
   <body>
@@ -27,37 +28,68 @@
     import {OrbitControls } from 'plugins/controls/OrbitControls.js'
     import { GLTFLoader } from 'plugins/loaders/GLTFLoader.js'
     
-    const scene = new T.Scene() 
-
+    const scene = new T.Scene()  
+      // note/Three/textures/cube/pisaRGBM16
+      // note/Three/textures/cube/skyboxsun25deg
+      // note/Three/textures/cube/SwedishRoyalCastle
+    const cubeTexture = new T.CubeTextureLoader()
+      .setPath('../../textures/cube/pisa/')
+      // .load([
+      //   'px.jpg',
+			// 	'nx.jpg',
+			// 	'py.jpg',
+			// 	'ny.jpg',
+			// 	'pz.jpg',
+			// 	'nz.jpg'
+      // ])
+      .load([
+        'px.png',
+				'nx.png',
+				'py.png',
+				'ny.png',
+				'pz.png',
+				'nz.png'
+      ])
+    cubeTexture.encoding = T.sRGBEncoding;
+    console.log(45,cubeTexture)
+    scene.background = cubeTexture
     const gLoader = new GLTFLoader()
-    // const horseGroup = new T.Group()
-    // gLoader.load('../../models/gltf/Horse.glb',horse => {
-    //   console.log(horse)
-    //   horseGroup.add(horse.scene)
-    // },xhr=>{
-    //   console.log('progress' ,xhr,xhr.loaded/xhr.total)
-    // },error=>{
-    //   console.log(error)
-    // })
-    // scene.add(horseGroup)
+    const horseGroup = new T.Group()
+    gLoader.load('../../models/gltf/Horse.glb',horse => {
+      console.log(horse)
+      horse.scene.traverse(obj=>{
+        if(obj.isMesh){
+          obj.material.envMap = cubeTexture 
+          obj.material.envMapIntensity = 1.0
+        }
+      })
+      horseGroup.add(horse.scene)
+    },xhr=>{
+      console.log('progress' ,xhr,xhr.loaded/xhr.total)
+    },error=>{
+      console.log(error)
+    })
+    scene.add(horseGroup)
+
     const geo = new T.SphereGeometry(50,32,24)
     const material = new T.MeshStandardMaterial({
           color:0x049EF4 ,
           metalness : 1 ,
-          roughness : .9
+          roughness : .9 ,
+          envMap : cubeTexture,
+          envMapIntensity : 1.0
         })
     const sphere = new T.Mesh(geo ,material )
-
-
+    console.log(61,sphere.material)
     scene.add(sphere)
 
-    const spot = new T.SpotLight(0x999999)
-    spot.position.set(0,4e2,0)
-    scene.add(spot)
+    // const spot = new T.SpotLight(0x999999)
+    // spot.position.set(0,4e2,0)
+    // scene.add(spot)
 
-    scene.add(new T.SpotLightHelper(spot))
+    // scene.add(new T.SpotLightHelper(spot))
 
-    scene.add(new T.GridHelper(50,5))
+    scene.add(new T.GridHelper(2e3,50))
     scene.add(new T.AxesHelper(2e3))
 
     const camera = new T.PerspectiveCamera(45,window.innerWidth/window.innerHeight,.1,2e3)
@@ -65,7 +97,7 @@
 
     const webgl = new T.WebGLRenderer({antialias:true}) 
     webgl.setSize(window.innerWidth , window.innerHeight)
-    webgl.setClearColor(0x444444)
+    webgl.setClearColor(0x999999,.5)
 
     document.body.appendChild(webgl.domElement)
     
@@ -78,7 +110,7 @@
 
     const orbit = new OrbitControls(camera,webgl.domElement)
     orbit.addEventListener('change',()=>{
-      clearAnimationFrame(reqId)
+      cancelAnimationFrame(reqId)
       render()
       
     })

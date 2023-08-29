@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    console.log(T , OrbitControls)
+
+    const scene = new T.Scene() 
+   
+    const lineBaseMat = new T.LineBasicMaterial({
+      color:0xff0000 , 
+      linewidth:2,
+      linecap:'round',
+      linejoin:'round'
+    })
+    const lineDashMat = new T.LineDashedMaterial({
+      color:0x00ff00 , 
+      // linewidth:2,
+      // linecap:'round',
+      // linejoin:'round',
+      dashSize : 1 ,
+      gapSize:.5 ,
+      // scale : .5
+    })
+
+    const lineCurve = new T.LineCurve(new T.Vector2(0,0),new T.Vector2(100,100))
+    console.log(lineCurve , lineBaseMat)
+    const line = new T.Line(new T.BufferGeometry().setFromPoints(lineCurve.getPoints(20)),lineBaseMat)
+    scene.add(line)
+    // 100,100,100,50,0,2*Math.PI,false,2*Math.PI
+    const arcCurve = new T.ArcCurve(10,10,8,0,.5*Math.PI,false,2*Math.PI) 
+    const arc = new T.Line(new T.BufferGeometry().setFromPoints(arcCurve.getPoints(64)),lineBaseMat)
+    scene.add(arc)
+
+    const ellipseCurve = new T.EllipseCurve(10,10,8,16,0,2*Math.PI,false,2*Math.PI)
+    const ellipse = new T.Line(new T.BufferGeometry().setFromPoints(ellipseCurve.getPoints(64)),lineDashMat)
+    scene.add(ellipse)
+
+    const splineCurve = new T.SplineCurve([
+      new T.Vector2(0,0),
+      new T.Vector2(20,-20),
+      new T.Vector2(40,0),
+      new T.Vector2(60,20),
+      new T.Vector2(80,0),
+    ])
+    const spline = new T.Line(new T.BufferGeometry().setFromPoints(splineCurve.getPoints(64)),lineDashMat)
+    scene.add(spline)
+
+    const qBezierCurve = new T.QuadraticBezierCurve(
+      new T.Vector2(0,50),
+      new T.Vector2(70,90),
+      new T.Vector2(140,50),
+    )
+    const quadraticBezier = new T.Line(new T.BufferGeometry().setFromPoints(qBezierCurve.getPoints(1e2)),lineBaseMat)
+    scene.add(quadraticBezier)
+
+    const cBezierCurve = new T.CubicBezierCurve(
+      new T.Vector2(0,50),
+      new T.Vector2(70,90),
+      new T.Vector2(70,10),
+      new T.Vector2(140,50),
+    )
+    const cubicBezier = new T.Line(new T.BufferGeometry().setFromPoints(cBezierCurve.getPoints(1e2)),lineDashMat)
+    scene.add(cubicBezier)
+
+    const qBezierCurve3 = new T.QuadraticBezierCurve3(
+      new T.Vector3(-80, 0, 0) ,
+      new T.Vector3(20, 100, 0) ,
+      new T.Vector3(80, 0, 100)
+    )
+    const quadraticBezier3 = new T.Line(new T.BufferGeometry().setFromPoints(qBezierCurve3.getPoints(1e2)),new T.LineBasicMaterial({color:0x0000ff}))
+    console.log(94,quadraticBezier3)
+    scene.add(quadraticBezier3)
+
+    const cBezierCurve3 = new T.CubicBezierCurve3(
+      new T.Vector3(-80, 0, 100),
+      new T.Vector3(-40, 50, 100),
+      new T.Vector3(50, 50, 100),
+      new T.Vector3(80, 0, 200),
+    )
+    const cubicBezier3 = new T.Line(new T.BufferGeometry().setFromPoints(cBezierCurve3.getPoints(1e3)),new T.LineBasicMaterial({color:'skyblue',linewidth:4}))
+    scene.add(cubicBezier3)
+    // const geo = new T.BufferGeometry()
+    // var points = [] 
+    // for(let i = 0 ; i < 10 ; i++) {
+    //   points.push(new T.Vector2(Math.random() * 20 ,Math.random() *20))
+    // }
+    // const splineCurve = new T.SplineCurve(points)
+    // const sp = splineCurve.getPoints(10) 
+    // geo.setFromPoints(sp)
+    // scene.add(new T.Line(geo,lineBaseMat))
+
+    scene.add(new T.AxesHelper(1e3))
+
+    const camera = new T.PerspectiveCamera(60,window.innerWidth/window.innerHeight,.1,3e3)
+    camera.position.set(1e2,1e2,1e2)
+    camera.lookAt(0,0,0)
+
+    const webgl = new T.WebGLRenderer({antialias:true})
+    webgl.setSize(window.innerWidth,window.innerHeight)
+    webgl.render(scene,camera)
+    document.body.appendChild(webgl.domElement)
+
+    const orbit = new OrbitControls(camera,webgl.domElement)
+    orbit.addEventListener('change',()=>{
+      webgl.render(scene,camera)
+    })
+
+  </script>
+</html>

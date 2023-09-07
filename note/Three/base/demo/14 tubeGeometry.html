@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import Stats from 'plugins/libs/stats.module.js'
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    console.log(T , OrbitControls)
+
+    var camera , scene , webgl , stats , orbit
+    const W = window.innerWidth , H = window.innerHeight
+
+    init () 
+
+    addTubeGeo()
+    addNewTubeGeo()
+    render()
+
+    function init () {
+      camera = new T.PerspectiveCamera(45,W/H,.1,1e3) 
+      camera.position.set(2e2,2e2,2e2)
+      camera.lookAt(0,0,0)
+
+      scene = new T.Scene() 
+      scene.add(new T.AxesHelper(1e3))
+      webgl = new T.WebGLRenderer({
+        antialias : true 
+      })
+      webgl.setPixelRatio(window.devicePixelRatio)
+      webgl.setClearColor(0x999999) 
+      webgl.setSize(W,H)
+
+      document.body.appendChild(webgl.domElement) 
+
+      stats = new Stats()
+      document.body.appendChild(stats.domElement)
+
+      orbit = new OrbitControls(camera,webgl.domElement)
+      orbit.addEventListener('change',()=>render())
+    }
+    
+    function addTubeGeo () {
+      const path = new T.CatmullRomCurve3([
+        new T.Vector3(-50, 20, 90),
+        new T.Vector3(-10, 40, 40),
+        new T.Vector3(0, 0, 0),
+        new T.Vector3(60, -60, 0),
+        new T.Vector3(70, 0, 80)
+      ])
+      const geo = new T.TubeGeometry(path,40,16,25)
+      scene.add(new T.Mesh(geo),new T.MeshLambertMaterial({color:0x00ff00,side:T.DoubleSide}))
+    }
+    function  addNewTubeGeo () {
+      const p1 = new T.Vector3(0,0,1e2) ,
+            p2 = new T.Vector3(0,0,30 ) ,
+            p3 = new T.Vector3(0,0,0) ,
+            p4 = new T.Vector3(30,0,0) ,
+            p5 = new T.Vector3(100,0,0)
+      const line1 = new T.LineCurve3(p1,p2) 
+      const curve = new T.QuadraticBezierCurve3(p2,p3,p4)      
+      const line2 = new T.LineCurve3(p4,p5)
+
+      const curvePath = new T.CurvePath() 
+      curvePath.curves.push(line1,curve,line2) 
+      const geo = new T.TubeGeometry(curvePath,50,8,24)
+      scene.add(new T.Mesh(geo),new T.MeshLambertMaterial({color:0xff0000,side:T.DoubleSide}))
+    }
+    function render () {
+      webgl.render(scene,camera)
+      stats && stats.update()
+    }
+
+  </script>
+</html>

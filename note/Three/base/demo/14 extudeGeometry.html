@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import { GUI } from 'plugins/libs/lil-gui.module.min.js'
+
+    console.log(T , OrbitControls)
+
+
+    var webgl , scene , camera , orbit , group
+
+    init() 
+    render()
+
+    function init () {
+
+      scene = new T.Scene()
+      scene.add(new T.AxesHelper(1e3))
+      scene.add(new T.GridHelper(8e2,40,40))
+
+      camera = new T.PerspectiveCamera(65,window.innerWidth / window.innerHeight , .2,1e3)
+      camera.position.set(2e2,50,-50)
+      camera.lookAt(0,0,0)
+      group = new T.Group()
+      group.name = 'group-extrude'
+
+      addGroupChildren(group)
+      addExtrude(group)
+      scene.add(group)
+
+      addExtrudeCurve()
+
+      webgl = new T.WebGLRenderer({antialias:true})
+      webgl.setSize(window.innerWidth,window.innerHeight)
+      webgl.setClearColor(0x999999)
+      document.body.appendChild(webgl.domElement)
+      
+      orbit = new OrbitControls(camera,webgl.domElement)
+      orbit.addEventListener('change',()=>render())
+      
+    }
+    
+    function addGroupChildren (g) {
+      let geometry = new T.BufferGeometry() 
+      geometry.setAttribute('position',new T.Float32BufferAttribute([],3))
+      const lineMaterial = new T.LineBasicMaterial({color:0xff0000,transparent:true,opacity:.5})
+      const meshMaterial = new T.MeshPhongMaterial({color:0x156289,emissive:0x072534,side:2,flatShading:true})
+      group.add(new T.LineSegments(geometry,lineMaterial))
+      group.add(new T.Mesh(geometry,meshMaterial))
+
+    }
+
+    function addExtrude(group) {
+      const length = 12, width = 8;
+      const shape = new T.Shape()
+      shape.moveTo( 0, 0 );
+      shape.lineTo( 0, width );
+      shape.lineTo( length, width );
+      shape.lineTo( length, 0 );
+      shape.lineTo( 0, 0 );
+      const data = {
+        steps: 2,
+        depth: 16,
+        bevelEnabled: true,
+        bevelThickness: 1,
+        bevelSize: 1,
+        bevelOffset: 0,
+        bevelSegments: 1
+      }
+
+      function renderExtrude() {
+        const extrude = new T.ExtrudeGeometry(shape,data)
+        extrude.center()
+        console.log(64 , extrude.attributes)
+        // extrude.center()
+        group.children[0].geometry.dispose() 
+        group.children[1].geometry.dispose() 
+        group.children[0].geometry = new T.WireframeGeometry(extrude)
+        group.children[1].geometry = extrude
+        // group.add(extrude)
+      }
+
+      const gui = new GUI() 
+
+      gui.add(data,'steps',1,10).step(1).onChange(renderExtrude)
+      gui.add(data,'depth',1,20).step(.1).onChange(renderExtrude)
+      gui.add(data,'bevelThickness',1,5).step(1).onChange(renderExtrude)
+      gui.add(data,'bevelOffset',-5,5).step(1).onChange(renderExtrude)
+      gui.add(data,'bevelSegments',1,5).step(1).onChange(renderExtrude)
+      renderExtrude()
+
+    }
+
+
+    function addExtrudeCurve() {
+      const shape = new T.Shape([
+        new T.Vector2(100,0), //多边形起点
+        new T.Vector2(100,10),
+        new T.Vector2(110,10),
+        new T.Vector2(110,0),
+      ])
+      // CatmullRomCurve3
+      const curve = new T.CatmullRomCurve3([
+        new T.Vector3( 90, -50, -50 ),
+        new T.Vector3( 110, 0, 0 ),
+        new T.Vector3( 108, 50, 50 ),
+        new T.Vector3( 95, 0, 100)
+      ])
+
+      const geo = new T.ExtrudeGeometry(shape,{
+        extrudePath : curve ,
+        steps : 1e2
+      })
+      scene.add(new T.Mesh(geo,new T.MeshPhongMaterial({color:0x156289,emissive:0x072534,side:2,flatShading:true})))
+    }
+
+    function render () {
+      webgl.render(scene,camera)
+    }
+
+  </script>
+</html>

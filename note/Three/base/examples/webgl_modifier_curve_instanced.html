@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import { TransformControls } from 'plugins/controls/TransformControls.js'
+    import Stats from 'plugins/libs/stats.module.js' 
+    import { InstancedFlow } from 'plugins/modifiers/CurveModifier.js' 
+    import { FontLoader } from 'plugins/loaders/FontLoader.js' 
+    import { TextGeometry } from 'plugins/geometries/TextGeometry.js'
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    console.log(T , OrbitControls)
+
+    const ACTION_SELECT = 1 , ACTION_NONE = 0 
+    const curveHandles = [] 
+    const mouse = new T.Vector2() 
+
+    var stats , orbit
+    var scene , camera , webgl , rayCaster , control , flow , action = ACTION_NONE 
+
+    init () 
+
+    animation()
+
+    function init () {
+      scene = new T.Scene() 
+      scene.background = new T.Color(0x444444)
+      scene.add(new T.AxesHelper(50))
+      camera = new T.PerspectiveCamera(40,window.innerWidth/window.innerHeight , 1 ,1e3) 
+      camera.position.set(2,2,4)
+      console.log(scene,scene.position)
+      camera.lookAt(scene.position)
+
+      const boxGeo = new T.BoxGeometry(.1,.1,.1) ,
+            boxMat = new T.MeshBasicMaterial()
+
+      const curves = [[
+					{ x: 1, y: - 0.5, z: - 1 },
+					{ x: 1, y: - 0.5, z: 1 },
+					{ x: - 1, y: - 0.5, z: 1 },
+					{ x: - 1, y: - 0.5, z: - 1 },
+				],
+				[
+					{ x: - 1, y: 0.5, z: - 1 },
+					{ x: - 1, y: 0.5, z: 1 },
+					{ x: 1, y: 0.5, z: 1 },
+					{ x: 1, y: 0.5, z: - 1 },
+				]].map(curvePoints => {
+          const curveVertices = curvePoints.map(pos => {
+            const handle = new T.Mesh(boxGeo,boxMat) 
+            handle.position.copy(pos) 
+            curveHandles.push(handle)
+            scene.add(handle)
+            return handle.position
+          }) 
+
+          const curve = new T.CatmullRomCurve3(curveVertices)
+          curve.curveType = 'centripetal' 
+          curve.closed = true 
+
+          const points = curve.getPoints(50) 
+          const line = new T.LineLoop(new T.BufferGeometry().setFromPoints(points),new T.LineBasicMaterial({color:0x00ff00}))
+          scene.add(line)
+          
+          return {
+            curve ,
+            line
+          }
+
+        })   
+        
+        const light = new T.DirectionalLight(0xffaa33) 
+        light.position.set(-10,10,10) 
+        light.intensity = 1 
+        scene.add(light) 
+
+        const light2 = new T.AmbientLight (0x003973) 
+        light2.intensity = 1 
+        scene.add(light2)
+
+        const loader = new FontLoader() 
+        loader.load('../../fonts/helvetiker_regular.typeface.json',function (font) {
+          console.log(104,font ) 
+          const geometry = new TextGeometry('fuck',{
+            font ,
+            size : .5 ,
+            height : .05 ,
+            curveSegments : 12, 
+            bevelEnabled : true ,
+            bevelThickness : .02 ,
+            bevelSize : .01 ,
+            bevelOffset : 0 ,
+            bevelSegments : 5 
+          })
+
+          geometry.rotateX(Math.PI)
+          const material = new T.MeshStandardMaterial({
+            color : 0x99ffff
+          })
+          const numberOfInstances = 8 
+          flow = new InstancedFlow(numberOfInstances , curves.length , geometry ,material) 
+          console.log(123,flow)
+          curves.forEach(({curve},i) => {
+            flow.updateCurve(i,curve) 
+            scene.add(flow.object3D)
+          })
+
+          for(let i = 0 ; i < numberOfInstances ; i++) {
+            const curveIndex = i % curves.length 
+            flow.setCurve(i,curveIndex) 
+            flow.moveIndividualAlongCurve(i,i * 1 / numberOfInstances) 
+            flow.object3D.setColorAt(i,new T.Color(0xffffff * Math.random() ))
+          }
+
+        })
+
+        webgl = new T.WebGLRenderer({antialias:true}) 
+        webgl.setPixelRatio(window.devicePixelRatio)
+        webgl.setSize(window.innerWidth,window.innerHeight) 
+        document.body.appendChild(webgl.domElement)
+        webgl.domElement.addEventListener('pointerdown',onPointerdown)
+
+        rayCaster = new T.Raycaster() 
+        control = new TransformControls(camera,webgl.domElement) 
+        control.addEventListener('dragging-changed',(event)=>{
+          console.log('dragging-changed',event)
+          if(!event.value) {
+            curves.forEach(({curve,line},i) => {
+              const points = curve.getPoints(50)
+              line.geometry.setFromPoints(points)
+              flow.updateCurve(i,curve)
+            })
+          }
+        })
+
+        stats = new Stats() 
+        document.body.appendChild(stats.dom) 
+
+        orbit = new OrbitControls(camera,webgl.domElement)
+        orbit.addEventListener('change',(e)=>{
+          console.log(162,e)
+          render()
+        })
+
+        window.addEventListener('resize',onWindowResize)
+    }
+
+    function animation () {
+      requestAnimationFrame(animation) 
+      if(action === ACTION_SELECT) {
+        rayCaster.setFromCamera(mouse,camera) 
+        action = ACTION_NONE 
+        const intersects = rayCaster.intersectObjects(curveHandles,false) 
+        if(intersects.length) {
+          const target = intersects[0].object 
+          control.attach(target)
+          scene.add(control)
+        }
+      }
+      flow && flow.moveAlongCurve(.0005)
+      render()
+    }
+    function onPointerdown (event) {
+      console.log(event)
+      action = ACTION_SELECT 
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1 
+      mouse.y = -(event.clientY / window.innerHeight ) * 2 + 1
+    }
+    function onWindowResize () {
+      camera.aspect = window.innerWidth / window.innerHeight 
+      camera.updateProjectionMatrix()
+      webgl.setSize(window.innerWidth,window.innerHeight)
+    }
+
+    function render () {
+      webgl.render(scene,camera)
+      stats && stats.update()
+    }
+
+  </script>
+</html>

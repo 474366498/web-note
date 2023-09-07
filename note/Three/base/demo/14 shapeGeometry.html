@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    console.log(T , OrbitControls)
+    var scene , camera , webgl ,orbit 
+
+
+
+    init()
+    render()
+
+
+    function init () {
+      scene = new T.Scene()
+      scene.add(new T.AxesHelper(1e3)) 
+      scene.add(new T.GridHelper(1e3,10,10))
+
+      camera = new T.PerspectiveCamera(60,window.innerWidth / window.innerHeight , .1,1e3)
+      camera.position.z = 5e2
+      camera.lookAt(0,0,0)
+
+      // addSpot()
+      addShape()
+    addShape2 ()
+
+      webgl =new T.WebGLRenderer({antialias:true})
+      webgl.setSize(window.innerWidth,window.innerHeight)
+      webgl.setClearColor(0x999999)
+      document.body.appendChild(webgl.domElement)
+      orbit = new OrbitControls(camera,webgl.domElement)
+      orbit.addEventListener('change',()=>render())
+    }
+    
+    function addSpot () {
+      let spot = new T.SpotLight()
+      let spotHelper = new T.SpotLightHelper(spot)
+      spot.position.set(0,2e2,0)
+      scene.add(spot)
+      // scene.add(spotHelper)
+    }
+
+    function addShape () {
+      const points = [
+        new T.Vector2(-50,-50) ,
+        new T.Vector2(-60,0) ,
+        new T.Vector2(0,50) ,
+        new T.Vector2(60,0) ,
+        new T.Vector2(50,-50) ,
+      ]
+      let shape = new T.Mesh(new T.ShapeGeometry(new T.Shape(points)) , new T.MeshLambertMaterial({color:0xff0000,wireframe:false,side:2}) )
+      console.log(64,shape)
+      scene.add(shape)
+    }
+
+    function addShape2 () {
+      let x = 1e2 , y = 0 ;
+
+      const heartShape = new T.Shape() 
+      heartShape.moveTo( x + 5, y + 5 );
+      heartShape.bezierCurveTo( x + 5, y + 5, x + 4, y, x, y );
+      heartShape.bezierCurveTo( x - 6, y, x - 6, y + 7,x - 6, y + 7 );
+      heartShape.bezierCurveTo( x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19 );
+      heartShape.bezierCurveTo( x + 12, y + 15.4, x + 16, y + 11, x + 16, y + 7 );
+      heartShape.bezierCurveTo( x + 16, y + 7, x + 16, y, x + 10, y );
+      heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
+
+      const shape = new T.Mesh(new T.ShapeGeometry(heartShape),new T.MeshBasicMaterial({color:0xff0000,side:2}))
+      scene.add(shape)
+    }
+
+    function render(){
+      webgl.render(scene,camera)
+    }
+
+
+  </script>
+</html>

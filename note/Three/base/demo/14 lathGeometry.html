@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    console.log(T , OrbitControls)
+    var scene , webgl , camera , orbit
+    var lathe 
+    init() 
+    animation()
+
+    function init () {
+
+      scene = new T.Scene() 
+      
+      scene.add(new T.AxesHelper(3e2))
+      scene.add(new T.GridHelper(500,25,5))
+      camera = new T.PerspectiveCamera(60,window.innerWidth / window.innerHeight , .1,1e3)
+      camera.position.set(3e2,3e2,3e2)
+      camera.lookAt(0,0,0)
+
+      webgl = new T.WebGLRenderer({antialias : true}) 
+      webgl.setSize(window.innerWidth,window.innerHeight)
+      document.body.appendChild(webgl.domElement)
+      addLathe()
+      addLathe2()
+
+
+      orbit = new OrbitControls(camera,webgl.domElement)
+      orbit.addEventListener('change',()=>render( ))
+    }
+    
+    function addLathe () {
+      const pointsData = [
+        new T.Vector2(50,60) ,
+        new T.Vector2(25,0) ,
+        new T.Vector2(50,-60)
+      ]
+      const lathe = new T.Mesh(new T.LatheGeometry(pointsData,30,0,2*Math.PI),new T.MeshBasicMaterial({color:0xff0000}) )
+      scene.add(lathe)
+    }
+
+    function addLathe2 () {
+      const points = [] 
+      for(let i = 0 ; i < 10 ; i++){
+        points.push(new T.Vector2(Math.sin(i*.2) * 10 + 5 , (i-5) * 2 ))
+      }
+      // console.log(67,points)
+      let lathe = new T.Mesh(new T.LatheGeometry(points),new T.MeshBasicMaterial({color:0xffff00}))
+      lathe.position.z = 100
+      console.log(73,lathe)
+      scene.add(lathe)
+    }
+
+    function animation () {
+      // requestAnimationFrame(animation)
+      render( )
+    }
+
+    function render () {
+      webgl.render(scene,camera)
+    }
+
+  </script>
+</html>

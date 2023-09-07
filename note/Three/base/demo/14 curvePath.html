@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    console.log(T , OrbitControls)
+
+    const scene = new T.Scene() 
+
+    const R = 100 , H = 200 
+
+    const line1 = new T.LineCurve(new T.Vector2(R,H),new T.Vector2(R,0)) ,
+          arc = new T.ArcCurve(0,0,R,0,Math.PI,true),
+          line2 = new T.LineCurve(new T.Vector2(-R,0) , new T.Vector2(-R,H)) 
+    const curvePath  = new T.CurvePath() 
+    curvePath.curves.push(line1,arc,line2) 
+    
+    const lineCurve = new T.Line(new T.BufferGeometry().setFromPoints(curvePath.getPoints(8)),new T.LineBasicMaterial({color:0xff0000}) )
+    
+    scene.add(lineCurve)
+
+    scene.add(new T.AxesHelper(1e3))
+
+    const camera = new T.PerspectiveCamera(45,window.innerWidth/window.innerHeight,.1,1e3)
+    camera.position.set(3e2,3e2,3e2)
+    camera.lookAt(0,0,0)
+
+    const webgl = new T.WebGLRenderer({
+      antialias : true 
+    })
+
+    webgl.setSize(window.innerWidth , window.innerHeight) 
+    webgl.setPixelRatio(window.devicePixelRatio)
+    
+    webgl.render(scene,camera )
+    document.body.appendChild(webgl.domElement) 
+
+    const orbit = new OrbitControls(camera,webgl.domElement)
+    orbit.addEventListener('change',()=>{
+      webgl.render(scene,camera )
+    })
+
+
+  </script>
+</html>

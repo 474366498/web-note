@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import { DRACOLoader } from 'plugins/loaders/DRACOLoader.js'
+    import { GLTFLoader } from 'plugins/loaders/GLTFLoader.js'
+    import {EffectComposer} from 'plugins/postprocessing/EffectComposer.js'
+    import { RenderPass } from 'plugins/postprocessing/renderPass.js'
+    import { OutlinePass } from 'plugins/postprocessing/OutlinePass.js'
+    import { ShaderPass } from 'plugins/postprocessing/ShaderPass.js'
+    import { FXAAShader } from 'plugins/shaders/FXAAShader.js'
+
+    import { GUI } from 'plugins/libs/lil-gui.module.min.js'
+    console.log(T , OrbitControls ,  DRACOLoader)
+
+    // https://blog.csdn.net/weixin_66948502/article/details/131530291?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-131530291-blog-124918490.235%5Ev38%5Epc_relevant_sort_base3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-131530291-blog-124918490.235%5Ev38%5Epc_relevant_sort_base3&utm_relevant_index=2
+    var OBJ  , webgl , nameNode , composer , outlinePass , renderPass , scene , camera ,orbit , gltfscene  , bujian , faguang = false 
+
+    init()
+     
+    animation()
+
+    function init () {
+      scene = new T.Scene() 
+      scene.background = new T.Color(0x999999)
+      scene.add(new T.AxesHelper(5e2))
+
+
+      camera = new T.PerspectiveCamera(50,window.innerWidth/window.innerHeight,1,1e3) 
+      camera.position.set(3,4,3)
+
+      webgl = new T.WebGLRenderer({antialias:true})
+      webgl.setPixelRatio(window.devicePixelRatio)
+      webgl.setSize(window.innerWidth , window.innerHeight)
+      const gltfLoader = new GLTFLoader()
+      // const dracoLoader = new DRACOLoader()
+      // dracoLoader.setDecoderPath('../../models/libs/draco/')
+      // gltfLoader.setDRACOLoader(dracoLoader)
+      // ../../models/gltf/kira.glb =>   No DRACOLoader instance provided.
+      gltfLoader.load('../../models/gltf/ClearcoatTest/ClearcoatTest.glb',gltf => {
+        console.log(52,gltf , gltf.scene.scale)
+        let model = gltf.scene
+        // model.scale = new T.Vector3(.1,.1,.1)
+        model.traverse(function (obj) {
+          // console.log(64,obj,obj.type)
+          if(obj.type === 'Mesh'){
+            // obj.geometry.scale(.01,.01,.01)
+          }
+        })
+        gltfscene = gltf.scene 
+        scene.add(model)
+      })
+      // gltfLoader.load('../../models/gltf/kira.glb',gl => {
+      //   console.log(78,gl)
+      // })
+
+      document.body.insertAdjacentElement('afterbegin',webgl.domElement)
+      window.addEventListener('resize',onWindowResize)
+
+      webgl.domElement.addEventListener('click',function (event) {
+        console.log('click')
+        webglClick(event)
+      },false)
+
+      const hemLight = new T.HemisphereLight(0xffffff,0xffffff , 1) 
+      hemLight.position.set(0,18,0)
+      scene.add(hemLight)
+      scene.add(new T.HemisphereLightHelper(hemLight,2,0xff0000))
+
+      const dirLight = new T.DirectionalLight(0xffffff,1)
+      dirLight.position.set(-10,10,-5) 
+      scene.add(dirLight)
+      scene.add(new T.DirectionalLightHelper(dirLight))
+
+      const spot = new T.SpotLight(0xffffff)
+      spot.position.set(10,-10,5)
+      scene.add(spot)
+      scene.add(new T.SpotLightHelper(spot))
+
+      orbit = new OrbitControls(camera,webgl.domElement) 
+      orbit.addEventListener('change',()=>{
+        webgl.render(scene,camera)
+      })
+      // orbit.enableDamping = true  
+
+
+    }
+
+    function animation () {
+      orbit.update() 
+      webgl.render(scene,camera)
+      requestAnimationFrame(animation)
+      if(resizeRendererToDisplaySize(webgl)) {
+        const canvas = webgl.domElement 
+        camera.aspect = canvas.clientWidth / canvas.clientHeight 
+        camera.updateProjectionMatrix()
+      }
+      if(composer) {
+        composer?.render()
+      }
+    }
+
+    function resizeRendererToDisplaySize (gl) {
+      const canvas = gl.domElement 
+      let width = window.innerWidth ,
+        height = window.innerHeight 
+      let canvasPixelWidth = canvas.width / window.devicePixelRatio ,
+          canvasPixelHeight = canvas.height / window.devicePixelRatio 
+      const needResize = canvasPixelWidth !== width || canvasPixelHeight !== height 
+      if(needResize) {
+        gl.setSize(width,height ,false)
+      } 
+      return needResize    
+    }
+
+    function onWindowResize () {
+      camera.aspect = window.innerWidth / window.innerHeight 
+      camera.updateProjectionMatrix() 
+      webgl.setSize(window.innerWidth , window.innerHeight)
+    }
+
+    function webglClick (event) { 
+    //  gltfscene
+      let raycaster = new T.Raycaster()
+      let mouse = new T.Vector2()
+      mouse.x = event.clientX / window.innerWidth * 2 - 1 
+      mouse.y = -(event.clientY / window.innerHeight ) * 2 + 1
+      raycaster.setFromCamera(mouse,camera)
+
+      const intersects = raycaster.intersectObjects(scene.children)
+      console.log(154,intersects)
+      // debugger
+      if(!intersects.length) return 
+      if(nameNode == intersects[0].object) {
+        faguang = !faguang
+      }else{
+        faguang = false
+      }
+
+      nameNode = intersects[0].object 
+
+      intersects[0].object instanceof T.Mesh && outlineObj(intersects[0].object)
+
+    }
+
+    function outlineObj (mesh) {
+      console.log(169,mesh) 
+
+      composer = new EffectComposer(webgl)
+      renderPass = new RenderPass(scene,camera) 
+      composer.addPass(renderPass)
+
+      outlinePass = new OutlinePass(new T.Vector2(window.innerWidth,window.innerHeight),scene,camera,mesh)
+      if(!faguang){
+        outlinePass.selectedObjects = [mesh] 
+      }else {
+        outlinePass.selectedObjects = []
+      }
+
+      outlinePass.edgeStrength = 15 
+      outlinePass.edgeGlow = 2 
+      outlinePass.usePatternTexture = false 
+      outlinePass.edgeThickness = 1 
+      outlinePass.downSampleRatio = 1 
+      outlinePass.pulsePeriod = 0
+      outlinePass.visibleEdgeColor.set(0x00ff00)
+      outlinePass.hiddenEdgeColor = new T.Color(0x0000ff)
+      outlinePass.clear = true 
+      console.log(192,composer , outlinePass)
+      composer.addPass(outlinePass)
+
+      let effectFXAA = new ShaderPass(FXAAShader)
+      effectFXAA.uniforms.resolution.value.set(1/window.innerWidth,1/window.innerHeight)
+      effectFXAA.renderToScreen = true 
+      composer.addPass(effectFXAA)
+      composer.render()
+      // webgl.render(scene,camera)
+
+    }
+
+  </script>
+</html>

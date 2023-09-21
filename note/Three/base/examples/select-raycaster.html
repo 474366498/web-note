@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import { GUI } from 'plugins/libs/lil-gui.module.min.js'
+    console.log(T , OrbitControls)
+    var scene , camera , webgl , orbit , viewer ,selectMaterial
+
+
+    init() 
+
+    render()
+    function init () {
+
+      scene =new T.Scene() 
+      scene.add(new T.AxesHelper(5e3)) 
+
+      camera = new T.PerspectiveCamera(45,window.innerWidth / window.innerHeight , 1 , 1e4) 
+      camera.position.set(2e2,2e2,2e2)
+      scene.add(camera)
+
+      addBox()
+      addLight()
+
+      selectMaterial = new T.MeshStandardMaterial({color:0xff0000})
+
+      webgl = new T.WebGLRenderer({antialias:true })
+      webgl.setPixelRatio(window.devicePixelRatio)
+      webgl.setClearColor(0x999999)
+      webgl.setSize(window.innerWidth,window.innerHeight)
+      document.body.insertAdjacentElement('afterbegin',webgl.domElement)
+
+      webgl.domElement.addEventListener('click',webglMousemove)
+
+      orbit = new OrbitControls(camera,webgl.domElement)
+      orbit.addEventListener('change',render)
+      viewer = {
+        webgl ,
+        scene ,
+        camera 
+      }
+      // scene.traverse(function (object) {
+      //   if(object instanceof T.Mesh) {
+      //     console.log(139,object)
+
+      //     object.addEventListener('click',function () {
+      //       console.log(139,object)
+      //     })
+      //   }
+      // })
+
+    }
+
+    function addBox () {
+      const box = new T.BoxBufferGeometry(20,20,20) 
+      for(let x = 0 ; x < 5 ; x++) {
+        const groupX = new T.Group()
+        groupX.name = `group-x${x}`
+        for(let z = 0 ; z < 5 ; z++ ) {
+          const groupZ = new T.Group()
+          groupZ.name = `group-x${x}-z${z}`
+          for(let y = 0 ; y < 1 ; y++ ) {
+              box.name = `x${x}-y${y}-z${z}`
+              const mesh = new T.Mesh(box,new T.MeshStandardMaterial({color:randomColor() , polygonOffset:true , polygonOffsetFactor:1 , polygonOffsetUnits:1 }))
+              mesh.position.set(40*x,40*y,40*z)
+              groupZ.add(mesh)
+          }
+          groupX.add(groupZ)
+        }
+        scene.add(groupX)
+      }
+    }
+
+    function addLight () {
+      const direction = new T.DirectionalLight(0xffffff)
+      direction.position.set(4e2,4e2,4e2)
+      scene.add(direction)
+      scene.add(new T.DirectionalLightHelper(direction))
+
+      const ambient = new T.AmbientLight(0xffffff,.3)
+      scene.add(ambient)
+
+      const spot = new T.SpotLight(0xffff00)
+      spot.position.set(-4e2,-4e2,-4e2)
+      scene.add(spot)
+      scene.add(new T.SpotLightHelper(spot))
+    }
+
+    function randomColor () {
+      return `rgb(${parseInt(Math.random() * 256)} , ${parseInt(Math.random() * 256)} , ${parseInt(Math.random() * 256)})`
+    }
+
+    // y轴上多了的时候 点击会出现偏差   https://blog.csdn.net/weixin_66948502/article/details/131530291?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-131530291-blog-124918490.235%5Ev38%5Epc_relevant_sort_base3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-131530291-blog-124918490.235%5Ev38%5Epc_relevant_sort_base3&utm_relevant_index=2
+    function webglMousemove (event)  {
+      console.log(106,event ,event.clientX , event.offsetX )
+      event.preventDefault()
+      const mouse = new T.Vector2() , raycaster = new T.Raycaster() 
+      let objectList = [] 
+      try {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1
+        mouse.y = -(event.clientX / window.innerHeight) * 2 + 1
+        raycaster.setFromCamera(mouse,camera)
+        objectList = raycaster.intersectObjects(scene.children,true)
+      }catch(e){
+        console.log(116,e)
+      }
+      console.log(118,objectList)
+      if(objectList.length > 0) {
+        let current = objectList.find(item=>item.object.type === "Mesh")?.object 
+        console.log(124,current)
+        if(current){
+          current.material.color.set(0xff0000)
+          render()
+        }
+      }else{
+        console.log('not find current mesh')
+      }
+    }
+
+
+    
+
+    function render () {
+      webgl.render(scene,camera)
+      // window.requestAnimationFrame(render)
+    }
+
+
+  </script>
+</html>

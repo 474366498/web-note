@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import { GUI } from 'plugins/libs/lil-gui.module.min.js'
+    console.log(T , OrbitControls)
+
+    var webgl , scene , camera , orbit 
+
+    init() 
+    render() 
+
+    function init () {
+      scene = new T.Scene() 
+      scene.add(new T.AxesHelper(5e2)) 
+
+
+      addLine()
+
+      addLineColor()
+
+      camera = new T.PerspectiveCamera(60,window.innerWidth / window.innerHeight , .1,1e3)
+      camera.position.set(50,50,50) 
+
+      webgl = new T.WebGLRenderer({antialias:true})
+      webgl.setPixelRatio(window.devicePixelRatio)
+      webgl.setSize(window.innerWidth,window.innerHeight)
+      webgl.setClearColor(0x999999)
+      document.body.insertAdjacentElement('afterbegin',webgl.domElement)
+
+      orbit = new OrbitControls(camera,webgl.domElement)
+      orbit.addEventListener('change',render)
+    }
+
+    function addLine() {
+      const geo = new T.BufferGeometry() 
+      const curve = new T.CatmullRomCurve3([
+        new T.Vector3(-50, 20, 90),
+        new T.Vector3(-10, 40, 40),
+        new T.Vector3(0, 0, 0),
+        new T.Vector3(60, -60, 0),
+        new T.Vector3(70, 0, 80)
+      ])
+      const points = curve.getSpacedPoints(100) 
+      geo.setFromPoints(points)
+
+      const pos = geo.attributes.position 
+      const count = pos.count 
+      const colorArr = [] 
+
+      for(let i = 0 ; i < count ; i++) {
+        const percent = i / count 
+        colorArr.push(percent , 0 , 1 - percent)
+      }
+      const colors = new Float32Array(colorArr)
+      geo.attributes.color = new T.BufferAttribute(colors,3)
+      console.log(79,geo.attributes , colors)
+      const material = new T.LineBasicMaterial({
+        vertexColors : true 
+      })
+      const line = new T.Line(geo,material)
+      scene.add(line)
+    }
+
+    function addLineColor() {
+      
+      const geo = new T.BufferGeometry()
+      const curve = new T.CatmullRomCurve3([
+        new T.Vector3(-50,20,90) ,
+        new T.Vector3(-10,40,40) ,
+        new T.Vector3(0,0,0) ,
+        new T.Vector3(60,-60,0) ,
+        new T.Vector3(70,0,80)
+      ])
+      const points = curve.getSpacedPoints(100)
+      geo.setFromPoints(points) 
+      const pos = geo.attributes.position 
+      const red = new T.Color(0xff0000) ,
+            blue = new T.Color(0x0000ff) 
+      const redLerpColorsBlue = new T.Color() 
+      redLerpColorsBlue.lerpColors(red,blue,.5) 
+      console.log(redLerpColorsBlue)
+      const colors = []
+      for(let i = 0 ; i < pos.count;i++) {
+        let percent = i / pos.count 
+        let c = red.clone().lerp(blue,percent) 
+        colors.push(c.r,c.g,c.b) 
+      }
+      geo.attributes.color = new T.BufferAttribute(new Float32Array(colors),3)
+      
+      geo.translate(100,0,0)
+
+      const material = new T.LineBasicMaterial({
+        vertexColors : true 
+      })
+
+      const line = new T.Line(geo,material) 
+      scene.add(line)
+
+    }
+
+    function render () {
+      webgl.render(scene,camera)
+    }
+
+
+  </script>
+</html>

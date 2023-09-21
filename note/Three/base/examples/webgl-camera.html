@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import { GUI } from 'plugins/libs/lil-gui.module.min.js'
+    import Stats from 'plugins/libs/stats.module.js' 
+
+    console.log(T , OrbitControls)
+    
+    var W = window.innerWidth , H = window.innerHeight , aspect  = W / H 
+
+    var container , stats 
+    var camera , scene , webgl , mesh 
+    var cameraRig , activeCamera , activeHelper 
+    var cameraPerspective , cameraOrtho 
+    var cameraPerspectiveHelper , cameraOrthoHelper 
+    const frustumSize  = W / 2 > 6e2 ? W / 2 : 6e2 
+    
+    console.log(42,frustumSize)
+    init () 
+    animate () 
+
+    function init () {
+
+      container = document.createElement('div')
+      document.body.insertAdjacentElement('afterbegin',container)
+
+      scene = new T.Scene() 
+
+      camera = new T.PerspectiveCamera(50,.5*aspect , 1 ,1e4) 
+      camera.position.z = 25e2 
+
+      cameraPerspective = new T.PerspectiveCamera(50,.5*aspect , 150,1e3) 
+      cameraPerspectiveHelper = new T.CameraHelper(cameraPerspective)
+      scene.add(cameraPerspectiveHelper)
+
+      cameraOrtho = new T.OrthographicCamera(
+        .5 * frustumSize * aspect / -2 , 
+        .5 * frustumSize * aspect / 2 , 
+        .5 * frustumSize * aspect / 2 , 
+        .5 * frustumSize * aspect / -2 , 
+        150 , 
+        1e3
+      )
+      cameraOrthoHelper = new T.CameraHelper(cameraOrtho)
+      scene.add(cameraOrthoHelper)
+
+      activeCamera = cameraPerspective 
+      activeHelper = cameraPerspectiveHelper 
+
+      cameraOrtho.rotation.y = Math.PI 
+      cameraPerspective.rotation.y = Math.PI
+
+      cameraRig = new T.Group() 
+
+      cameraRig.add(cameraPerspective )
+      cameraRig.add(cameraOrtho) 
+      scene.add(cameraRig)
+
+      mesh = new T.Mesh(
+        new T.SphereGeometry(1e2,16,8),
+        new T.MeshBasicMaterial({ color : 0xffffff , wireframe:true})
+      )
+      scene.add(mesh)
+
+      const mesh2 = new T.Mesh(
+        new T.SphereGeometry(5e1,16,8) ,
+        new T.MeshBasicMaterial({ color : 0x00ff00 , wireframe : true })
+      )
+      mesh2.position.y = 15e1 
+      mesh.add(mesh2)
+
+      const mesh3 = new T.Mesh(
+        new T.SphereGeometry(30,16,8) ,
+        new T.MeshBasicMaterial({color:0x0000ff,wireframe:true})
+      )
+      mesh3.position.z = 450 
+      cameraRig.add(mesh3)
+
+
+      const geometry = new T.BufferGeometry()
+      const vertices = [] 
+      for(let i = 0 ; i < 1e4 ; i++ ) {
+        vertices.push(T.MathUtils.randFloatSpread(2e3))
+        vertices.push(T.MathUtils.randFloatSpread(2e3))
+        vertices.push(T.MathUtils.randFloatSpread(2e3))
+      }
+      geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3))
+
+      const particles = new T.Points(geometry,new T.PointsMaterial({color:0x888888}))
+      scene.add(particles)
+
+      console.log(95,scene , particles)
+
+      webgl = new T.WebGLRenderer({antialias:true}) 
+      webgl.setPixelRatio(window.devicePixelRatio)
+      webgl.setSize(W,H)
+      container.insertAdjacentElement('afterbegin',webgl.domElement)
+      webgl.autoClear = false 
+
+      stats = new Stats() 
+      webgl.domElement.insertAdjacentElement('afterend',stats.dom)
+
+      window.addEventListener('resize',onWindowResize) 
+      document.addEventListener('keydown',onKeyDown)
+    }
+
+    function animate () {
+      requestAnimationFrame(animate)
+      render()
+      stats && stats.update()
+    }
+  
+    function onWindowResize () {
+      W = window.innerWidth 
+      H = window.innerHeight 
+      aspect = W / H 
+      webgl.setSize(W , H)
+
+      camera.aspect = .5 * aspect 
+      camera.updateProjectionMatrix()
+
+      cameraPerspective.aspect = .5 * aspect 
+      cameraPerspective.updateProjectionMatrix() 
+
+      cameraOrtho.left = -.5 * frustumSize * aspect / 2 
+      cameraOrtho.right = .5 * frustumSize * aspect / 2 
+      cameraOrtho.top = frustumSize / 2 
+      cameraOrtho.bottom = - frustumSize / 2 
+      cameraOrtho.updateProjectionMatrix()
+    }
+    function onKeyDown (event) {
+      console.log(130,event)
+      switch (event.keyCode) {
+        case 79: // o
+          activeCamera = cameraOrtho 
+          activeHelper = cameraOrthoHelper  
+          break;
+        case 80 : // p
+          activeCamera = cameraPerspective 
+          activeHelper = cameraPerspectiveHelper
+        break;
+        default:
+          break;
+      }
+    }
+
+    function render () {
+      const r = Date.now() * 0.0005 
+      mesh.position.x = 7e2 * Math.cos(r) 
+      mesh.position.y = 7e2 * Math.sin(r) 
+      mesh.position.z = 7e2 * Math.sin(r) 
+      
+      mesh.children[0].position.x = 7e1 * Math.cos(2 * r) 
+      mesh.children[0].position.z = 7e1 * Math.sin(r)
+
+      if(activeCamera === cameraPerspective) {
+        cameraPerspective.fov = 35 + 30 * Math.sin(.5 * r) 
+        cameraPerspective.far = mesh.position.length() 
+        cameraPerspective.updateProjectionMatrix()
+
+        cameraPerspectiveHelper.update() 
+        cameraPerspectiveHelper.visible = true 
+        cameraOrthoHelper.visible = false 
+      }else {
+        cameraOrtho.far = mesh.position.length() 
+        cameraOrtho.updateProjectionMatrix() 
+
+        cameraOrthoHelper.update()
+        cameraOrthoHelper.visible = true 
+        cameraPerspectiveHelper.visible = false 
+      }
+      
+      cameraRig.lookAt(mesh.position)
+      webgl.clear()
+
+      activeHelper.visible = false 
+
+      webgl.setViewport(0,0,W / 2 ,  H ) 
+      webgl.render(scene,activeCamera)
+
+      activeHelper.visible = true 
+
+      webgl.setViewport(W / 2 , 0 , W/2,H)
+      webgl.render(scene,camera)
+
+    }
+  
+  </script>
+</html>

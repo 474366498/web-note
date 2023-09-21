@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import Stats from 'plugins/libs/stats.module.js'
+    console.log(T , OrbitControls)
+
+    var stats , orbit , container 
+    var camera , scene , webgl 
+    var group 
+
+    let targetRotation = 0 , targetRotationOnPointerDown = 0 , pointerX = 0 , pointerXOnPointerDown = 0  
+    let windowHalfX = window.innerWidth / 2 
+
+    init()
+    animation()
+
+    function init () {
+      container = document.createElement('div')
+      document.body.appendChild(container)
+
+      scene = new T.Scene()
+      scene.background = new T.Color(0xf0f0f0)
+
+      scene.add(new T.AxesHelper(5e2))
+
+      camera = new T.PerspectiveCamera(50 , window.innerWidth / window.innerHeight , 1 ,1e3)
+      camera.position.set(0,150,400)
+      scene.add(camera)
+
+      const light = new T.PointLight(0xffffff,.8)
+      camera.add(light) 
+
+      group = new T.Group()
+      group.position.y = -50 
+      scene.add(group) 
+
+      const loader = new T.TextureLoader()
+      const texture = loader.load('../../textures/uv_grid_opengl.jpg')
+      texture.wrapS = texture.wrapS = T.RepeatWrapping 
+      texture.repeat.set(0.008,0.008)
+
+      function addShape (shape,extrudeSettings , color,x,y,z,rx,ry,rz,s) {
+        let geometry = new T.ShapeGeometry(shape)
+        let mesh = new T.Mesh(geometry,new T.MeshPhongMaterial({side : T.DoubleSide,map:texture}))
+        mesh.position.set(x,y,z - 175 )
+        mesh.rotation.set(rx,ry,rz) 
+        mesh.scale.set(s,s,s)
+        group.add(mesh) 
+
+        geometry = new T.ShapeGeometry(shape) 
+        mesh = new T.Mesh(geometry , new T.MeshPhongMaterial({color,side:T.DoubleSide}))
+        mesh.position.set(x,y,z-125)
+        mesh.rotation.set(rx,ry,rz) 
+        mesh.scale.set(s,s,s)
+        group.add(mesh)
+
+        geometry = new T.ExtrudeGeometry(shape,extrudeSettings)
+        mesh = new T.Mesh(geometry,new T.MeshPhongMaterial({color}))
+        mesh.position.set(x,y,z-75)
+        mesh.rotation.set(rx,ry,rz)
+        mesh.scale.set(s,s,s)
+        group.add(mesh) 
+
+        addLineShape(shape,color,x,y,z,rx,ry,rz,s)
+
+      }
+
+      function addLineShape(shape,color,x,y,z,rx,ry,rz,s) {
+
+        shape.autoClose = true 
+
+        const points = shape.getPoints() 
+        const spacedPoints = shape.getSpacedPoints(50)
+        const geometryPoints = new T.BufferGeometry().setFromPoints(points)
+        const geometrySpacedPoints = new T.BufferGeometry().setFromPoints(spacedPoints) 
+
+        let line = new T.Line(geometryPoints,new T.LineBasicMaterial({color}))
+        line.position.set(x,y,z-25)
+        line.rotation.set(rx,ry,rz) 
+        line.scale.set(s,s,s) 
+        group.add(line)
+
+        line = new T.Line(geometrySpacedPoints,new T.LineBasicMaterial({color}))
+        line.position.set(x,y,z+25)
+        line.rotation.set(rx,ry,rz) 
+        line.scale.set(s,s,s)
+        group.add(line)
+
+        let particles = new T.Points(geometryPoints,new T.PointsMaterial({color,size:4}))
+        particles.position.set(x,y,z+75)
+        particles.rotation.set(rx,ry,rz) 
+        particles.scale.set(s,s,s)
+        group.add(particles)
+
+        particles = new T.Points(geometrySpacedPoints,new T.PointsMaterial({color,size:4}))
+        particles.position.set(x,y,z+125)
+        particles.rotation.set(rx,ry,rz) 
+        particles.scale.set(s,s,s)
+        group.add(particles)
+
+      }
+      const californiaPts = [] 
+      californiaPts.push( new T.Vector2( 610, 320 ) );
+      californiaPts.push( new T.Vector2( 450, 300 ) );
+      californiaPts.push( new T.Vector2( 392, 392 ) );
+      californiaPts.push( new T.Vector2( 266, 438 ) );
+      californiaPts.push( new T.Vector2( 190, 570 ) );
+      californiaPts.push( new T.Vector2( 190, 600 ) );
+      californiaPts.push( new T.Vector2( 160, 620 ) );
+      californiaPts.push( new T.Vector2( 160, 650 ) );
+      californiaPts.push( new T.Vector2( 180, 640 ) );
+      californiaPts.push( new T.Vector2( 165, 680 ) );
+      californiaPts.push( new T.Vector2( 150, 670 ) );
+      californiaPts.push( new T.Vector2( 90, 737 ) );
+      californiaPts.push( new T.Vector2( 80, 795 ) );
+      californiaPts.push( new T.Vector2( 50, 835 ) );
+      californiaPts.push( new T.Vector2( 64, 870 ) );
+      californiaPts.push( new T.Vector2( 60, 945 ) );
+      californiaPts.push( new T.Vector2( 300, 945 ) );
+      californiaPts.push( new T.Vector2( 300, 743 ) );
+      californiaPts.push( new T.Vector2( 600, 473 ) );
+      californiaPts.push( new T.Vector2( 626, 425 ) );
+      californiaPts.push( new T.Vector2( 600, 370 ) );
+      californiaPts.push( new T.Vector2( 610, 320 ) );
+
+      for(let i = 0 ; i < californiaPts.length ; i++) {
+        californiaPts[i].multiplyScalar(.25)
+      }
+
+      const californiaShape = new T.Shape(californiaPts)
+
+      const triangleShape = new T.Shape().moveTo(80,20)
+      .lineTo(40,80)
+      .lineTo(120,80)
+      .lineTo(80,20)
+
+      const x = 0 , y = 0 
+      const heartShape = new T.Shape()
+        .moveTo(x+24,y+25)
+        .bezierCurveTo( x + 25, y + 25, x + 20, y, x, y )
+        .bezierCurveTo( x - 30, y, x - 30, y + 35, x - 30, y + 35 )
+        .bezierCurveTo( x - 30, y + 55, x - 10, y + 77, x + 25, y + 95 )
+        .bezierCurveTo( x + 60, y + 77, x + 80, y + 55, x + 80, y + 35 )
+        .bezierCurveTo( x + 80, y + 35, x + 80, y, x + 50, y )
+        .bezierCurveTo( x + 35, y, x + 25, y + 25, x + 25, y + 25 );
+
+      const sqLength = 80 
+      
+      const squareShape = new T.Shape()
+        .moveTo(0,0)
+        .lineTo( 0, sqLength )
+        .lineTo( sqLength, sqLength )
+        .lineTo( sqLength, 0 )
+        .lineTo( 0, 0 );
+
+      const roundedRectShape = new T.Shape();
+
+      (function roundedRect(ctx,x,y,width,height,radius){
+        ctx.moveTo( x, y + radius );
+					ctx.lineTo( x, y + height - radius );
+					ctx.quadraticCurveTo( x, y + height, x + radius, y + height );
+					ctx.lineTo( x + width - radius, y + height );
+					ctx.quadraticCurveTo( x + width, y + height, x + width, y + height - radius );
+					ctx.lineTo( x + width, y + radius );
+					ctx.quadraticCurveTo( x + width, y, x + width - radius, y );
+					ctx.lineTo( x + radius, y );
+					ctx.quadraticCurveTo( x, y, x, y + radius );
+      })(roundedRectShape,0,0,50,50,20);
+
+      // ( function roundedRect( ctx, x, y, width, height, radius ) {
+
+			// 		ctx.moveTo( x, y + radius );
+			// 		ctx.lineTo( x, y + height - radius );
+			// 		ctx.quadraticCurveTo( x, y + height, x + radius, y + height );
+			// 		ctx.lineTo( x + width - radius, y + height );
+			// 		ctx.quadraticCurveTo( x + width, y + height, x + width, y + height - radius );
+			// 		ctx.lineTo( x + width, y + radius );
+			// 		ctx.quadraticCurveTo( x + width, y, x + width - radius, y );
+			// 		ctx.lineTo( x + radius, y );
+			// 		ctx.quadraticCurveTo( x, y, x, y + radius );
+
+			// 	} )( roundedRectShape, 0, 0, 50, 50, 20 );
+
+      const trackShape = new T.Shape()
+        .moveTo( 40, 40 )
+					.lineTo( 40, 160 )
+					.absarc( 60, 160, 20, Math.PI, 0, true )
+					.lineTo( 80, 40 )
+					.absarc( 60, 40, 20, 2 * Math.PI, Math.PI, true );
+
+      const circleRadius = 40 
+      const circleShape = new T.Shape()    
+        .moveTo( 0, circleRadius )
+        .quadraticCurveTo( circleRadius, circleRadius, circleRadius, 0 )
+        .quadraticCurveTo( circleRadius, - circleRadius, 0, - circleRadius )
+        .quadraticCurveTo( - circleRadius, - circleRadius, - circleRadius, 0 )
+        .quadraticCurveTo( - circleRadius, circleRadius, 0, circleRadius );
+      
+      const fishShape = new T.Shape()
+      .moveTo( x, y )
+					.quadraticCurveTo( x + 50, y - 80, x + 90, y - 10 )
+					.quadraticCurveTo( x + 100, y - 10, x + 115, y - 40 )
+					.quadraticCurveTo( x + 115, y, x + 115, y + 40 )
+					.quadraticCurveTo( x + 100, y + 10, x + 90, y + 10 )
+					.quadraticCurveTo( x + 50, y + 80, x, y );
+          
+      const arcShape = new T.Shape()
+        .moveTo(50,10)
+        .absarc(10,10,40,0,Math.PI * 2 ,false ) 
+      const holePath = new T.Path()
+        .moveTo(20,10)
+        .absarc(10,10,10,0,Math.PI * 2 , true)
+      arcShape.holes.push(holePath)
+      
+      const smileyShape = new T.Shape()
+      .moveTo(80,40)
+      .absarc(40,40,40,0,Math.PI * 2 ,false) 
+      const smileyEye1Path = new T.Path() 
+        .moveTo(35,20)
+        .absellipse(25,20,10,10,0,Math.PI * 2 , true) 
+      const smileyEye2Path = new T.Path() 
+        .moveTo(65,20)
+        .absellipse(55,20,10,10,0,Math.PI * 2 , true)   
+
+      const smileyMouthPath = new T.Path()
+        .moveTo(20,40)
+        .quadraticCurveTo( 40, 60, 60, 40 )
+					.bezierCurveTo( 70, 45, 70, 50, 60, 60 )
+					.quadraticCurveTo( 40, 80, 20, 60 )
+					.quadraticCurveTo( 5, 50, 20, 40 );
+
+      smileyShape.holes.push(smileyEye1Path)
+      smileyShape.holes.push(smileyEye2Path)
+      smileyShape.holes.push(smileyMouthPath)
+      
+      const splinepts = [] 
+      splinepts.push( new T.Vector2( 70, 20 ) );
+      splinepts.push( new T.Vector2( 80, 90 ) );
+      splinepts.push( new T.Vector2( - 30, 70 ) );
+      splinepts.push( new T.Vector2( 0, 0 ) );
+
+      const splineShape = new T.Shape().moveTo(0,0).splineThru(splinepts)
+
+      const extrudeSettings = {depth:8,bevelEnabled:true ,bevelSegments:2,steps:2,bevelSize:1,bevelThickness:1} 
+
+      addShape( californiaShape, extrudeSettings, 0xf08000, - 300, - 100, 0, 0, 0, 0, 1 );
+				addShape( triangleShape, extrudeSettings, 0x8080f0, - 180, 0, 0, 0, 0, 0, 1 );
+				addShape( roundedRectShape, extrudeSettings, 0x008000, - 150, 150, 0, 0, 0, 0, 1 );
+				addShape( trackShape, extrudeSettings, 0x008080, 200, - 100, 0, 0, 0, 0, 1 );
+				addShape( squareShape, extrudeSettings, 0x0040f0, 150, 100, 0, 0, 0, 0, 1 );
+				addShape( heartShape, extrudeSettings, 0xf00000, 60, 100, 0, 0, 0, Math.PI, 1 );
+				addShape( circleShape, extrudeSettings, 0x00f000, 120, 250, 0, 0, 0, 0, 1 );
+				addShape( fishShape, extrudeSettings, 0x404040, - 60, 200, 0, 0, 0, 0, 1 );
+				addShape( smileyShape, extrudeSettings, 0xf000f0, - 200, 250, 0, 0, 0, Math.PI, 1 );
+				addShape( arcShape, extrudeSettings, 0x804000, 150, 0, 0, 0, 0, 0, 1 );
+				addShape( splineShape, extrudeSettings, 0x808080, - 50, - 100, 0, 0, 0, 0, 1 );
+
+				addLineShape( arcShape.holes[ 0 ], 0x804000, 150, 0, 0, 0, 0, 0, 1 );
+
+				for ( let i = 0; i < smileyShape.holes.length; i += 1 ) {
+
+					addLineShape( smileyShape.holes[ i ], 0xf000f0, - 200, 250, 0, 0, 0, Math.PI, 1 );
+
+				}
+      
+      webgl = new T.WebGLRenderer({antialias:true})
+      webgl.setPixelRatio(window.devicePixelRatio)
+      webgl.setSize(window.innerWidth,window.innerHeight)
+      container.appendChild(webgl.domElement)
+
+      stats = new Stats()
+      container.appendChild(stats.dom)
+
+      container.style.touchAction = 'none'
+      container.addEventListener('pointerdown',onPointerDown)
+
+      window.addEventListener('resize',onWindowResize)
+
+      orbit = new OrbitControls(camera,webgl.domElement)
+      orbit.addEventListener('change',()=>{
+        console.log(289,'ssss')
+      })
+
+    }
+
+    function onPointerDown (event) {
+      if(event.isPrimary === false ) return 
+      pointerXOnPointerDown = event.clientX - windowHalfX 
+      targetRotationOnPointerDown = targetRotation  
+
+      document.addEventListener('pointermove',onPointerMove)
+      document.addEventListener('pointerup',onPointerUp)
+    }
+    function onPointerMove (event) {
+      if(event.isPrimary === false) return 
+      pointerX = event.clientX - windowHalfX 
+      targetRotation = targetRotationOnPointerDown + (pointerX - pointerXOnPointerDown) * .02 
+    }
+    function onPointerUp (event) {
+      if(event.isPrimary === false) return
+      document.removeEventListener('pointermove',onPointerMove)
+      document.removeEventListener('pointerup',onPointerUp)
+    }
+    function onWindowResize () {
+      windowHalfX = window.innerWidth / 2 
+      camera.aspect = window.innerWidth / window.innerHeight 
+      camera.updateProjectionMatrix()
+
+      webgl.setSize(window.innerWidth , window.innerHeight)
+    }
+
+    function animation () {
+      requestAnimationFrame(animation)
+      render()
+      stats.update()
+    }
+
+    function render() {
+      group.rotation.y += (targetRotation - group.rotation.y) * .05 
+      webgl.render(scene,camera)
+    }
+
+
+  </script>
+</html>

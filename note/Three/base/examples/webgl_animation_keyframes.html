@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import Stats from 'plugins/libs/stats.module.js'
+    import {RoomEnvironment } from 'plugins/environments/RoomEnvironment.js' 
+    import { GLTFLoader } from "plugins/loaders/GLTFLoader.js";
+    import { DRACOLoader } from 'plugins/loaders/DRACOLoader.js'
+    console.log(T , OrbitControls,DRACOLoader)
+
+    let mixer 
+
+    const clock = new T.Clock()
+    const stats = new Stats() 
+    document.body.appendChild(stats.dom)
+
+    const webgl = new T.WebGLRenderer({ antialias:true})
+    webgl.setPixelRatio(window.devicePixelRatio)
+    webgl.setSize(window.innerWidth,window.innerHeight)
+    webgl.outputEncoding = T.sRGBEncoding 
+    document.body.appendChild(webgl.domElement)
+
+    const pmremGenerator = new T.PMREMGenerator(webgl)
+
+    const scene = new T.Scene()
+    scene.background = new T.Color(0xbfe3dd)
+    scene.environment = pmremGenerator.fromScene(new RoomEnvironment(),.04).texture 
+    console.log(51, pmremGenerator ,RoomEnvironment , pmremGenerator.fromScene(new RoomEnvironment(),.04).texture )
+    scene.add(new T.AxesHelper(60))
+    let spot = new T.SpotLight()
+    spot.position.set(4,30,4)
+    scene.add(spot)
+
+    const camera = new T.PerspectiveCamera(40,window.innerWidth / window.innerHeight,1,100) 
+    camera.position.set(5,2,8)
+
+    const controls = new OrbitControls(camera,webgl.domElement)
+    controls.target.set(0,.5,0)
+    controls.update()
+    controls.enablePan = false 
+    controls.enableDamping = true 
+
+    const dracoLoader = new DRACOLoader()
+    console.log(62,dracoLoader)
+    dracoLoader.setDecoderPath('../../three/jsm/libs/draco/gltf/')
+
+    const loader = new GLTFLoader()
+    loader.setDRACOLoader(dracoLoader)
+    loader.load('../../models/gltf/LittlestTokyo.glb',glb => {
+      console.log(67,glb)
+      const model = glb.scene 
+      model.position.set(1,1,0)
+      model.scale.set(.01,.01,.01)
+      scene.add(model)
+      
+      mixer = new T.AnimationMixer(model) 
+      mixer.clipAction(glb.animations[0]).play()
+      animation() 
+    },undefined , error => {
+      console.log(error)
+    })
+
+    function animation() {
+      requestAnimationFrame(animation)
+      const delta = clock.getDelta()
+      // console.log(84,delta)
+      mixer.update(delta)
+      controls.update()
+      stats.update()
+      webgl.render(scene,camera)
+    }
+
+  </script>
+</html>

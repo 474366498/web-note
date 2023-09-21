@@ -540,7 +540,7 @@ let names = [
 
 names.forEach(name => {
   let match = name.match(/(\d{1,4})\W*\.\w{1,}$/)
-  console.log(543, match, match ? match[1] : 0)
+  // console.log(543, match, match ? match[1] : 0)
 })
 
 // let sortMatch = item.name.match(/(\d{1,4})\W*\.\w{1,}$/)
@@ -552,8 +552,13 @@ names.forEach(name => {
 
 
 
-
-
+const codeMap = []
+for (let i = 1; i < 13e1; i++) {
+  let item = { num: i, letter: String.fromCharCode(i) }
+  console.log(i, item)
+  codeMap.push(item)
+}
+console.log(561, codeMap)
 
 
 

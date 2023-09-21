@@ -89,6 +89,7 @@
       const intersects = raycaster.intersectObjects(meshes)
       if(intersects.length > 0) {
         console.log(intersects)
+        intersects[0].object.material.color.set(0xff0000);
       }else{
         console.log('没有geo')
       }

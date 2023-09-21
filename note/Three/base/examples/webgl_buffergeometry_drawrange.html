@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    import { GUI } from 'plugins/libs/lil-gui.module.min.js'
+    import Stats from 'plugins/libs/stats.module.js' 
+    console.log(T , OrbitControls)
+    
+
+    var group 
+    var container , stats 
+    var particlesData = [] 
+    var camera , scene , webgl 
+    var positions , colors 
+    let particles 
+    var pointCloud 
+    var particlePositions 
+    var linesMesh 
+
+    const maxParticleCount = 1e3 
+    let particleCount = 5e2 
+    const r = 8e2 , rHalf = r / 2 
+
+    const effectController = {
+      showDots : true ,
+      showLines : true ,
+      minDistance : 1.5e2 ,
+      limitConnections : false ,
+      maxConnections : 2e1 ,
+      particleCount : 5e2
+    }
+
+    init () 
+    animate() 
+
+    function initGui () {
+      const gui = new GUI() 
+      gui.add(effectController,'showDots').onChange(val => pointCloud.visible = val) 
+      gui.add(effectController,'showLines').onChange(val => linesMesh.visible = val) 
+      gui.add(effectController,'minDistance',10,3e2) 
+      gui.add(effectController,'limitConnections')
+      gui.add(effectController,'maxConnections',0,3e1,1)
+      gui.add(effectController,'particleCount',0,maxParticleCount,1)
+        .onChange(val => {
+          particleCount = parseInt(val)
+          particles.setDrawRange(0,particleCount)
+        })
+    }
+
+    function init () {
+      initGui()
+
+      camera = new T.PerspectiveCamera(45,window.innerWidth / window.innerHeight , 1 , 4e3) 
+      camera.position.z = 1.75e3 
+
+      scene = new T.Scene() 
+
+      group = new T.Group() 
+      scene.add(group)
+
+      const helper = new T.BoxHelper(new T.Mesh( new T.BoxGeometry(r,r,r)))
+      helper.material.color.setHex(0x101010)
+      helper.material.blending = T.AdditiveBlending 
+      helper.material.transparent = true 
+      group.add(helper)
+
+      const segments = maxParticleCount * maxParticleCount 
+
+      positions = new Float32Array(segments * 3) 
+      colors = new Float32Array(segments * 3)
+
+      const pMaterial = new T.PointsMaterial({
+        color : 0xffffff ,
+        size : 3 ,
+        blending : T.AdditiveBlending ,
+        transparent : true ,
+        sizeAttenuation : false 
+      })
+      particles = new T.BufferGeometry() 
+      particlePositions = new Float32Array(maxParticleCount * 3)
+
+      for(let i = 0 ; i < maxParticleCount ; i++) {
+        const x = Math.random() * r - r / 2 ,
+              y = Math.random() * r - r / 2 ,
+              z = Math.random() * r - r / 2 
+
+        particlePositions[i*3] = x        
+        particlePositions[i*3 + 1] = y       
+        particlePositions[i*3 + 2] = z 
+        
+        particlesData.push({
+          velocity : new T.Vector3(-1 + Math.random() * 2 , -1 + Math.random() * 2 , -1 + Math.random() * 2) ,
+          numConnections : 0
+        })
+      }
+
+      particles.setDrawRange(0,particleCount) 
+      particles.setAttribute('position',new T.BufferAttribute(particlePositions,3).setUsage(T.DynamicDrawUsage))
+
+      pointCloud = new T.Points(particles,pMaterial) 
+      group.add(pointCloud)
+
+      const geometry = new T.BufferGeometry() 
+      geometry.setAttribute('position',new T.BufferAttribute(positions,3).setUsage(T.DynamicDrawUsage))
+      geometry.setAttribute('color',new T.BufferAttribute(colors,3).setUsage(T.DynamicDrawUsage))
+      geometry.computeBoundingSphere()
+      geometry.setDrawRange(0,0)
+
+      const material = new T.LineBasicMaterial({
+        vertexColors: true ,
+        blending : T.AdditiveBlending ,
+        transparent : true  
+      })
+
+      linesMesh = new T.LineSegments(geometry,material)
+      group.add(linesMesh)
+
+      webgl = new T.WebGLRenderer({ antialias : true })
+      webgl.setPixelRatio(window.devicePixelRatio)
+      webgl.setSize(window.innerWidth , window.innerHeight)
+      webgl.outputEncoding = T.sRGBEncoding 
+
+      document.body.insertAdjacentElement('afterbegin',webgl.domElement)
+
+      stats = new Stats() 
+      webgl.domElement.insertAdjacentElement('afterend',stats.dom)
+
+      const orbit = new OrbitControls(camera,webgl.domElement)
+      orbit.minDistance = 1e3 
+      orbit.maxDistance = 4e3
+
+      window.addEventListener('resize',onWindowResize )
+    }
+
+    function onWindowResize () {
+      camera.aspect = window.innerWidth / window.innerHeight 
+      camera.updateProjectionMatrix() 
+
+      webgl.setSize(window.innerWidth , window.innerHeight)
+    }
+
+    function animate () {
+      let vertexpos = 0 ,
+          colorpos = 0 ,
+          numConnected = 0 
+      for(let i = 0 ; i < particleCount ; i++) 
+      particlesData[i].numConnections = 0 
+         
+
+      for(let i = 0 ; i < particleCount ; i++) {
+        const particleData = particlesData[i] 
+
+        particlePositions[i*3] += particleData.velocity.x 
+        particlePositions[i*3 + 1] += particleData.velocity.y 
+        particlePositions[i*3 + 2 ] += particleData.velocity.z 
+        
+
+        if(particlePositions[i * 3 ] < -rHalf || particlePositions[i * 3 ] > rHalf) {
+          particleData.velocity.x = - particleData.velocity.x 
+        }
+
+        if(particlePositions[i * 3 + 1] < -rHalf || particlePositions[i * 3 + 1] > rHalf) {
+          particleData.velocity.y = - particleData.velocity.y 
+        }
+
+        if(particlePositions[i * 3 + 2] < -rHalf || particlePositions[i * 3 + 2] > rHalf) {
+          particleData.velocity.z = - particleData.velocity.z
+        }
+
+        if(effectController.limitConnections && particleData.numConnections >= effectController.maxConnections) {
+          continue
+        }
+
+        for(let j = i + 1 ; j < particleCount ; j++) {
+          const particleDataB = particlesData[j] 
+          // console.log(199,particleData , particleDataB)
+          if(effectController.limitConnections && particleDataB.numConnections >= effectController.maxConnections) {
+            continue
+          }
+
+          const dx = particlePositions[i*3] - particlePositions[j * 3] ,
+                dy = particlePositions[i*3+1] - particlePositions[j * 3+1] ,
+                dz = particlePositions[i*3 + 2] - particlePositions[j * 3 + 2] ,
+                dist = Math.sqrt(dx * dx + dy * dy +dz * dz)
+          
+          if(dist < effectController.minDistance ) {
+
+            particleData.numConnections ++ 
+            particleDataB.numConnections ++ 
+
+            const alpha = 1 - dist / effectController.minDistance 
+
+            positions[vertexpos ++] = particlePositions [i * 3 ] 
+            positions[vertexpos ++] = particlePositions [i * 3 + 1] 
+            positions[vertexpos ++] = particlePositions [i * 3 + 2] 
+
+            positions[vertexpos ++] = particlePositions [j * 3 ] 
+            positions[vertexpos ++] = particlePositions [j * 3 + 1] 
+            positions[vertexpos ++] = particlePositions [j * 3 + 2] 
+
+            colors[colorpos ++] = alpha 
+            colors[colorpos ++] = alpha 
+            colors[colorpos ++] = alpha 
+
+            colors[colorpos ++] = alpha 
+            colors[colorpos ++] = alpha 
+            colors[colorpos ++] = alpha 
+
+            numConnected ++
+          }      
+        }
+      }
+
+      linesMesh.geometry.setDrawRange(0,numConnected * 2) 
+      linesMesh.geometry.attributes.position.needsUpdate = true 
+      linesMesh.geometry.attributes.color.needsUpdate = true 
+
+      requestAnimationFrame(animate)
+
+      stats.update()
+
+      render() 
+
+    }
+
+    function render () {
+      const time = Date.now() * .0002 
+
+      group.rotation.y = time * 0.1 
+      webgl.render(scene,camera)
+    }
+
+  </script>
+</html>

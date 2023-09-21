@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  </head>
+  <style>
+    body{
+      margin:0;
+    }
+  </style>
+  <body>
+     
+  </body>
+  <script type="importmap">
+    {
+      "imports" : {
+        "three" :"../../three/build/three.module.js" ,
+        "plugins/":"../../three/jsm/"
+      }
+    }
+  </script>
+  <script type="module" >
+    import * as T from 'three' 
+    import {OrbitControls } from 'plugins/controls/OrbitControls.js'
+    console.log(T , OrbitControls)
+
+    var webgl , scene , camera , orbit 
+
+    init() 
+
+    render () 
+
+    function init () {
+
+      scene = new T.Scene() 
+      scene.add(new T.AxesHelper(5e2))
+
+      addHoles()
+
+      camera = new T.PerspectiveCamera(60,window.innerWidth / window.innerHeight , .1,1e3)
+      camera.position.set(1e2,1e2,1e2)
+
+      webgl = new T.WebGLRenderer({antialias:true})
+      webgl.setPixelRatio(window.devicePixelRatio)
+      webgl.setSize(window.innerWidth,window.innerHeight)
+      webgl.setClearColor(0x999999)
+      document.body.insertAdjacentElement('afterbegin',webgl.domElement)
+
+      orbit = new OrbitControls(camera,webgl.domElement)
+      orbit.addEventListener('change',render)
+    }
+    
+    function addHoles () {
+      const shape = new T.Shape() 
+      shape.lineTo(100,0)
+      shape.lineTo(100,100)
+      shape.lineTo(0,100)
+
+      const path1 = new T.Path()
+      path1.absarc(20,20,10)
+      const path2 = new T.Path()
+      path2.absarc(80,20,10)
+      const path3 = new T.Path()
+      path3.moveTo(40,40)
+      path3.lineTo(40,60)
+      path3.lineTo(60,60)
+      path3.lineTo(60,40)
+      shape.holes.push(path1,path2,path3)
+
+      const extrude = new T.ExtrudeGeometry(shape,{depth:10,bevelEnabled:false,curveSegments:50})
+      const mesh = new T.Mesh(extrude,new T.MeshBasicMaterial())
+      scene.add(mesh)
+    }
+
+
+    function render () {
+      webgl.render(scene,camera)
+    }
+  </script>
+</html>

@@ -22,7 +22,8 @@ export default {
   setup () {
     let room = ref(null) ,
         tag = ref(null) ,
-        progress = ref(0) 
+        progress = ref(0) ,
+        isMouseDown = ref(false)
 
     onMounted (() => {
       console.log(28,tag.value)
@@ -30,6 +31,23 @@ export default {
       init()
 
       render()
+      // orbit = new OrbitControls(camera , webgl.domElement) 
+      window.addEventListener('mousedown',function () {
+        isMouseDown.value = true
+      })
+      window.addEventListener('mouseup',()=>{
+        isMouseDown.value = false
+        console.log(40,camera.rotation)
+      } )
+
+      window.addEventListener('mousemove',(event)=>{
+        if(isMouseDown.value) {
+          camera.rotation.y += (event.movementX / window.innerWidth) * Math.PI
+          camera.rotation.z += (event.movementY / window.innerHeight) * Math.PI
+          camera.rotation.x += (event.movementY / window.innerHeight) * Math.PI
+
+        }
+      })
     })
     var rooms = [
         {
@@ -80,10 +98,12 @@ export default {
 
       camera = new T.PerspectiveCamera(75,window.innerWidth / window.innerHeight , .1 ,1e3) 
       camera.position.set(0,0,0) 
+      scene.add(new T.CameraHelper(camera))
+
 
       room && room.value && room.value.appendChild(webgl.domElement)
 
-      orbit = new OrbitControls(camera , webgl.domElement) 
+     
       // orbit.update()
       initRooms()
       initTexts()
@@ -150,6 +170,9 @@ export default {
             y : room.position.y , 
             z : room.position.z ,
             duration:1
+          })
+          gsap.to(camera.rotation,{
+            x:0,y:0,z:0
           })
           moveTag(text)
         })

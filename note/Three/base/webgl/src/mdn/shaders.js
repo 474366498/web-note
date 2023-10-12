@@ -36,7 +36,7 @@ export function linkProgram(gl, vertexShader, fragmentShader) {
     var info = gl.getProgramInfoLog(program);
     throw "Could not compile WebGL program. \n\n" + info;
   }
-
+  console.log(39, program)
   return program;
 }
 
@@ -54,7 +54,7 @@ export function createWebGLProgramFromIds(gl, vertexSourceId, fragmentSourceId) 
 
   var vertexSourceEl = document.getElementById(vertexSourceId);
   var fragmentSourceEl = document.getElementById(fragmentSourceId);
-
+  console.log(57, vertexSourceEl.innerHTML)
   return createWebGLProgram(
     gl,
     vertexSourceEl.innerHTML,

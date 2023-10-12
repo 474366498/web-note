@@ -60,6 +60,7 @@ export const multiplyMatrices = function (a, b) {
   return result;
 }
 
+// 矩阵的乘法数组
 export const multiplyArrayOfMatrices = function (matrices) {
 
   var inputMatrix = matrices[0];

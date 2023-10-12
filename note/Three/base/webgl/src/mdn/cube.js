@@ -1,5 +1,5 @@
 
-
+// Define the data that is needed to make a 3d cube
 export const createCubeData = function () {
 
   var positions = [
@@ -67,7 +67,7 @@ export const createCubeData = function () {
     16, 17, 18, 16, 18, 19,   // right
     20, 21, 22, 20, 22, 23    // left
   ]
-
+  console.log(70, positions, colors, elements)
   return {
     positions: positions,
     elements: elements,
@@ -76,7 +76,7 @@ export const createCubeData = function () {
 }
 
 export const createBuffersForCube = function (gl, cube) {
-
+  console.log('cube.js', 79, cube)
   var positions = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positions);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(cube.positions), gl.STATIC_DRAW);
@@ -88,6 +88,7 @@ export const createBuffersForCube = function (gl, cube) {
   var elements = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, elements);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cube.elements), gl.STATIC_DRAW);
+  console.log(91, positions, colors, elements)
 
   return {
     positions: positions,

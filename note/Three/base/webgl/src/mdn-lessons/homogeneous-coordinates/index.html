@@ -24,35 +24,27 @@
   <!--
     The vertex shader operates on individual vertices in our model data by setting gl_Position.
   -->
-   <script id="vertex-shader" type="x-shader/x-vertex">
-    // Each point has a position and color
-    attribute vec3 position;
-    attribute vec4 color;
-    
-    // The transformation matrix
-    uniform mat4 model;
-
-    // Pass the color attribute down to the fragment shader
-    varying vec4 vColor;
+  <script id="vertex-shader" type="x-shader/x-vertex">
+    // The individual position vertex
+    attribute vec4 position;
 
     void main() {
       
-      //Pass the color down to the fragment shader
-      vColor = color;
-      
-      // Multiply the 
-      gl_Position = model * vec4(position, 1.0);
+      // the gl_Position is the final position in clip space after the vertex shader modifies it
+      gl_Position = position ;
     }
   </script>
 
-  <!-- The fragment shader determines the color of the final pixel by setting gl_FragColor -->
+  <!--
+    The fragment shader determines the color of the final pixel by setting gl_FragColor.
+    The range of values is from 0.0 to 1.0.
+  -->
   <script id="fragment-shader" type="x-shader/x-fragment">
     precision mediump float;
-    varying vec4 vColor;
+    uniform vec4 color;
     
     void main() {
-      gl_FragColor = vColor;
-			// gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+      gl_FragColor = color;
     }
   </script>
    <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/WebGL_API/WebGL_model_view_projection#%E9%BD%90%E6%AC%A1%E5%9D%90%E6%A0%87" target="_blank"> mdn WebGL model view projection </a> 

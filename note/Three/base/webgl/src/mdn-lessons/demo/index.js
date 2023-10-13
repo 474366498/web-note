@@ -104,7 +104,7 @@ CubeDemo.prototype.setupProgram = function () {
   this.locations.positions = gl.getAttribLocation(webglProgram, 'position')
   this.locations.color = gl.getAttribLocation(webglProgram, 'color')
 
-  console.log(107, gl, this.locations)
+  console.log(107, gl, this.locations, gl?.MIN || 'MIN')
   gl.enable(gl.DEPTH_TEST)
 
   return webglProgram

@@ -272,3 +272,14 @@
   #### compressedTexImage[23]D 
 
   #### compressedTexSubImage2D 
+
+
+
+
+
+
+
+
+
+
+

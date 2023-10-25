@@ -4,9 +4,9 @@ import * as T from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import gsap from 'gsap'
 import * as D from 'dat.gui'
-
-import vertex from '../shaders/water/vertex.glsl'
-import fragment from '../shaders/water/fragment.glsl'
+import { Water } from 'three/examples/jsm/objects/Water2'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 const gui = new D.GUI()
 
@@ -19,91 +19,73 @@ camera.updateProjectionMatrix()
 scene.add(camera)
 
 scene.add(new T.AxesHelper(5))
+/*
+const water = new Water(
+  new T.PlaneGeometry(4, 4, 2 ** 10, 2 ** 10),
+  {
+    color: 0xff0000,
+    textureWidth: 2 ** 10,
+    textureHeight: 2 ** 10,
+    flowDirection: new T.Vector2(3, 1),
+    flowSpeed: .05,
+    reflectivity: .03,
+    scale: .99
+  }
+)
 
+water.rotation.x = - Math.PI / 2
+scene.add(water)
+*/
 
-const params = {
-  uWaresFrequency: 10,  // 产品频率
-  uScale: .1,           // x 缩放比例
-  uXzScale: 1,          // x z缩放比例
-  uNoiseFrequency: 42,  // 噪声频率
-  uNoiseScale: 1.5,     // 噪音规模
-  uLowColor: '#ff0000',  // 低色
-  uHighColor: '#ffff00', // 高色
-  uXspeed: 2.2,         // x速度
-  uZspeed: 2.3,         // z速度
-  uNoiseSpeed: 2.56,     // 噪音速度
-  uOpacity: .56        // 透明度
-}
+const rgbeLoader = new RGBELoader()
+const gltfLoader = new GLTFLoader()
 
-const shaderMaterial = new T.ShaderMaterial({
-  vertexShader: vertex,
-  fragmentShader: fragment,
-  uniforms: {
-    uWaresFrequency: {
-      value: params.uWaresFrequency
-    },
-    uScale: {
-      value: params.uScale
-    },
-    uXzScale: {
-      value: params.uXzScale
-    },
-    uNoiseFrequency: {
-      value: params.uNoiseFrequency
-    },
-    uNoiseScale: {
-      value: params.uNoiseScale
-    },
-    uLowColor: {
-      value: new T.Color(params.uLowColor)
-    },
-    uHighColor: {
-      value: new T.Color(params.uHighColor)
-    },
-    uXspeed: {
-      value: params.uXspeed
-    },
-    uZspeed: {
-      value: params.uZspeed
-    },
-    uNoiseSpeed: {
-      value: params.uNoiseSpeed
-    },
-    uOpacity: {
-      value: params.uOpacity
-    },
-    uTime: {
-      value: params?.uTime | 1
-    }
-  },
-  side: T.DoubleSide,
-  transparent: true
+rgbeLoader.loadAsync('./assets/050.hdr').then(bg => {
+  bg.mapping = T.EquirectangularReflectionMapping
+  scene.background = bg
+  scene.environment = bg
+  onLoadGlb()
 })
 
-gui.add(params, 'uWaresFrequency').min(1).max(1e2).step(.1).onChange(val => onChangeMaterialUniforms('uWaresFrequency', val))
-gui.add(params, 'uScale').min(0).max(.2).step(.001).onChange(val => onChangeMaterialUniforms('uScale', val))
-gui.add(params, 'uXzScale').min(0).max(5).step(.1).onChange(val => onChangeMaterialUniforms('uXzScale', val))
-gui.add(params, 'uNoiseFrequency').min(1).max(1e2).step(.1).onChange(val => onChangeMaterialUniforms('uNoiseFrequency', val))
-gui.add(params, 'uNoiseScale').min(0).max(5).step(.001).onChange(val => onChangeMaterialUniforms('uNoiseScale', val))
-gui.add(params, 'uXspeed').min(0).max(5).step(.001).onChange(val => onChangeMaterialUniforms('uXspeed', val))
-gui.add(params, 'uZspeed').min(0).max(5).step(.001).onChange(val => onChangeMaterialUniforms('uZspeed', val))
-gui.add(params, 'uNoiseSpeed').min(0).max(5).step(.001).onChange(val => onChangeMaterialUniforms('uNoiseSpeed', val))
-gui.add(params, 'uOpacity').min(0).max(1).step(.001).onChange(val => onChangeMaterialUniforms('uOpacity', val))
+function onLoadGlb() {
+  gltfLoader.load('./assets/model/yugang.glb', glb => {
+    console.log(52, glb)
+    const yugang = glb.scene.children[0]
+    yugang.material.side = T.DoubleSide
 
-gui.addColor(params, 'uLowColor').onFinishChange(c => onChangeMaterialUniforms('uLowColor', new T.Color(c)))
-gui.addColor(params, 'uHighColor').onFinishChange(c => onChangeMaterialUniforms('uHighColor', new T.Color(c)))
-
-
-function onChangeMaterialUniforms(key, val) {
-  shaderMaterial.uniforms[key].value = val
+    const waterGeo = glb.scene.children[1].geometry
+    const water = new Water(waterGeo, {
+      color: 0xffffff,
+      textureWidth: 2 ** 10,
+      textureHeight: 2 ** 10,
+      flowDirection: new T.Vector2(3, 1),
+      flowSpeed: .05,
+      reflectivity: .03,
+      scale: 1.25
+    })
+    scene.add(yugang)
+    scene.add(water)
+  })
 }
 
 const plane = new T.Mesh(
-  new T.PlaneGeometry(4, 4, 2 ** 10, 2 ** 10),
-  shaderMaterial
+  new T.PlaneGeometry(2, 2),
+  new T.MeshBasicMaterial()
 )
-plane.rotation.x = - Math.PI / 2
+plane.position.set(0, -.03, 0)
+plane.rotation.x = -Math.PI / 2
 scene.add(plane)
+console.log(44, plane)
+
+
+
+
+
+const point = new T.PointLight(0xffffff)
+point.position.set(4, 4, 4)
+scene.add(point)
+
+scene.add(new T.PointLightHelper(point))
 
 
 
@@ -126,6 +108,8 @@ scene.add(plane)
 
 const webgl = new T.WebGLRenderer({ alpha: true, antialias: true })
 webgl.setSize(window.innerWidth, window.innerHeight)
+webgl.outputColorSpace = T.SRGBColorSpace
+// webgl.toneMapping = T.ACESFilmicToneMapping
 
 document.body.insertAdjacentElement('beforeend', webgl.domElement)
 
@@ -144,13 +128,11 @@ console.log(142, clock)
 
 function animate() {
   const t = clock.getElapsedTime()
-  shaderMaterial.uniforms.uTime.value = t
   requestAnimationFrame(animate)
   webgl.render(scene, camera)
 }
 
 animate()
-
 
 
 

@@ -95,7 +95,8 @@ void main () {
 
   float elevation = sin(modelPosition.x * uWaresFrequency + uXspeed*uTime ) * sin(modelPosition.z * uWaresFrequency * uXzScale + uZspeed*uTime) ;
 
-  elevation += -abs(cnoise(vec2(modelPosition.xz * uNoiseFrequency + uNoiseSpeed * uTime) ) ) ;
+  elevation += -abs(cnoise(vec2(modelPosition.xz * uNoiseFrequency + uNoiseSpeed * uTime) ) ) * uNoiseScale ;
+  elevation += -abs(cnoise(vec2(modelPosition.xz*uNoiseFrequency+uTime*uNoiseSpeed))) *uNoiseScale;
 
   vElevation = elevation ;
 

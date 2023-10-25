@@ -358,20 +358,9 @@ void main () {
   vec3 greenColor = vec3(1.0, 1.0 , 1.0) ;
   vec3 uvColor = vec3(uUv , 1.0) ;
   float strength = step(.9, sin(cnoise(uUv * 10.0 + uTime) * 20.0)) ;
-  vec3 mixColor = mix(greenColor , uvColor , strength) ;
+  vec3 mixColor = mix(greenColor , uvColor , strength) ;  // mix(颜色1 , 颜色2 , 强度)
 
   gl_FragColor = vec4(mixColor , 1.0) ;
-
-
-
-
-
-
-
-
-
-
-
 
 
 

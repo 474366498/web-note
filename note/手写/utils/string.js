@@ -43,3 +43,23 @@ function toCamel(str, flg = true) {
 }
 
 // log(toCamel('expand_list'))
+
+/** 自定义进制转换
+ * 
+ * @param {*} num 待转换的数字字符串
+ * @param {*} formBase 当前数字字符串进制 默认 16
+ * @param {*} toBase  目标字符串进制 默认10
+ * https://blog.csdn.net/weixin_53483257/article/details/122127525
+ */
+function convertBase(num, formBase = 16, toBase = 10) {
+  return parseInt(num, fromBase).toString(toBase)
+}
+
+/**
+ * 解 unicode 10进制编码
+ * @param {*} uniTen 10进制文字 通过 convertBase 转换
+ * https://www.jb51.net/article/76609.htm
+ */
+function uniCharCode(uniTen) {
+  return String.fromCharCode(uniTen)
+}

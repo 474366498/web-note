@@ -67,6 +67,12 @@ document.body.insertAdjacentElement('beforebegin', webgl.domElement)
 const controls = new OrbitControls(camera, webgl.domElement)
 controls.enableDamping = true
 
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  webgl.setSize(window.innerWidth, window.innerHeight)
+})
+
 function animate() {
   requestAnimationFrame(animate)
   webgl.render(scene, camera)

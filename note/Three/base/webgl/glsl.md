@@ -274,9 +274,14 @@ void main () {
 
 ##### 2.4.2 向量关系函数 
 
-|                         语法                          |               说明                  |
-|                       ------                         |              ------                 | 
-
+|                             语法                                            |               说明                  |
+|                           ------                                           |              ------                 | 
+| bvec lessThan(vec x , vec y) bvec lessThan(ivec x,ivec y)                  |  判断x < y  | 
+| bvec lessThanEqual(vec x ,vec y) bvec lessThanEqual(ivec x, ivec y)        |  判断x<=y   |
+| bvec greaterThan(vec x,vec y) bvec greaterThan(ivec x , ivec y)            |  判断x>y    | 
+| bvec greaterThanEqual(vec x,vec y) bvec greaterThanEqual(ivec x ,ivec y)   |  判断x>=y  | 
+| bvec equal(vec x , vec y) bvec equal(ivec x,ivec y) bvec equal(bvec x,bvec y) | 判断x==y | 
+| bvec notEqual(vec x ,vec y) bvec notEqual(ivec x , ivec y) bvec notEqual()
 
 
 

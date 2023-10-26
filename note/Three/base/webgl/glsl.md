@@ -32,6 +32,15 @@
 | sampler1DShader| 一维深度纹理句柄 | 
 | sampler2DShader| 二维深度纹理句柄 |
 
+``` glsl 
+// 指定数据所需的精度级别 
+
+precision highp float ; // 高精度32位
+precision mediump float ; // 中精度16位
+precision lowp float ; // 低精度8位
+
+```
+
 ### 2.1 内置变量
 #### 2.1.1.定点着色器
 
@@ -281,9 +290,29 @@ void main () {
 | bvec greaterThan(vec x,vec y) bvec greaterThan(ivec x , ivec y)            |  判断x>y    | 
 | bvec greaterThanEqual(vec x,vec y) bvec greaterThanEqual(ivec x ,ivec y)   |  判断x>=y  | 
 | bvec equal(vec x , vec y) bvec equal(ivec x,ivec y) bvec equal(bvec x,bvec y) | 判断x==y | 
-| bvec notEqual(vec x ,vec y) bvec notEqual(ivec x , ivec y) bvec notEqual()
+| bvec notEqual(vec x ,vec y) bvec notEqual(ivec x , ivec y) bvec notEqual(bvec x, bvec y) | 判断x!=y |
+| bool any(bvec x)                                                           | 判断x的元素是否有true | 
+| bool all(bvec x)                                                           | 判断x的元素是否全部为true | 
+| bool not(bvec x)                                                           | <!--TOTO--> |
 
+##### 2.4.3 Texture 查找函数
 
+|    字段类型      |                 代码或说明                 |
+|       ------   |                 --------             |                    
+|       代码      |   vec4 texture2D (sampler2D sampler, vec2 coord)   |
+|       代码      |   vec4 texture2D (sampler2D sampler, vec2 coord, float bias)   |
+|       代码      |   vec4 texture2DProj (sampler2D sampler, vec3 coord)   |
+|       代码      |   vec4 texture2DProj (sampler2D sampler, vec3 coord, float bias)   |
+|       代码      |   vec4 texture2DProj (sampler2D sampler, vec4 coord)   |
+|       代码      |   vec4 texture2DProj (sampler2D sampler, vec4 coord, float bias)   |
+|       代码      |   vec4 texture2DLod (sampler2D sampler, vec2 coord, float lod)   |
+|       代码      |   vec4 texture2DProjLod (sampler2D sampler, vec3 coord, float lod)   |
+|       代码      |   vec4 texture2DProjLod (sampler2D sampler, vec4 coord, float lod)  |
+|       说明      |  使用texture坐标coord来查找当前绑定到采样器的texture。对于函数名中含有Proj的函数来说，texture的坐标（coord.s,coord.t）会先除以coord的最后一个坐标。对于vec4这种变种来说，坐标的第三个元素直接被忽略。| 
 
-
-faceforward float eta)
+|    字段类型      |                 代码或说明                 |
+|       ------   |                 --------             |     
+|    代码         |   vec4 textureCube (samplerCube sampler, vec3 coord)   |
+|    代码         |   vec4 textureCube (samplerCube sampler, vec3 coord, float bias)  |
+|    代码         |   vec4 textureCubeLod (samplerCube sampler, vec3 coord, float lod)  |
+|    说明         |  使用coord这个坐标去查找当前绑定到采样器的cube map。coord的方向用来表示去查找cube map的哪一个二维平面。OpenGL说明书的2.0版本的3.8.6小节详细描述了这一点。 | 

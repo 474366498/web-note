@@ -190,7 +190,32 @@ for (int s = 0 ; s < 7 ; s++ ) {
 
 ### 2. 控制语句 
 > GLSL语言可使用if/else语句进行逻辑控制，语法和C语言一致 
-*** 去百度找找 *** 
+``` glsl 
+void main () {
+
+  float dist = distance(gl_PointCoord , vec2(.5)) ;
+  mat4 m = mat4(
+    255.0,0.0,0.0,255.0,
+    255.0,255.0,0.0,255.0,
+    0.0,255.0,0.0,255.0,
+    0.0,0.0,255.0,255.0  
+  ) ;
+  if(dist >= 0.0 && dist < .125 ) {
+    gl_FragColor = m[0] / 255.0 ;
+  }else if(dist >= .125 && dist < .25) {
+    gl_FragColor = m[1] / 255.0 ;
+  }else if(dist >= .25 && dist < .375) {
+    gl_FragColor = m[2] / 255.0 ;
+  }else if(dist >= .375 && dist < .5) {
+    gl_FragColor = m[3] / 255.0 ;
+  }else {
+    discard ;
+  }
+  
+}
+
+```
+
 
 ## 四 函数 
 ### 1. 自定义函数 

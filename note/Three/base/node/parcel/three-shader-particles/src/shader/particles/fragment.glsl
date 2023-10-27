@@ -2,7 +2,12 @@
 
 varying vec2 vUv;
 
-uniform sampler2D uTexture ;
+uniform sampler2D uTexture_5 ;
+uniform sampler2D uTexture_8 ;
+uniform sampler2D uTexture_9 ;
+
+varying float vImgIndex ;
+varying vec3 vColor ;
 
 void main () {
   
@@ -23,6 +28,7 @@ void main () {
   // vec4 textureColor = texture2D(uTexture,vec2(gl_PointCoord)) ;  // vec4 => rgba 4个参数
   // gl_FragColor = vec4(textureColor.gba, textureColor.a) ;
 
+  /*
   float dist = distance(gl_PointCoord , vec2(.5)) ;
   mat4 m = mat4x4(
     255.0,0.0,0.0,255.0,
@@ -41,6 +47,19 @@ void main () {
   }else {
     discard ;
   }
+  */
+
+  vec4 textureColor ;
+  if(vImgIndex == 0.0) {
+    textureColor = texture2D(uTexture_5,gl_PointCoord) ;
+  } else if(vImgIndex == 1.0) {
+    textureColor = texture2D(uTexture_8,gl_PointCoord) ;
+  }else {
+    textureColor = texture2D(uTexture_9,gl_PointCoord) ;
+  }
+  gl_FragColor = vec4(textureColor.rgb,textureColor.r) ;
+
+  // gl_FragColor = vec4(vColor,textureColor.r) ;
 
 
 }

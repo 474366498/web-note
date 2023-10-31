@@ -92,20 +92,6 @@ scene.add(new T.PointLightHelper(point))
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const webgl = new T.WebGLRenderer({ alpha: true, antialias: true })
 webgl.setSize(window.innerWidth, window.innerHeight)
 webgl.outputColorSpace = T.SRGBColorSpace

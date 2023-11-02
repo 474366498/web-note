@@ -105,7 +105,7 @@ export default class Fireworks {
       // console.log(105, bf)
       this.startAudio.setBuffer(bf)
       this.startAudio.setLoop(false)
-      this.startAudio.setVolume(.21)
+      this.startAudio.setVolume(.11)
       // this.startAudio.play()
     })
     let r = Math.floor(Math.random() * 4) + 1
@@ -113,10 +113,8 @@ export default class Fireworks {
       // console.log(109, bf)
       this.fireAudio.setBuffer(bf)
       this.fireAudio.setLoop(false)
-      this.fireAudio.setVolume(.21)
+      this.fireAudio.setVolume(.31)
     })
-
-
   }
   addScene(scene, camera) {
     scene.add(this.startPoint)

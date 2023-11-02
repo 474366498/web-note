@@ -15,7 +15,7 @@ const scene = new T.Scene()
 
 const camera = new T.PerspectiveCamera(75, window.innerWidth / window.innerHeight, .1, 1e3)
 camera.aspect = window.innerWidth / window.innerHeight
-camera.position.set(20, 50, 20)
+camera.position.set(40, 60, 40)
 camera.updateProjectionMatrix()
 scene.add(camera)
 
@@ -29,7 +29,7 @@ scene.add(spot)
 // scene.add(new T.SpotLightHelper(spot))
 
 const directional = new T.DirectionalLight(0xffffff, 1)
-directional.position.set(80, 1e2, 80)
+directional.position.set(1e2, 80, 1e2)
 scene.add(directional)
 // scene.add(new T.DirectionalLightHelper(directional))
 
@@ -43,6 +43,13 @@ rgbeLoader.loadAsync('./assets/2k.hdr').then(bg => {
 
 gltfLoader.load('./assets/model/newyears_min.glb', glb => {
   console.log(glb.scene)
+  glb.scene.traverse(item => {
+    if (item.geometry) {
+      // console.log(48, item.name, item.geometry)
+      item.geometry.scale(2, 2, 2)
+    }
+  })
+  // glb.scene.children[0].scale(T.Vector3(2))
   scene.add(glb.scene)
 
   const water = new Water(new T.PlaneGeometry(1e2, 1e2), {
@@ -114,7 +121,8 @@ document.body.insertAdjacentElement('beforeend', webgl.domElement)
 
 const controls = new OrbitControls(camera, webgl.domElement)
 console.log(27, controls)
-// controls.enableDamping = true
+controls.enableDamping = true
+controls.enableZoom = false
 controls.addEventListener('change', () => animate)
 
 window.addEventListener('resize', () => {
@@ -141,25 +149,29 @@ animate()
 
 // 设置创建烟花函数
 function createFireworks() {
-  for (let i = 0; i < 10; i++) {
+  let sum = 5 + Math.random() * 5
+  for (let i = 0; i < sum; i++) {
+    setTimeout(() => {
+      // console.log(154, i)
+      let color = `hsl(${Math.floor(Math.random() * 360)} , 100%, 80%)`
+      /**
+       x = (Math.random() - .5) * 300,
+          z = (Math.random() - .5) * 300,
+          y = (Math.random() * 60) + 5
+       */
+      let to = {
+        x: (Math.random() - .5) * 300,
+        z: - (Math.random() - .5) * 300,
+        y: 45 + Math.random() * 20
+      }
+      let from = Object.assign({}, to, { y: Math.random() * 3 / 10 })
+      // console.log(158, from)
+      // 随机生成颜色和烟花放的位置
+      let firework = new Fireworks(color, to, from)
+      firework.addScene(scene, camera)
+      fireworks && fireworks.push(firework)
+    }, i * 5e1 + Math.floor(5e1 * Math.random()));
 
-    let color = `hsl(${Math.floor(Math.random() * 360)} , 100%, 80%)`
-    /**
-     x = (Math.random() - .5) * 300,
-        z = (Math.random() - .5) * 300,
-        y = (Math.random() * 60) + 5
-     */
-    let to = {
-      x: (Math.random() - .5) * 300,
-      z: - (Math.random() - .5) * 300,
-      y: 45 + Math.random() * 20
-    }
-    let from = Object.assign({}, to, { y: Math.random() * 3 / 10 })
-    // console.log(158, from)
-    // 随机生成颜色和烟花放的位置
-    let firework = new Fireworks(color, to, from)
-    firework.addScene(scene, camera)
-    fireworks && fireworks.push(firework)
   }
 }
 

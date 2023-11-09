@@ -1,13 +1,5 @@
-// import sunImg from "./solarImg/sun.jpg"; //太阳
-// import mercuryImg from "./solarImg/mercury.jpg"; //水星
-// import venusImg from "./solarImg/venus.jpg"; //金星
-// import earthImg from "./solarImg/earth.jpg"; //地球
-// import marsImg from "./solarImg/mars.jpg"; //火星
-// import jupiterImg from "./solarImg/jupiter.jpg"; //木星
-// import saturnImg from "./solarImg/saturn.jpg"; //土星
-// import uranusImg from "./solarImg/uranus.jpg"; //天王星
-// import neptuneImg from "./solarImg/neptune.jpg"; //海王星
-// import plutoImg from "./solarImg/pluto.jpg"; //冥王星
+
+
 let sunSize = 200, mercurySize = 30, venusSize = 45, earthSize = 50,
   marsSize = 45, jupiterSize = 90, saturnSize = 80, uranusSize = 70,
   neptuneSize = 65, plutoSize = 40;
@@ -23,10 +15,10 @@ let sun = {
     revolution: "", temp: "5500℃", atmosphere: "氮气、氧气、氩气", msg: "太阳是在大约45.7亿年前在一个坍缩的氢分子云内形成。太阳是太阳系里唯一的恒星，是太阳系的中心天体。"
   }//描述
 };
-/*
+
 let mercury = {
   name: "水星",
-  mapImg: mercuryImg,
+  mapImg: './solarImg/mercury.jpg',
   size: mercurySize,
   position: [sunSize + mercurySize + 25, 0, 0],
   rotation: 0.001,
@@ -38,7 +30,7 @@ let mercury = {
 };
 let venus = {
   name: "金星",
-  mapImg: venusImg,
+  mapImg: './solarImg/venus.jpg',
   size: venusSize,
   position: [mercury.position[0] + mercurySize + venusSize + 25, 0, 0],
   rotation: 0.00025,
@@ -51,7 +43,7 @@ let venus = {
 };
 let earth = {
   name: "地球",
-  mapImg: earthImg,
+  mapImg: './solarImg/earth.jpg',
   size: earthSize,
   position: [venus.position[0] + venusSize + earthSize + 100, 0, 0],
   rotation: 0.05,
@@ -64,7 +56,7 @@ let earth = {
 };
 let mars = {
   name: "火星",
-  mapImg: marsImg,
+  mapImg: './solarImg/mars.jpg',
   size: marsSize,
   position: [earth.position[0] + earthSize + marsSize + 100, 0, 0],
   rotation: 0.05,
@@ -77,7 +69,7 @@ let mars = {
 };
 let jupiter = {
   name: "木星",
-  mapImg: jupiterImg,
+  mapImg: './solarImg/jupiter.jpg',
   size: jupiterSize,
   position: [mars.position[0] + marsSize + jupiterSize + 25, 0, 0],
   rotation: 0.14,
@@ -90,7 +82,7 @@ let jupiter = {
 };
 let saturn = {
   name: "土星",
-  mapImg: saturnImg,
+  mapImg: './solarImg/saturn.jpg',
   size: saturnSize,
   position: [jupiter.position[0] + jupiterSize + saturnSize + 80, 0, 0],
   rotation: 0.13,
@@ -103,7 +95,7 @@ let saturn = {
 };
 let uranus = {
   name: "天王星",
-  mapImg: uranusImg,
+  mapImg: './solarImg/uranus.jpg',
   size: uranusSize,
   position: [saturn.position[0] + saturnSize + uranusSize + 80, 0, 0],
   rotation: 0.11,
@@ -116,7 +108,7 @@ let uranus = {
 };
 let neptune = {
   name: "海王星",
-  mapImg: neptuneImg,
+  mapImg: './solarImg/neptune.jpg',
   size: neptuneSize,
   position: [uranus.position[0] + uranusSize + neptuneSize + 25, 0, 0],
   rotation: 0.12,
@@ -129,7 +121,7 @@ let neptune = {
 };
 let pluto = {
   name: "冥王星",
-  mapImg: plutoImg,
+  mapImg: './solarImg/pluto.jpg',
   size: plutoSize,
   position: [neptune.position[0] + neptuneSize + plutoSize + 25, 0, 0],
   rotation: 0.11,
@@ -140,7 +132,7 @@ let pluto = {
   }
 
 };
-*/
-// let planetList = [sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto];
-let planetList = [sun]
+
+let planetList = [sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto];
+// let planetList = [sun, mercury, venus]
 export default planetList;

@@ -6,6 +6,21 @@ tags:
 
 ### 项目中
 *** hexo-asset-image *** 
+> [解决hexo引用本地图片无法显示的问题](https://juejin.cn/post/7006594302604214280)
+> 在使用中 修改了 node_modules/hexo-asset-image/index.js 中src具体内容 
+
+```yml 
+  ...
+  ## 资源文件夹
+  post_asset_folder: true 
+  marked:
+    prependRoot: true
+    postAsset: true
+
+  ...
+
+``` 
+
 ``` javascript 
 'use strict';
 var cheerio = require('cheerio');
@@ -160,6 +175,8 @@ hexo d
 1. [在github上搭建个人独立博客](https://blog.csdn.net/tlb203/article/details/128619163)
 2. [利用Github DIY自己的个人博客](https://zhuanlan.zhihu.com/p/550709268)
 3. [hexo给文章插入图片、进行图片样式控制](https://blog.51cto.com/u_15477117/4919656)
+4. [hexo文件参数及其相关说明](https://www.jianshu.com/p/d1dedae4d970)
+5. [Hexo-Next 主题选择以及自定义配置](https://zhuanlan.zhihu.com/p/606484894?utm_id=0)
 
 # https://474366498.github.io/
 
@@ -177,5 +194,4 @@ hexo d
 然后重新 git push到你的仓库里面
 
 123
-
-
+ 

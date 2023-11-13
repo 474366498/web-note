@@ -42,7 +42,11 @@ precision lowp float ; // 低精度8位
 ```
 
 ### 2.1 内置变量
-#### 2.1.1.定点着色器
+#### 2.1.1.顶点着色器
+
+*** modelMatrix  模型矩阵                                               ***
+*** projectionMatrix  投影矩阵：一种线性代数中的变换矩阵，其对应的变换是投影。  ***
+*** viewMatrix 视图矩阵                                                 ***
 
 |      名称              |                  类型              |     描述                  |      
 |       ----            |                   ----            |           ----            |
@@ -63,6 +67,7 @@ precision lowp float ; // 低精度8位
 | gl_FogFragCoord       | float     | 雾坐标的varying输出 |
 
 #### 2.1.2.片段着色器 
+
 
 |      名称              |                  类型              |     描述                  |      
 |       ----            |                   ----            |           ----            |

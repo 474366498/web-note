@@ -1,6 +1,7 @@
 
 
 import * as T from 'three'
+import gsap from 'gsap'
 import camera from '../camera'
 
 export default class AlarmSprite {
@@ -8,11 +9,27 @@ export default class AlarmSprite {
   constructor(path = './textures/warning.png', position = { x: -4.2, y: 3.2, z: -1.2 }) {
     const textureLoader = new T.TextureLoader()
 
-    this.material = new T.SpriteMaterial({ map: textureLoader.load('./textures/warning.png') })
+    this.material = new T.SpriteMaterial({ map: textureLoader.load(path) })
 
     this.mesh = new T.Sprite(this.material)
 
     this.mesh.position.set(position.x, position.y, position.z)
+
+    gsap.to(this.mesh.scale, {
+      x: .75,
+      y: .75,
+      z: .75,
+      duration: 1,
+      ease: 'none',
+      repeat: -1,
+      yoyo: true,
+      onStart: () => {
+        console.log('start')
+      },
+      onComplete: () => {
+        console.log('end')
+      }
+    })
 
     this.fns = []
 
@@ -20,7 +37,7 @@ export default class AlarmSprite {
     this.mouse = new T.Vector2()
 
     window.addEventListener('click', event => {
-      console.log('window.click ')
+      // console.log('window.click ')
       if (this.fns.length < 1) return
       this.mouse.x = event.clientX / window.innerWidth * 2 - 1
       this.mouse.y = -(event.clientY / window.innerHeight * 2 - 1)

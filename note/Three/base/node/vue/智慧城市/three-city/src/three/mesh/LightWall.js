@@ -5,7 +5,7 @@ import gsap from 'gsap'
 import vertex from '@/shader/lightWall/vertex.glsl'
 import fragment from '@/shader/lightWall/fragment.glsl'
 
-console.log(8, vertex, fragment)
+// console.log(8, vertex, fragment)
 
 // 光墙
 export default class LightWall {
@@ -28,7 +28,7 @@ export default class LightWall {
     let { min, max } = this.mesh.geometry.boundingBox
 
     let uHeight = max.y - min.y
-    console.log(27, min, max, uHeight)
+    // console.log(27, min, max, uHeight)
 
     this.material.uniforms.uHeight = {
       value: uHeight

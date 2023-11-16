@@ -14,7 +14,7 @@ import createMesh from '@/three/createMesh'
 
 const sceneDiv = ref(null)
 var control = new controls(camera,webgl.domElement)
-console.log(11 , scene , camera , control )
+// console.log(11 , scene , camera , control )
 scene.add(camera)
 
 createMesh()

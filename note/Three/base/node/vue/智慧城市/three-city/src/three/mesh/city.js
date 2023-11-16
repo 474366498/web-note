@@ -16,7 +16,7 @@ const gLoader = new GLTFLoader()
 export default function createCity() {
   gLoader.load('./model/city.glb', gltf => {
 
-    console.log(10, gltf)
+    // console.log(10, gltf)
 
     gltf.scene.traverse(item => {
       if (item.type === 'Mesh') {
@@ -41,7 +41,7 @@ export default function createCity() {
 
     // 添加shader飞线
     const flyLineShader = new FlyLineShader()
-    console.log(41, flyLineShader)
+    // console.log(41, flyLineShader)
     scene.add(flyLineShader.mesh)
 
     // 添加光墙

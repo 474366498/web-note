@@ -46,4 +46,10 @@ export default class FlyLine {
     })
 
   }
+  remove() {
+    this.mesh.remove()
+    this.mesh.removeFromParent()
+    this.mesh.geometry.dispose()
+    this.mesh.material.dispose()
+  }
 }

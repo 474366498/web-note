@@ -16,7 +16,8 @@
     "three": "^0.158.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "webpack-glsl-loader": "^1.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-router": "~5.0.0",

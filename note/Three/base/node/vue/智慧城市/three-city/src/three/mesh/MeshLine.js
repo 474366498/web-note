@@ -9,4 +9,10 @@ export default class MeshLine {
     this.geometry = edges
     this.mesh = line
   }
+  remove() {
+    this.mesh.remove()
+    this.mesh.removeFromParent()
+    this.mesh.geometry.dispose()
+    this.mesh.material.dispose()
+  }
 }

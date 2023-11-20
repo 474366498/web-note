@@ -34,6 +34,7 @@ export default function createCity() {
 
     scene.add(gltf.scene)
 
+    /*
     // 添加飞线
     const flyLine = new FlyLine()
     // console.log(34, flyLine)
@@ -60,7 +61,7 @@ export default function createCity() {
     alarm.onClick(function (e) {
       console.log(61, e)
     })
-
+    */
   })
 
 }

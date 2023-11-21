@@ -3,7 +3,6 @@
 import * as T from 'three'
 import gsap from 'gsap'
 import camera from '../camera'
-import controls from '../controls'
 
 export default class AlarmSprite {
 

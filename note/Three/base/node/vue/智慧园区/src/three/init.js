@@ -1,9 +1,9 @@
 import webgl from "./webgl";
-import camera from "./camera";
+import Camera from "./camera";
 
 window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight
-  camera.updateProjectionMatrix()
+  Camera.active.aspect = window.innerWidth / window.innerHeight
+  Camera.active.updateProjectionMatrix()
 
   webgl.setSize(window.innerWidth, window.innerHeight)
 

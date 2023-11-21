@@ -8,3 +8,7 @@ var city
 export default function createMesh() {
   city = new City(scene)
 }
+
+export function updateMesh(time) {
+  city.update(time)
+}

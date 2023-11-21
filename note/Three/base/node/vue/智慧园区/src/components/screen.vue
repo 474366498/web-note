@@ -1,36 +1,52 @@
 <template>
     <section id="screen">
-      <div class="header">智慧城市</div>
+      <div class="header">智慧园区</div>
       <div class="main">
         <div class="left">
-          <div class="cityEvent" v-for="(item,key) in dataInfo" key="key">
-            <h3> <span>{{ item.name }}</span></h3>
+          <div class="cityEvent" >
+            <h3> <span>热气球运动轨迹</span></h3>
             <h1>
-              <img src="../assets/bg/bar.svg" class="icon" /> 
-              <span> {{ toFixInt(item.number) }} ({{ item.unit }})</span>
+              <label>
+                横穿
+                <input name="motionTrajectory" type="radio" value="0" @change="toggleAction(0)"/>
+              </label>
+              <label>
+                环绕
+                <input name="motionTrajectory" type="radio" value="1" @change="toggleAction(1)"/>
+              </label>
             </h1>
+            <div class="footerBorder"></div>
+          </div>
+          <div class="cityEvent">
+            <h3><span>相机切换</span></h3>
+            <h1><label> 默认<input name="camera" type="radio" value="" @change="toggleCamera('default')"></label></h1>
+            <h1><label> 车后方<input name="camera" type="radio" value="" @change="toggleCamera('carcamera_Orientation')"></label></h1>
+            <h1><label>驾驶员右侧 <input name="camera" type="radio" value="" @change="toggleCamera('rightcamera_Orientation')"></label></h1>
+            <div class="footerBorder"></div>
+
+          </div>
+
+          <div class="cityEvent">
+            <h3><span>控制器切换</span></h3>
+            <h1><label> 默认<input name="camera" type="radio" value="" @change="toggleControls('orbit')"></label></h1>
+
+            <h1><label>第一人物视觉 <input name="camera" type="radio" value="" @change="toggleControls('person')"></label></h1>
+            <h1><label> 飞行模式<input name="camera" type="radio" value="" @change="toggleControls('fly')"></label></h1>
+            <div class="footerBorder"></div>
+
           </div>
 
         </div>
 
-        <div class="right">
+        <!-- <div class="right">
           <div class="cityEvent list">
             <h3> <span> 事件列表</span></h3>
             <ul>
-              <li v-for="(item , i ) of eventList.list" key="i" :class="{active:currentActive == i}" @click="toggleActive(i)">
-                <h1> 
-                  <div> 
-                    <img class="icon" :src="imgs[item.name]" /> 
-                    <span>{{ item.name }}</span>
-                  </div>
-                  <span class="time">{{ item.time.slice(10,item.time.length ) }}</span>
-                </h1>
-                <p>{{ item.type }}</p>
-                <!-- <address style="color:yellow;">x:{{ item.position.x }} , z : {{ item.position.z }}</address> -->
-              </li>
+               
             </ul>
           </div>
-        </div>
+        </div> -->
+
       </div>
     </section>
 </template>
@@ -40,137 +56,21 @@ import * as T from 'three'
 import gsap from 'gsap'
 import { onMounted, reactive, ref, watch } from 'vue'
 
-import { getCityInfo, getCityList } from '@/api'
-
 import eventHub from '@/utils/eventHub'
-import {toFixInt , randomColor} from '@/utils/string'
-
-import scene from '@/three/scene'
-import AlarmSprite from '@/three/mesh/AlarmSprite';
-import LightWall from '@/three/mesh/LightWall';
-import FlyLineShader from '@/three/mesh/FlyLineShader';
-import LightRadar from '@/three/mesh/LightRadar'
 
 console.log(54,eventHub)
+ 
 
-const imgs = {
-  电力: require("@/assets/bg/dianli.svg"),
-  火警: require("@/assets/bg/fire.svg"),
-  治安: require("@/assets/bg/jingcha.svg"),
-};
-var dataInfo = reactive({
-  iot : { number : 0 } ,
-  event : { number : 0 } ,
-  power : { number : 0 } ,
-  test : { number : 0 } ,
-}),
-  eventList = reactive({list:[]}) 
-const currentActive = ref(null) 
-
-onMounted(async () => {
-  changeInfo()
-  changeList()
-  setInterval(() => {
-    changeInfo()
-    changeList()
-  }, 3e4);
-})
-
-const changeInfo = async () => {
-  const res = await getCityInfo() 
-  // console.log(27, res.data)
-  let data = res.data.data
-  for (let key in dataInfo) {
-    dataInfo[key].name = data[key].name
-    dataInfo[key].unit = data[key].unit
-    gsap.to(dataInfo[key], {
-      number: data[key].number,
-      duration : 1
-    })
-  }
-
+const toggleAction = e => {
+  console.log(50, e)
+  eventHub.emit('toggleAction',e)
+}, toggleCamera = key => {
+  console.log(68, key) 
+  eventHub.emit('toggleCamera',key)
+  }, toggleControls = key => {
+    console.log('toggleControls', key)
+  eventHub.emit('toggleControls',key)
 }
-
-const changeList = async () => {
-  let res = await getCityList() 
-  eventList.list = res.data.list
-  // console.log(80,res.data , eventList)
-}
-
-const eventMeshList = [] 
-const eventMap = {
-  火警: (position, index) => {
-    let color = (() => {
-      return new T.Color(1,
-        Math.random() * 4 / 10,
-        Math.random() * 4 / 10
-      ).getHex()
-    })()
-    console.log(110,color)
-    const lightWall = new LightWall(1, 2, position,2,color)
-    lightWall.eventIndex = index 
-    scene.add(lightWall.mesh) 
-    // console.log(100,lightWall)
-    eventMeshList.push(lightWall)
-  },
-  治安: (position, i) => {
-    let color = randomColor()
-    console.log(109,position)
-    const flyLine = new FlyLineShader(position,color)
-    flyLine.eventIndex = i 
-    scene.add(flyLine.mesh)
-    eventMeshList.push(flyLine)
-  },
-  电力: (position, i) => {
-    let color = randomColor()
-    let lightRadar = new LightRadar(2, position,color)
-    lightRadar.eventIndex = i 
-    scene.add(lightRadar.mesh)
-    eventMeshList.push(lightRadar)
-  }
-}
-
-watch(() => eventList.list, () => {
-  // console.log(90,eventList.list.length)  AlarmSprite
-  eventMeshList.forEach(item=>item.remove() )
-  eventList.list.forEach((item , i) => {
-    console.log(94, item)
-    let sprite = new AlarmSprite(item.name, item.position)
-    scene.add(sprite.mesh)
-    sprite.eventIndex = i 
-
-    sprite.onClick(() => {
-      console.log(136, item, i)
-      currentActive.value = i 
-      eventHub.emit('spriteClick',{event:item,i})
-    })
-
-    eventMeshList.push(sprite)
-    if (eventMap[item.name]) {
-      eventMap[item.name](item.position,i)
-    }
-  })
-})
-
-const toggleActive = i => {
-  currentActive.value = i 
-  updateControl(i)
-},
-updateControl = i => {
-  // console.log(153, eventMeshList)
-  eventMeshList.forEach(item => {
-    if (item.eventIndex === i) {
-      item.mesh.visible = true
-      console.log(156, item)
-      eventHub.emit('toggleActive', {item,i})
-    } else {
-      item.mesh.visible = false 
-    }
-  })
-}
-// const  toFixInt = num => {
-//   return num.toFixed(0)
-// }
 </script>
 
 <style scoped> 
@@ -221,6 +121,7 @@ updateControl = i => {
   flex-direction: column;
   align-items: center;
   padding: 0.4rem 0;
+  pointer-events: auto;
 }
 
 .right {
@@ -276,6 +177,7 @@ updateControl = i => {
   bottom: 0;
   bottom: 0;
   width: 3.5rem;
+  min-width:200px;
   height: 0.4rem;
 }
 .footerBorder::before {
@@ -315,6 +217,9 @@ h1 {
   justify-content: space-between;
   font-size: 0.3rem;
 }
+h1 label{
+  cursor:pointer;
+}
 h3 {
   color: #fff;
   display: flex;
@@ -337,6 +242,7 @@ h1 span.time {
 }
 .list h1 {
   padding: 0.1rem 0.3rem;
+  cursor:pointer;
 }
 .cityEvent.list ul {
   pointer-events: auto;

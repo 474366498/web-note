@@ -27,6 +27,12 @@ class ControlsModule {
     this.controls.enableDamping = true
     this.controls.maxPolarAngle = Math.PI / 2
     this.controls.minPolarAngle = 0
+    this.controls.target.copy({
+      x: -815,
+      y: 143.5,
+      z: 70
+    })
+    this.controls.update()
   }
 
   setPerson() {

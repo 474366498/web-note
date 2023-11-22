@@ -25,6 +25,8 @@ onMounted(() => {
   animation()
 })
 
+
+
 const clock = new T.Clock()
 // console.log(29999,controls)
 function animation() {

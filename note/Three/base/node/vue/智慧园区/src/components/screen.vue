@@ -32,6 +32,7 @@
 
             <h1><label>第一人物视觉 <input name="camera" type="radio" value="" @change="toggleControls('person')"></label></h1>
             <h1><label> 飞行模式<input name="camera" type="radio" value="" @change="toggleControls('fly')"></label></h1>
+            <h1><label> 舞蹈女孩<input name="camera" type="radio" value="" @change="toggleControls('girl')"></label></h1>
             <div class="footerBorder"></div>
 
           </div>

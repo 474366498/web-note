@@ -27,12 +27,6 @@ class ControlsModule {
     this.controls.enableDamping = true
     this.controls.maxPolarAngle = Math.PI / 2
     this.controls.minPolarAngle = 0
-    this.controls.target.copy({
-      x: -815,
-      y: 143.5,
-      z: 70
-    })
-    this.controls.update()
   }
 
   setPerson() {
@@ -49,6 +43,20 @@ class ControlsModule {
     this.controls = new FlyControls(Camera.active, webgl.domElement)
     this.controls.movementSpeed = 1e2
     this.controls.rollSpeed = Math.PI / 60
+  }
+
+  setGirl() {
+    this.name = 'OrbitControls'
+    this.controls = new OrbitControls(Camera.active, webgl.domElement)
+    this.controls.enableDamping = true
+    this.controls.maxPolarAngle = Math.PI / 2
+    this.controls.minPolarAngle = 0
+    this.controls.target.copy({
+      x: -815,
+      y: 143.5,
+      z: 70
+    })
+    this.controls.update()
   }
 
 }

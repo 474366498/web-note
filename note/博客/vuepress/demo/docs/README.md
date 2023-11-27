@@ -75,3 +75,5 @@ const bar = 'bar'
 ```
 :::
 ::::
+
+[guide](/guide)

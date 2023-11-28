@@ -1,6 +1,6 @@
 import * as T from 'three'
 
-const camera = new T.PerspectiveCamera(75, window.innerWidth / window.innerHeight, .1, 1e5)
+const camera = new T.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1e5)
 
 class CameraModule {
   constructor() {

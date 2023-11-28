@@ -14,7 +14,7 @@
         <div class="cityEvent" @click="showAll">
           <h3>
             <img class="icon" src="../assets/bg/bar.svg" alt="" />
-            <span> 厂房分层展开 </span>
+            <span> 厂房分层{{open ? '合并' :'展开'}} </span>
           </h3>
 
           <div class="footerBorder"></div>
@@ -87,7 +87,46 @@
 </template>
 
 <script setup>
-  
+import { ref } from 'vue'
+import eventHub from '@/utils/eventHub'
+console.log(92,eventHub)
+
+var open = ref(false) 
+
+  const showWall = () => {
+    console.log(91)
+    eventHub.emit('showWall')
+  },
+  showAll = () => {
+    if (open.value) {
+      open.value = false 
+      eventHub.emit('hideAll')
+    } else {
+      open.value = true
+      eventHub.emit('showAll')
+    }
+  },
+  showFloor1 = () => {
+    eventHub.emit('showFloor1')
+  },
+  showFloor2 = () => {
+    eventHub.emit('showFloor2')
+  },
+  flatFighter = () => {
+    eventHub.emit('flatFighter')
+  },
+  recoverFighter = () => {
+    eventHub.emit('recoverFighter')
+  },
+  pointsFighter = () => {
+    eventHub.emit('pointsFighter')
+  },
+  pointsBlast = () => {
+    eventHub.emit('pointsBlast')
+  },
+  pointsBack = () => {
+    eventHub.emit('pointsBack')
+  }
 </script>
 
 <style scoped>
@@ -96,7 +135,6 @@
   height: 100vh;
   position: fixed;
   z-index: 100;
-
   left: 0;
   top: 0;
   pointer-events: none;
@@ -157,6 +195,7 @@
   background-image: url(@/assets/bg/bg_img03.png);
   background-repeat: repeat;
   pointer-events: auto;
+  cursor: pointer;
 }
 
 .cityEvent::before {

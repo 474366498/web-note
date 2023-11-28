@@ -47,6 +47,8 @@ precision lowp float ; // 低精度8位
 *** modelMatrix  模型矩阵                                               ***
 *** projectionMatrix  投影矩阵：一种线性代数中的变换矩阵，其对应的变换是投影。  ***
 *** viewMatrix 视图矩阵                                                 ***
+> gl_Position =   projectionMatrix *  viewMatrix *  modelMatrix * vec4(position,1.0) ;
+
 
 |      名称              |                  类型              |     描述                  |      
 |       ----            |                   ----            |           ----            |

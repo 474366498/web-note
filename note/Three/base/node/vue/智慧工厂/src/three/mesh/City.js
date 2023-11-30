@@ -228,9 +228,11 @@ export default class City {
     })
     eventHub.on('pointsBlast', () => {
       console.log('pointsBlast')
+      this.pointsBlast()
     })
     eventHub.on('pointsBack', () => {
       console.log('pointsBack')
+      this.pointsBack()
     })
 
   }
@@ -271,6 +273,9 @@ export default class City {
                 },
                 uTexture: {
                   value: texture
+                },
+                uTime: {
+                  value: 0
                 }
               },
               vertexShader: vertex,
@@ -306,5 +311,43 @@ export default class City {
     // })
 
     return group
+  }
+
+  pointsBlast() {
+    if (!this.fighterPointsGroup) {
+      this.fighterPointsGroup = this.transformPoints()
+      this.scene.add(this.fighterPointsGroup)
+    }
+    this.fighterPointsGroup.traverse(child => {
+      if (child.isPoints) {
+        let count = child.geometry.attributes.position.count,
+          pointPositionArray = new Float32Array(count * 3)
+        for (let i = 0; i < count; i++) {
+          pointPositionArray[3 * i] = (Math.random() * 4 - 2) * 1e2
+          pointPositionArray[3 * i + 1] = (Math.random() * 4) * 1e2
+          pointPositionArray[3 * i + 2] = -(Math.random() * 4) * 1e2
+        }
+        child.geometry.setAttribute('aPosition', new T.BufferAttribute(pointPositionArray, 3))
+
+        gsap.to(child.material.uniforms.uTime, {
+          value: 10,
+          duration: 10
+        })
+
+      }
+    })
+  }
+
+  pointsBack() {
+    if (!this.fighterPointsGroup) return
+
+    this.fighterPointsGroup.traverse(child => {
+      if (child.isPoints) {
+        gsap.to(child.material.uniforms.uTime, {
+          value: 0,
+          duration: 5
+        })
+      }
+    })
   }
 }

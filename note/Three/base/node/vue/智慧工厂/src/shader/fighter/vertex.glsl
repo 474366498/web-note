@@ -12,6 +12,7 @@ void main () {
   vec3 targetPosition = currentPosition.xyz + direction * .1 * uTime ;
   vec4 vPosition = viewMatrix * vec4(targetPosition , 1.0) ;
   gl_Position = projectionMatrix * vPosition ;
-  gl_PointSize = .2 ; 
+  gl_PointSize = -200.0 / vPosition.z ;  
+  // aPosition.z 0 ~ -400 
 
 }

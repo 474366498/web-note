@@ -64,6 +64,7 @@ function init() {
   controls.enableZoom = true
 
   window.addEventListener('resize', onWindowResize)
+  console.log(67, webgl)
 
 }
 

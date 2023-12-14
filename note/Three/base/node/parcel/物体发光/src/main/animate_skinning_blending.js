@@ -304,8 +304,9 @@ const setCrossFadeDuration = (defaultDuration) => {
 
 function onWindowResize() {
 
-
-
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  webgl.setSize(window.innerWidth, window.innerHeight)
 
 }
 

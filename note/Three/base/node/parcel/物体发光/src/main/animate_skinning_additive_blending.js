@@ -10,22 +10,30 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 var scene, webgl, camera, stats, controls, model, animations, skeleton, mixer, clock
 
 const crossFadeControls = []
+let currentBaseAction = 'idle'
+const allActions = []
+const baseActions = {
+  idle: { weight: 1 },
+  walk: { weight: 0 },
+  run: { weight: 0 },
+},
+  additiveActions = {
+    sneak_pose: { weight: 0 },
+    sad_pose: { weight: 0 },
+    agree: { weight: 0 },
+    headShake: { weight: 0 },
+  }
+var panelSettings, numAnimations
 
-var idleAction, walkAction, runAction
-var idleWeight, walkWeight, runWeight
 
-var actions, settings
-
-let singleStepMode = false, sizeOfNextStep = 0
 
 init()
 animate()
 
 function init() {
 
-  camera = new T.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1e3)
-  camera.position.set(1, 2, -3)
-  camera.lookAt(0, 1, 0)
+  camera = new T.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1e2)
+  camera.position.set(-1, 2, 3)
 
   clock = new T.Clock()
 
@@ -47,31 +55,9 @@ function init() {
   scene.add(mesh)
 
   const loader = new GLTFLoader()
-  loader.load('./model/Soldier.glb', gltf => {
+  loader.load('./model/Xbot.glb', gltf => {
     console.log(51, gltf)
-    model = gltf.scene
-    animations = gltf.animations
-    scene.add(model)
 
-    model.traverse(obj => {
-      if (obj.isMesh) obj.castShadow = true
-    })
-
-    skeleton = new T.SkeletonHelper(model)
-    skeleton.visible = false
-    scene.add(skeleton)
-
-    createPanel()
-
-    mixer = new T.AnimationMixer(model)
-
-    idleAction = mixer.clipAction(animations[0])
-    walkAction = mixer.clipAction(animations[3])
-    runAction = mixer.clipAction(animations[1])
-
-    actions = [idleAction, walkAction, runAction]
-
-    activateAllActions()
 
 
 
@@ -95,6 +81,9 @@ function init() {
   window.addEventListener('resize', onWindowResize)
 
   controls = new OrbitControls(camera, webgl.domElement)
+  controls.enablePan = false
+  controls.enableZoom = false
+  controls.target.set(0, 1, 0)
 
 }
 
@@ -106,7 +95,7 @@ function addLights() {
   scene.add(new T.HemisphereLightHelper(hemiLight))
 
   const dirLight = new T.DirectionalLight(0xffffff)
-  dirLight.position.set(-3, 10, -10)
+  dirLight.position.set(3, 10, 10)
   dirLight.castShadow = true
   dirLight.shadow.camera.top = 2;
   dirLight.shadow.camera.bottom = - 2;

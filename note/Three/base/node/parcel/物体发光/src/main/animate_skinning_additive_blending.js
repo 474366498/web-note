@@ -7,8 +7,8 @@ import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-var scene, webgl, camera, stats, controls, model, animations, skeleton, mixer, clock
-
+var scene, webgl, camera, stats, controls, model, skeleton, clock
+var animations, numAnimations, mixer
 const crossFadeControls = []
 let currentBaseAction = 'idle'
 const allActions = []
@@ -23,12 +23,12 @@ const baseActions = {
     agree: { weight: 0 },
     headShake: { weight: 0 },
   }
-var panelSettings, numAnimations
+var panelSettings
 
 
 
 init()
-animate()
+// animate()
 
 function init() {
 
@@ -57,13 +57,52 @@ function init() {
   const loader = new GLTFLoader()
   loader.load('./model/Xbot.glb', gltf => {
     console.log(51, gltf)
+    model = gltf.scene
+    scene.add(model)
 
+    model.traverse(obj => {
+      obj.isMesh && (obj.castShadow = true)
+    })
 
+    skeleton = new T.SkeletonHelper(model)
+    skeleton.visible = true
+    scene.add(skeleton)
 
+    animations = gltf.animations,
+      numAnimations = animations.length,
+      mixer = new T.AnimationMixer(model)
+
+    for (let i = 0; i !== numAnimations; ++i) {
+      let clip = animations[i],
+        name = clip.name
+
+      if (baseActions[name]) {
+        const action = mixer.clipAction(clip)
+        activateAction(action)
+        baseActions[name].action = action
+        allActions.push(action)
+      } else if (additiveActions[name]) {
+        // Make the clip additive and remove the reference frame    使剪辑添加，并删除参考框架
+        T.AnimationUtils.makeClipAdditive(clip)
+
+        if (clip.name.endsWith('_pose')) {
+          clip = T.AnimationUtils.subclip(clip, clip.name, 2, 3, 30)
+        }
+
+        const action = mixer.clipAction(clip)
+        activateAction(action)
+        additiveActions[name].action = action
+        allActions.push(action)
+
+      }
+
+    }
+
+    console.log(101, additiveActions, allActions)
+    createPanel()
+    animate()
 
   })
-
-
 
 
   webgl = new T.WebGLRenderer({
@@ -82,10 +121,13 @@ function init() {
 
   controls = new OrbitControls(camera, webgl.domElement)
   controls.enablePan = false
-  controls.enableZoom = false
+  controls.enableZoom = true
   controls.target.set(0, 1, 0)
 
 }
+
+
+
 
 function addLights() {
   scene.add(new T.GridHelper(4e2, 5e1, 0xff0000, 0xffff00))
@@ -108,30 +150,174 @@ function addLights() {
 
 }
 
+function activateAction(action) {
+  console.log(154, action)
+  const clip = action.getClip()
+  const settings = baseActions[clip.name] || additiveActions[clip.name]
+  setWeight(action, settings.weight)
+  action.play()
+
+}
+
+function setWeight(action, weight) {
+  action.enabled = true
+  action.setEffectiveTimeScale(1)
+  action.setEffectiveWeight(weight)
+}
+
+
 function createPanel() {
 
   const panel = new GUI({ width: 320 })
 
+  const f1 = panel.addFolder('Base Actions'),
+    f2 = panel.addFolder('Additive Action Weights'),
+    f3 = panel.addFolder('General Speed')
 
+  panelSettings = {
+    'modify time scale': 1
+  }
 
+  // "None", "idle", "walk", "run" 
+  const baseNames = ['None', ...Object.keys(baseActions)]
 
+  console.log(185, baseNames)
+  for (let i = 0; i < baseNames.length; i++) {
+    const name = baseNames[i],
+      settings = baseActions[name]
+
+    panelSettings[name] = function () {
+      const currentSettings = baseActions[currentBaseAction],
+        currentAction = currentSettings ? currentSettings.action : null,
+        action = settings ? settings.action : null
+
+      if (currentAction !== action) {
+        prepareCrossFade(currentAction, action, .35)
+      }
+    }
+
+    crossFadeControls.push(f1.add(panelSettings, name))
+
+  }
+
+  for (const name of Object.keys(additiveActions)) {
+    const settings = additiveActions[name]
+    panelSettings[name] = settings.weight
+    // sneak_pose sad_pose  agree  headShake  摇头   偷偷的姿势 悲伤的姿势  agree
+    f2.add(panelSettings, name, 0, 1, .01).listen().onChange(w => {
+      console.log(209, name, w)
+      setWeight(settings.action, w)
+      settings.weight = w
+    })
+  }
+
+  f3.add(panelSettings, 'modify time scale', 0, 2, .01).onChange(modifyTimeScale)
+
+  crossFadeControls.forEach(control => {
+    control.setInactive = function () {
+      control.domElement.classList.add('control-inactive')
+    }
+    control.setActive = function () {
+      control.domElement.classList.add('control-inactive')
+    }
+    const settings = baseActions[control.property]
+    if (!settings || !settings.weight) {
+      control.setInactive()
+    }
+  })
+
+  console.log(231, f1, f2, f3, panelSettings, crossFadeControls)
 }
 
-function activateAllActions() {
+// createPanel start
+const prepareCrossFade = (sAction, eAction, duration) => {
+  // If the current action is 'idle', execute the crossfade immediately;  else wait until the current action has finished its current loop      如果当前操作处于空闲状态，则立即执行crossfade，否则等待当前操作完成其当前循环
+  debugger
+  console.log(237, sAction, eAction, duration)
+  if (currentBaseAction === 'idle' || !sAction || !eAction) {
+    executeCrossFade(sAction, eAction, duration)
+  } else {
+
+    synchronizeCrossFade(sAction, eAction, duration)
+  }
+
+  if (eAction) {
+    const clip = eAction.getClip()
+    currentBaseAction = clip.name
+  } else {
+    currentBaseAction = 'None'
+  }
+
+  crossFadeControls.forEach(control => {
+    let name = control.property
+
+    if (name === currentBaseAction) {
+      control.setActive()
+    } else {
+      control.setInactive()
+    }
+
+  })
+
+},
+
+  executeCrossFade = (sAction, eAction, duration) => {
+    // Not only the start action, but also the end action must get a weight of 1 before fading (concerning the start action this is already guaranteed in this place)    不仅是开始动作，结束动作也必须在开始动作衰落之前获得1的权重，这在这里已经得到了保证
+    if (eAction) {
+      setWeight(eAction, 1)
+      eAction.time = 0
+      if (sAction) {
+        // Crossfade with warping      交叉褪色与翘曲
+        sAction.crossFadeTo(eAction, duration, true)
+      } else {
+        // Fade in 
+        eAction.fadeIn(duration)
+      }
+    } else {
+      sAction.fadeOut(duration)
+    }
+
+  },
+  synchronizeCrossFade = (sAction, eAction, duration) => {
+    mixer.addEventListener('loop', onLoopFinished)
+    function onLoopFinished(event) {
+      console.log(283, mixer, event)
+      if (event.action === sAction) {
+        mixer.removeEventListener('loop', onLoopFinished)
+        executeCrossFade(sAction, eAction, duration)
+      }
+    }
+  },
+  modifyTimeScale = (speed) => {
+    mixer.timeScale = speed
+  }
+
+// createPanel end  
 
 
-
-}
 
 function onWindowResize() {
-
-
-
+  let w = window.innerWidth, h = window.innerHeight
+  camera.aspect = w / h
+  camera.updateProjectionMatrix()
+  webgl.setSize(w, h)
 
 }
 
 function animate() {
   requestAnimationFrame(animate)
+
+  for (let i = 0; i !== numAnimations; i++) {
+    const action = allActions[i],
+      clip = action.getClip(),
+      settings = baseActions[clip.name] || additiveActions[clip.name]
+    settings.weight = action.getEffectiveWeight()
+  }
+  // debugger
+  const d = clock.getDelta()
+  mixer.update(d)
+  stats.update()
+
   webgl.render(scene, camera)
 }
 

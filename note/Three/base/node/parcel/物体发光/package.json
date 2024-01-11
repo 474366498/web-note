@@ -22,6 +22,7 @@
     "echarts": "^5.4.3",
     "geojson-decoder": "^1.0.1",
     "gsap": "^3.9.1",
+    "jquery": "^3.7.1",
     "three": "^0.137.5"
   }
 }

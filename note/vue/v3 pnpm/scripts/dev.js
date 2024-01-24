@@ -29,4 +29,4 @@ async function build(target) {
 
 }
 
-build('shared')  
+build('reactivity')  

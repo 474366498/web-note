@@ -80,9 +80,9 @@ interface El {
 }
 
 class CustomElement extends HTMLElement {
-  private name
-  private cname
-  public props
+  private name: string
+  private cname: string
+  public props: { title: { type: StringConstructor; default: string } }
   public innerText
   constructor() {
     super()

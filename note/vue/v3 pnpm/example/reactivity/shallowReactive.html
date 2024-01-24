@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script type="text/javascript" src="../../packages/reactivity/dist/reactivity.global.js"></script>
+  <script type="module">
+    const { shallowReactive } = VueReactivity 
+    
+    let r = shallowReactive({ 
+      name:'cc',
+      age:55,
+      obj:{s:444},
+      list:[1,2,3,4] , 
+      set:new Set(['1',2,3,'4',]),
+      map:new Map([
+        ['a',{a:'1'}],
+        ['b',{b:'2'}]
+      ]  )  
+    })
+
+    console.log(15,r)
+
+    // r.name = 'ww'  // target is shallow
+    r.obj.s = 999 
+    r.obj = { a : 123}
+    r.list.push(5)
+    r.set.add('6')
+    r.set.delete(2)
+    r.map.set('c',{c:'3'})
+    // r.map.delete('b')  // deleteProperty
+    // console.log('html' ,33 , 'ee' in r ) // has
+    // console.log(34,'ownKeys:',Object.keys(r))
+
+    console.log(31,r , r.map )
+
+  </script>
+
+</body>
+</html>

@@ -22,6 +22,7 @@ async function run(dirs, buildFn) {
   return result
 }
 
+
 async function build(target) {
   // execa  -c 执行rollup 环境配置
   console.log('build', target)

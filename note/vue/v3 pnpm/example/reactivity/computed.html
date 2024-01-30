@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script type="text/javascript" src="../../packages/reactivity/dist/reactivity.global.js"></script>
+  <script type="module">
+    const { computed , effect , reactive  , toRefs } = VueReactivity 
+    
+    let obj = reactive({ 
+      name:'cc',
+      age:55,
+      obj:{s:444},
+      list:[1,2,3,4] , 
+      set:new Set(['1',2,3,'4',]),
+      map:new Map([
+        ['a',{a:'1'}],
+        ['b',{b:'2'}]
+      ]  )  
+    }) 
+
+    // let list = toRef(obj,'list')
+    // list.value.push(5)
+
+    let { name , age , list} = toRefs(obj)
+    // let c = computed(()=>{
+    //   return name.value +''+ age.value
+    // })
+
+    // let c = computed({
+    //   get : () => {
+    //     return age.value + 10 
+    //   },
+    //   set : () => {
+    //     return age.value - 10
+    //   }
+    // })
+
+
+    let c = computed({
+      get : () => {
+        return age.value + 10 
+      },
+      set : () => {
+        return age.value - 10
+      }
+    },{
+      onTrack (e) {
+        console.log(52,e)
+      },
+      onTrigger(e) {
+        console.log(55,e)
+      }
+    })
+    c.value = 115
+    console.log(31, name ,  c) 
+
+
+    console.log(62,obj.age , age.value)
+  </script>
+
+</body>
+</html>

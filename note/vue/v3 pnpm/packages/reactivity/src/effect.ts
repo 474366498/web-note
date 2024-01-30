@@ -68,10 +68,13 @@ export class ReactiveEffect<T = any> {
     public scheduler: EffectScheduler | null = null,
     scope?: EffectScope
   ) {
+    debugger
+    console.log(this.fn, this.scheduler, scope)
     recordEffectScope(this, scope)
   }
 
   run() {
+    debugger
     if (!this.active) {
       return this.fn()
     }
@@ -134,6 +137,52 @@ function cleanupEffect(effect: ReactiveEffect) {
     deps.length = 0
   }
 }
+
+export interface DebuggerOptions {
+  onTrigger?: () => void
+  onTrack?: () => void
+}
+
+export interface ReactiveEffectOptions extends DebuggerOptions {
+  lazy?: boolean
+  scheduler?: EffectScheduler   // 程序机，调度机
+  scope?: EffectScope  // 范围，领域 
+  allowRecurse?: boolean
+  onStop?: () => void
+}
+
+export interface ReactiveEffectRunner<T = any> {
+  (): T
+  effect: ReactiveEffect
+}
+
+export function effect<T = any>(fn: () => T, options?: ReactiveEffectOptions): ReactiveEffectRunner {
+  console.log(fn, options)
+  debugger
+  if ((fn as ReactiveEffectRunner).effect) {
+    fn = (fn as ReactiveEffectRunner).effect.fn
+  }
+  const _effect = new ReactiveEffect(fn)
+  if (options) {
+    extend(_effect, options)
+    if (options.scope) recordEffectScope(_effect, options.scope)
+  }
+
+  if (!options || !options.lazy) {
+    _effect.fn()
+  }
+  const runner = _effect.run.bind(_effect) as ReactiveEffectRunner
+  runner.effect = _effect
+  return runner
+}
+
+
+
+
+
+
+
+
 
 export let shouldTrack = true
 const trackStack: boolean[] = []

@@ -1,12 +1,12 @@
-import { IfAny, hasChanged } from "@vue/shared"
+import { IfAny, hasChanged, isArray } from "@vue/shared"
 import { Dep, createDep } from "./dep"
-import { isReadonly, isShallow, toRaw, toReactive } from "./reactive"
+import { isProxy, isReactive, isReadonly, isShallow, toRaw, toReactive } from "./reactive"
 import { activeEffect, shouldTrack, trackEffects, triggerEffects } from "./effect"
 import { TrackOpTypes, TriggerOpTypes } from "./operations"
 import { CollectionTypes } from "./collectionHandlers"
 
 
-
+const { warn } = console
 
 
 
@@ -122,17 +122,88 @@ class RefImpl<T> {
 }
 
 
-export type ToRefs<T = any> = {
-  [K in keyof T]: ToRef<T[K]>
+export function triggerRef(ref: Ref) {
+  triggerRefValue(ref, ref.value)
+}
+
+export function unref<T>(ref: T | Ref<T>): T {
+  return isRef(ref) ? (ref as Ref).value : ref
+}
+
+
+
+export type ShallowUnwrapRef<T> = {
+  [K in keyof T]: T[K] extends Ref<infer V>
+  ? V
+  : T[K] extends Ref<infer V> | undefined
+  ? unknown extends V
+  ? undefined
+  : V | undefined
+  : T[K]
+}
+
+const shallowUnwrapHandlers: ProxyHandler<any> = {
+  get: (target, key, receiver) => unref(Reflect.get(target, key, receiver)),
+  set: (target, key, value, receiver) => {
+    debugger
+    const oldVal = target[key]
+    if (isRef(oldVal) && !isRef(value)) {
+      oldVal.value = value
+      return true
+    } else {
+      return Reflect.set(target, key, value, receiver)
+    }
+  }
+}
+
+export function proxyRefs<T extends object>(objectWithRefs: T): ShallowUnwrapRef<T> {
+  return isReactive(objectWithRefs) ? objectWithRefs : new Proxy(objectWithRefs, shallowUnwrapHandlers)
 }
 
 
 
 
 
+export type ToRefs<T = any> = {
+  [K in keyof T]: ToRef<T[K]>
+}
+
+export function toRefs<T extends object>(object: T): ToRefs<T> {
+  if (!isProxy(object)) {
+    warn(`toRefs() expects a reactive object but received a plain one.`);
+  }
+  const ret: any = isArray(object) ? new Array(object.length) : {}
+  for (const key in object) {
+    ret[key] = toRef(object, key)
+  }
+  return ret
+}
+
 
 export type ToRef<T> = IfAny<T, Ref<T>, [T] extends [Ref] ? T : Ref<T>>
 
+export function toRef<T extends object, K extends keyof T>(object: T, key: K): ToRef<Exclude<T[K], undefined>>
+export function toRef<T extends object, K extends keyof T>(object: T, key: K, defaultValue: T[K]): ToRef<Exclude<T[K], undefined>>
+export function toRef<T extends object, K extends keyof T>(object: T, key: K, defaultValue?: T[K]): ToRef<T[K]> {
+  const val = object[key]
+  return isRef(val) ? val : (new ObjectRefImpl(object, key, defaultValue) as any)
+}
+
+class ObjectRefImpl<T extends object, K extends keyof T> {
+  public readonly __v_isRef = true
+
+  constructor(private readonly _object: T, private readonly _key: K, private readonly _defaultValue: T[K]) {
+
+  }
+
+  get value() {
+    const val = this._object[this._key]
+    return val === undefined ? (this._defaultValue as T[K]) : val
+  }
+  set value(newV) {
+    this._object[this._key] = newV
+  }
+}
 
 
 

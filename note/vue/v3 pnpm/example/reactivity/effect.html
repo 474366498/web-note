@@ -8,12 +8,9 @@
 <body>
   <script type="text/javascript" src="../../packages/reactivity/dist/reactivity.global.js"></script>
   <script type="module">
-    const { ref , effect , reactive  , toRefs , proxyRefs } = VueReactivity 
-    let r = ref({
-      name:'cc',
-      age:55,
-    })
-    let obj = proxyRefs({ 
+    const { effect , reactive  , toRefs } = VueReactivity 
+    
+    let obj = reactive({ 
       name:'cc',
       age:55,
       obj:{s:444},
@@ -25,8 +22,22 @@
       ]  )  
     }) 
 
-    obj.name = 'www'
-    console.log(62,r, obj , obj.name )
+    // let list = toRef(obj,'list')
+    // list.value.push(5)
+
+    let { name , list} = toRefs(obj)
+    effect(()=>{
+      name.value = 'ww'
+      list.value.push(5)
+      effect(()=>{
+        list.value.push(6)
+        
+      },{lazy:true })
+    },{scope:{id:'out'}})
+    console.log(31, name ,  list)
+        setTimeout(() => {
+          console.log(34,list.value)
+        }, 9e3);
   </script>
 
 </body>

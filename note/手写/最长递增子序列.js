@@ -27,7 +27,7 @@ console.log(24, getSequence(array))  // [2,3,7，8,9]  => [ 0, 1, 2, 5, 7 ]
 */
 
 
-// 最长递增子序列 不符合 vue3 diff 算法
+// 最长子序列 不符合 vue3 diff 算法
 function getSequence(arr) {
   let len = arr.length
 

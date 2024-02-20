@@ -29,4 +29,6 @@ async function build(target) {
 
 }
 
-build('reactivity')  
+// build('reactivity')
+build('runtime-dom')
+build('runtime-core')  

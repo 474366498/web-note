@@ -124,7 +124,7 @@ function getSequenceV(arr) {
 
 console.log(69, getSequence(array), getSequenceV(array))
 
-console.log(getSequence([2, 3, 1, 5, 6, 8, 7, 9, 4]), getSequenceV([2, 3, 1, 5, 6, 8, 7, 9, 4]))
+console.log(getSequence([2, 1, 3, 5, 6, 8, 7, 9, 4]), getSequenceV([2, 1, 3, 5, 6, 8, 7, 9, 4]))
 
 
 

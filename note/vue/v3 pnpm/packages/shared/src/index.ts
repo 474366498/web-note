@@ -7,6 +7,21 @@ export {
   IfAny
 } from './typeUtils'
 
+export {
+  isSpecialBooleanAttr,
+  isBooleanAttr,
+  includeBooleanAttr
+} from './domAttrConfig'
+
+
+export {
+  normalizeClass,
+  normalizeProp,
+  normalizeStyle
+} from './normalizeProp'
+
+
+export { ShapeFlags } from './shapeFlags'
 
 // 空对象
 export const EMPTY_OBJ: { readonly [key: string]: any } = Object.freeze({}) || {}

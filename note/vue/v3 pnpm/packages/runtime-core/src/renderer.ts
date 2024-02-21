@@ -1,5 +1,5 @@
 
-import { CreateAppFunction, createAppAPI } from './apiCreateApp'
+import { CreateAppFunction, createAppAPI } from './apiCreateApp.js'
 import { VNode } from './vnode'
 
 
@@ -36,14 +36,29 @@ export function createRenderer<HostNode = RendererNode, HostElement = RendererEl
 }
 
 
+
 function baseCreateRenderer(options) {
 
 
   // const { } = options
-
-  console.log(44, options)
+  const {
+    insert: hostInsert,
+    remove: hostRemove,
+    patchProp: hostPatchProp,
+    createElement: hostCreateElement,
+    createText: hostCreateText,
+    createComment: hostCreateComment,
+    setText: hostSetText,
+    setElementText: hostSetElementText,
+    parentNode: hostParentNode,
+    nextSibling: hostNextSibling,
+    setScopeId: hostSetScopeId,
+    insertStaticContent: hostInsertStaticContent
+  } = options
+  console.log(44, options, hostInsert)
 
   const patch = (n1, n2, container, anchor = null, parentComponent = null, parentSuspense = null) => {
+    console.log('patch', n1, n2)
     if (n1 === n2) {
       return
     }
@@ -54,12 +69,15 @@ function baseCreateRenderer(options) {
 
   }
 
-  const render = (vnode, container) => {
+  const render: RootRenderFunction = (vnode, container) => {
+    console.log(59, vnode)
     if (vnode == null) {
       if (container._vnode) {
+        // 注销
         unmount(container._vnode, null, null, true)
       }
     } else {
+      // 渲染
       patch(container._vnode || null, vnode, container, null, null, null)
     }
     container._vnode = vnode

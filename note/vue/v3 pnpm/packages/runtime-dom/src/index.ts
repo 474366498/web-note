@@ -38,7 +38,7 @@ export const createApp = (...args) => {
   app.mount = function (containerOrSelector: Element | ShadowRoot | string): any {
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
-    console.log(41, container)
+    console.log(41, container, mount)
 
     const component = app._component
 
@@ -54,7 +54,7 @@ export const createApp = (...args) => {
       container.removeAttribute('v-cloak')
       container.setAttribute('data-v-app', '')
     }
-
+    console.log(57, proxy)
     return proxy
 
   }

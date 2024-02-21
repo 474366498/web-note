@@ -48,7 +48,21 @@ export interface AppConfig {
 }
 
 export interface AppContext {
+  app: App
+  config: AppConfig
+  // mixins: ComponentOptions[]
+  mixins: ComponentOptions[]
+  components: Record<string, Component>
+  directives: Record<string, Directive>
+  provides: Record<string | symbol, any>
 
+  optionsCache: WeakMap<ComponentOptions, any>
+  propsCache: WeakMap<ConcreteComponent, any>
+  emitsCache: WeakMap<ConcreteComponent, any>
+
+  reload?: () => void
+
+  filters?: Record<string, Function>
 
 }
 
@@ -143,14 +157,14 @@ export function createAppAPI<HostElement>(render: RootRenderFunction<HostElement
 
       mount(rootContainer, isHydrate?: boolean): any {
         if (!isMounted) {
-          const vnode = createVNode(rootComponent as ConcreteComponent, rootProps)
-          console.log('vnode ...')
-          // vnode.appContext = context 
-          // render(vnode,rootContainer)
+          // const vnode = createVNode(rootComponent as ConcreteComponent, rootProps)
+          const node = createVNode(rootComponent, rootProps)
+          node['appContext'] = context
+          // VNode<HostNode = RendererNode, HostElement = RendererElement, ExtraProps = { [key: string]: any; }>.appContext: AppContext | null
+          // render(node, rootContainer)
+          console.log('vnode ...', node, context)
           isMounted = true
           app._container = rootContainer
-        } else {
-
         }
       },
 
@@ -170,10 +184,3 @@ export function createAppAPI<HostElement>(render: RootRenderFunction<HostElement
 
   }
 }
-
-
-
-
-
-
-

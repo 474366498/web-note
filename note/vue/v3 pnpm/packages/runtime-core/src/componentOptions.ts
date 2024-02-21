@@ -43,6 +43,6 @@ export type ComponentOptions<
   Mixin extends Object = any,
   Extends extends Object = any,
   E extends Object = any
-> = ComponentOptionBase<Props, RawBindings, D, C, M, Mixin, Extends, E> & ThisType<Object>
+> = ComponentOptionBase<Props, RawBindings, D, C, M, Mixin, Extends, E> & ThisType<object>
 
 

@@ -46,7 +46,8 @@ export type ConcreteComponent<
   D = any,
   C extends Object = {},
   M extends MethodOptions = MethodOptions
-> = ComponentOptions<Props, RawBindings, D, C, M> | FunctionalComponent<Props, any>
+> = | ComponentOptions<Props, RawBindings, D, C, M>
+  | FunctionalComponent<Props, any>
 
 // compat         compat
 export type Component<Props = any> = any

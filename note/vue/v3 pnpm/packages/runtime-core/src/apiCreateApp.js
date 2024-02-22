@@ -101,8 +101,8 @@ let uid = 0
 // 创建 App
 export function createAppAPI(render) {
   // console.log(27, render, this)
-  return function createApp(rootComponent, rootProps = null) {
-    console.log('api 28', rootComponent, rootProps)
+  return function createApp(rootComponent, rootProps = null, ...args) {
+    console.log('api 28', rootComponent, rootProps, args)
     if (!isFunction(rootComponent)) {
       rootComponent = { ...rootComponent }
     }

@@ -14,31 +14,39 @@
     const { createApp } = VueRuntimeDOM 
     console.log(14,createApp) 
 
-    // const app = createApp({
-    //   data() {
-    //     return {
-    //       count: 0
-    //     }
-    //   },
-    //   setup () {
-    //     const count = ref(1)
-    //     return () => h('div',count.value)
-    //   }
-    // })
-
-    // app.mount('#app')
-
-    createApp(
-      {
-        render(){
-          console.log(100)
+    const app = createApp({
+      data() {
+        return {
+          num: 0
         }
-      } ,
-       {
-        name :'name' ,
-        age:1e2
-       } 
-      ).mount('#app')
+      },
+      setup (props,context) {
+        console.log('html setup',props,context)
+        const count = ref(1)
+        const fn = count.value ++ 
+        return {
+          count 
+        }
+      },
+      render (proxy) {
+        console.log('html render',proxy.a , proxy.num)
+        // return h('div',{style:{color:'red'}} , `hello ${proxy.count}`)
+      }
+    },{a:'aaaaaaaaaaaa'},'a','b','Detached Elementsx')
+
+    app.mount('#app')
+
+    // createApp(
+    //   {
+    //     render(){
+    //       console.log(100)
+    //     }
+    //   } ,
+    //    {
+    //     name :'name' ,
+    //     age:1e2
+    //    } 
+    //   ).mount('#app')
 
   </script>
 

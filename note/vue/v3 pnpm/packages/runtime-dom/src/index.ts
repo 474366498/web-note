@@ -1,6 +1,7 @@
 import { Renderer, createRenderer } from "@vue/runtime-core"
 import { extend, isFunction, isString } from "@vue/shared"
 import { nodeOps } from "./nodeOps"
+import { patchProp } from "./patchProp"
 
 
 let renderer //: Renderer<Element | ShadowRoot>
@@ -9,10 +10,10 @@ let renderer //: Renderer<Element | ShadowRoot>
 
 
 
-var rendererOptions = extend({}, nodeOps)
+var rendererOptions = extend({ patchProp }, nodeOps)
 
 function ensureRenderer() {
-  console.log(15, rendererOptions)
+  // console.log(15, rendererOptions)
   return (
     renderer
     ||
@@ -32,13 +33,13 @@ export const createApp = (...args) => {
   console.log(6, args)
   const app = ensureRenderer().createApp(...args)
 
-  console.log(26, app)
+  console.log('runtime-dom index', app)
   const { mount } = app
 
   app.mount = function (containerOrSelector: Element | ShadowRoot | string): any {
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
-    console.log(41, container, mount)
+    // console.log(41, container, mount)
 
     const component = app._component
 

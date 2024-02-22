@@ -1,5 +1,9 @@
 import { isModelListener, isOn, isString } from "@vue/shared"
-
+import { patchAttr } from "./modules/attrs"
+import { patchClass } from "./modules/class"
+import { patchEvent } from "./modules/event"
+import { patchStyle } from './modules/style'
+import { patchDOMProp } from './modules/props'
 
 
 const nativeOnRE = /^on[a-z]/
@@ -7,25 +11,25 @@ const nativeOnRE = /^on[a-z]/
 export const patchProp = (el, key, pValue, nValue) => {
 
 
-  // if (key === 'class') {
-  //   patchClass(el, nValue)
-  // } else if (key === 'style') {
-  //   patchStyle(el, pValue, nValue)
-  // } else if (isOn(key)) {
-  //   if (!isModelListener(key)) {
-  //     patchEvent(el, key, pValue, nValue)
-  //   }
-  // } else if (
-  //   key[0] === '.'
-  //     ? ((key = key.slice(1)), true)
-  //     : key[0] === '^'
-  //       ? ((key = key.slice(1)), false)
-  //       : shouldSetAsProp(el, key, nValue)
-  // ) {
-  //   patchDOMProp(el, key, nValue)
-  // } else {
-  //   patchAttr(el, key, nValue)
-  // }
+  if (key === 'class') {
+    patchClass(el, nValue)
+  } else if (key === 'style') {
+    patchStyle(el, pValue, nValue)
+  } else if (isOn(key)) {
+    if (!isModelListener(key)) {
+      patchEvent(el, key, pValue, nValue)
+    }
+  } else if (
+    key[0] === '.'
+      ? ((key = key.slice(1)), true)
+      : key[0] === '^'
+        ? ((key = key.slice(1)), false)
+        : shouldSetAsProp(el, key, nValue)
+  ) {
+    patchDOMProp(el, key, nValue)
+  } else {
+    patchAttr(el, key, nValue)
+  }
 
 }
 

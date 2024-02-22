@@ -186,7 +186,7 @@ function createBaseVNode(type, props, children: unknown = null, patchFlag = 0, d
     appContext: null
   } as VNode
 
-  console.log(125, vnode)
+  // console.log(125, vnode)
   return vnode
 
 }

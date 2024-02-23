@@ -33,7 +33,7 @@ export const createApp = (...args) => {
   console.log(6, args)
   const app = ensureRenderer().createApp(...args)
 
-  console.log('runtime-dom index', app)
+  // console.log('runtime-dom index', app)
   const { mount } = app
 
   app.mount = function (containerOrSelector: Element | ShadowRoot | string): any {

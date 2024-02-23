@@ -68,13 +68,13 @@ export class ReactiveEffect<T = any> {
     public scheduler: EffectScheduler | null = null,
     scope?: EffectScope
   ) {
-    debugger
-    console.log(this.fn, this.scheduler, scope)
+    // debugger
+    // console.log(this.fn, this.scheduler, scope)
     recordEffectScope(this, scope)
   }
 
   run() {
-    debugger
+    // debugger
     if (!this.active) {
       return this.fn()
     }
@@ -157,8 +157,8 @@ export interface ReactiveEffectRunner<T = any> {
 }
 
 export function effect<T = any>(fn: () => T, options?: ReactiveEffectOptions): ReactiveEffectRunner {
-  console.log(fn, options)
-  debugger
+  // console.log(fn, options)
+  // debugger
   if ((fn as ReactiveEffectRunner).effect) {
     fn = (fn as ReactiveEffectRunner).effect.fn
   }

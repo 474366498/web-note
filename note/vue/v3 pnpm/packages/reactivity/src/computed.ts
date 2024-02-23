@@ -97,7 +97,7 @@ export class ComputedRefImpl<T> {
     this[ReactiveFlags.IS_READONLY] = isReadonly
   }
   get value() {
-    debugger
+    // debugger
     const self = toRaw(this)
     trackRefValue(self)
     if (self._dirty || !self._cacheable) {

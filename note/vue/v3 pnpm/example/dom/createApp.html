@@ -9,10 +9,12 @@
   <div id="app"></div>
   <script type="text/javascript" src="../../packages/reactivity/dist/reactivity.global.js"></script>
   <script type="text/javascript" src="../../packages/runtime-dom/dist/runtime-dom.global.js"></script>
+  <script type="text/javascript" src="../../packages/runtime-core/dist/runtime-core.global.js"></script>
   <script type="module">
     const {ref , reactive , shallowRef , toRef , toRefs } = VueReactivity 
     const { createApp } = VueRuntimeDOM 
-    console.log(14,createApp) 
+    const { h } = VueRuntimeCore
+    // console.log(14,createApp ,VueRuntimeCore) 
 
     const app = createApp({
       data() {
@@ -23,14 +25,20 @@
       setup (props,context) {
         console.log('html setup',props,context)
         const count = ref(1)
-        const fn = count.value ++ 
+        const fn = ()=> count.value ++ 
         return {
           count 
         }
       },
       render (proxy) {
-        console.log('html render',proxy.a , proxy.num)
-        // return h('div',{style:{color:'red'}} , `hello ${proxy.count}`)
+        console.log('html render',this , proxy)
+        return h(
+          'div',
+          {class:'d',style:{color:'red'}} , 
+            `hello ${proxy.count.value}`,
+            h('p',{class:'pp',style:{color:'pink'}},'pp'),
+            'kb'
+          )
       }
     },{a:'aaaaaaaaaaaa'},'a','b','Detached Elementsx')
 

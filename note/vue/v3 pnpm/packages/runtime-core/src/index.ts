@@ -1,11 +1,8 @@
 
 
 export { createRenderer, Renderer } from './renderer'
+export { h } from './h'
 
-export const createApp = (...args) => {
-  console.log(6, args)
-
-}
 
 
 

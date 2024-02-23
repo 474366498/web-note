@@ -186,6 +186,9 @@ function createBaseVNode(type, props, children: unknown = null, patchFlag = 0, d
     appContext: null
   } as VNode
 
+  if (children) {
+    vnode.shapeFlag |= isString(children) ? ShapeFlags.TEXT_CHILDREN : ShapeFlags.ARRAY_CHILDREN
+  }
   // console.log(125, vnode)
   return vnode
 
@@ -239,7 +242,7 @@ export function createVNode(type: ConcreteComponent, props, children = null, pat
           : isFunction(type)
             ? ShapeFlags.FUNCTIONAL_COMPONENT
             : 0
-
+  // console.log(242, shapeFlag)
   return createBaseVNode(type, props, children, patchFlag, dynamicProps, shapeFlag) as VNode
 }
 
@@ -250,5 +253,8 @@ function guardReactiveProps(props) {
     ? extend({}, props)
     : props
 }
-
-
+// 处理h函数中 children 转成vnode 
+export function childrenToVnode(child) {
+  if (isObject(child)) return child
+  return createVNode(Text, null, String(child))
+}

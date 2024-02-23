@@ -1,7 +1,7 @@
 import { ComponentPropsOptions } from './componentProps'
 
 import { MethodOptions, ComponentOptions } from './componentOptions'
-import { ShapeFlags } from '@vue/shared'
+import { ShapeFlags, isFunction, isObject } from '@vue/shared'
 import { PublicInstanceProxyHandlers } from './componentPublicInstance'
 
 
@@ -222,14 +222,41 @@ function setupStatefulComponent(instance) {
   instance.proxy = new Proxy(instance.ctx, PublicInstanceProxyHandlers as any)
   const Component = instance.type
   let { data, setup, render } = Component
-
-  let setupContext = createContext(instance)
   instance.data = data() || {}
-  instance.setupState = setup(instance.props, setupContext)
-  console.log(138, instance)
-
-  render(instance.proxy)
+  if (setup) {
+    let setupContext = createContext(instance)
+    // instance.setupState = setup(instance.props, setupContext)
+    let setupResult = setup(instance.props, setupContext)
+    handlerSetupResult(instance, setupResult)
+  } else {
+    finishComponentSetup(instance)
+  }
+  let r = render(instance.proxy)
+  console.log(138, instance, r)
 }
+
+function handlerSetupResult(instance, result) {
+  // setup return 返回 方法或对象
+  if (isFunction(result)) {
+    instance.render = result
+  } else if (isObject(result)) {
+    instance.setupState = result
+  }
+  finishComponentSetup(instance)
+
+}
+// 处理render 
+function finishComponentSetup(instance) {
+  let Component = instance.type
+  if (!instance.render) {   // 实例上没有 render方法
+    if (!Component.render && Component.template) {
+      // 进行模板编译 
+      console.warn('v3 模板编译')
+    }
+    instance.render = Component.render
+  }
+}
+
 
 
 function createContext(instance) {

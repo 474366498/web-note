@@ -55,7 +55,7 @@ function createRef(rawValue, shallow) {
   if (isRef(rawValue)) {
     return rawValue
   }
-  console.log(57, rawValue, shallow)
+  // console.log(57, rawValue, shallow)
   return new RefImpl(rawValue, shallow)
 }
 
@@ -145,7 +145,7 @@ export type ShallowUnwrapRef<T> = {
 const shallowUnwrapHandlers: ProxyHandler<any> = {
   get: (target, key, receiver) => unref(Reflect.get(target, key, receiver)),
   set: (target, key, value, receiver) => {
-    debugger
+    // debugger
     const oldVal = target[key]
     if (isRef(oldVal) && !isRef(value)) {
       oldVal.value = value

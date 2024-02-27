@@ -2,7 +2,7 @@ import { Renderer, createRenderer } from "@vue/runtime-core"
 import { extend, isFunction, isString } from "@vue/shared"
 import { nodeOps } from "./nodeOps"
 import { patchProp } from "./patchProp"
-
+export * from '@vue/reactivity'
 
 let renderer //: Renderer<Element | ShadowRoot>
 

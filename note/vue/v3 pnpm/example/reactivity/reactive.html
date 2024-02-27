@@ -6,9 +6,13 @@
   <title>Document</title>
 </head>
 <body>
+  <div id="d"></div>
   <script type="text/javascript" src="../../packages/reactivity/dist/reactivity.global.js"></script>
   <script type="module">
     const { reactive } = VueReactivity 
+    let d = document.getElementById('d')
+    d.style.width='100vw'
+    d.style.height = '100vh'
     
     let r = reactive({ 
       name:'cc',
@@ -32,7 +36,17 @@
     // r.map.delete('b')  // deleteProperty
     // console.log('html' ,33 , 'ee' in r ) // has
     // console.log(34,'ownKeys:',Object.keys(r))
-
+    setTimeout(() => {
+      if(r.age<1e2){
+        r.age++
+      }else {
+        r.age = 0
+      }
+      d.innerHTML = r.age
+    }, 2e3);
+    d.onclick = function () {
+      console.log(r.age)
+    }
     console.log(31,r , r.map.size() )
 
   </script>

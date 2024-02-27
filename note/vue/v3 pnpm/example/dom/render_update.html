@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="text/javascript" src="../../packages/reactivity/dist/reactivity.global.js"></script>
+  <script type="text/javascript" src="../../packages/runtime-dom/dist/runtime-dom.global.js"></script>
+  <script type="text/javascript" src="../../packages/runtime-core/dist/runtime-core.global.js"></script>
+  <script type="module">
+    const {ref  , shallowRef , toRef , toRefs } = VueReactivity 
+    const { createApp ,reactive} = VueRuntimeDOM 
+    const { h } = VueRuntimeCore
+    console.log(14,createApp ,reactive) 
+
+    const app = createApp({
+      data() {
+        return {
+          num: 0
+        }
+      },
+      setup (props,context) {
+        console.log('html setup',props,context)
+        const state = reactive({num:1 , flag : false })
+        const fn = ()=> {
+          state.num ++ 
+          console.log('fn',state)
+        }
+        const fn1 = () => {
+          // console.log('onMousemove')
+        }
+        setTimeout(() => {
+          state.flag = true 
+        }, 3E3);
+        return {
+          state ,
+          fn,
+          fn1
+        }
+      },
+      render (proxy) {
+        console.log('html render',this , proxy)
+        let c1 = [
+          h('p',{key:'a'},'a') ,
+          h('p',{key:'b'},'b') ,
+          h('p',{key:'c'},'c') ,
+          h('p',{key:'d'},'d') ,
+          h('p',{key:'e'},'e'),
+          h('p',{key:'h'},'h')
+
+        ] , 
+        c2 = [
+          
+          h('p',{key:'a'},'a') ,
+          h('p',{key:'z'},'z') ,
+          h('p',{key:'b'},'b') ,
+          h('p',{key:'c'},'c') ,
+          h('p',{key:'d'},'d') ,
+          h('p',{key:'e'},'e') ,
+          h('p',{key:'f'},'f') ,
+          h('p',{key:'g'},'g') ,
+        ]
+        if(proxy.state.flag) {
+
+          return h(
+            'div',
+            {class:'d',style:{color:'red'},a:'a1',onClick:proxy.fn,onMousemove:proxy.fn1,onMouseout:()=>{/*console.log('onMouseout')*/}} , c2
+              // [`hello ${proxy.state.num} 123`,
+              // h('p',{class:'pp',style:{color:'pink'}},'pp'),
+              // 'kb']
+            )
+        }else {
+          return h(
+            'div',
+            {class:'p',style:{color:'skyblue',},b:'b',onClick:proxy.fn} , c1
+              // `hello ${proxy.state.num}`,
+              // h('p',{class:'pp',style:{color:'pink'}},'pp'),
+              // 'kb'
+            )
+        }
+      }
+    },{a:'aaaaaaaaaaaa'},'a','b','Detached Elementsx')
+
+    app.mount('#app')
+
+    // createApp(
+    //   {
+    //     render(){
+    //       console.log(100)
+    //     }
+    //   } ,
+    //    {
+    //     name :'name' ,
+    //     age:1e2
+    //    } 
+    //   ).mount('#app')
+
+  </script>
+
+</body>
+</html>

@@ -2,7 +2,7 @@ import { TrackOpTypes, TriggerOpTypes } from "./operations";
 
 import { Dep, createDep, finalizeDepMarkers, initDepMarkers, newTracked, wasTracked } from "./dep";
 import { EffectScope, recordEffectScope } from "./effectScope";
-import { extend, isArray, isIntegerKey, isMap } from "@vue/shared";
+import { extend, isArray, isFunction, isIntegerKey, isMap } from "@vue/shared";
 
 
 
@@ -157,7 +157,7 @@ export interface ReactiveEffectRunner<T = any> {
 }
 
 export function effect<T = any>(fn: () => T, options?: ReactiveEffectOptions): ReactiveEffectRunner {
-  // console.log(fn, options)
+  console.log(160, fn, options)
   // debugger
   if ((fn as ReactiveEffectRunner).effect) {
     fn = (fn as ReactiveEffectRunner).effect.fn
@@ -317,6 +317,7 @@ export function triggerEffects(dep: Dep | ReactiveEffect[], debuggerEventExtraIn
 }
 
 function triggerEffect(effect: ReactiveEffect, debuggerEventExtraInfo?: DebuggerEventExtraInfo) {
+  // console.log(320, effect)
   if (effect !== activeEffect || effect.allowRecurse) {
     if (effect.onTrigger) {
       effect.onTrigger(extend({ effect }, debuggerEventExtraInfo))

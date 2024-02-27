@@ -181,6 +181,8 @@ function createBaseVNode(type, props, children: unknown = null, patchFlag = 0, d
     staticCount: 0,
     shapeFlag, //表示当前vNode的类型
     patchFlag,
+    parentComponent: null,
+    parentSuspense: null,
     dynamicProps, //含有动态的props
     dynamicChildren: null, //含有的动态children
     appContext: null

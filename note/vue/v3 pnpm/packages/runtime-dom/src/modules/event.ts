@@ -23,9 +23,10 @@ export function patchEvent(el, rawName, prev, next,) {
     const [name, options] = parseName(rawName)
     if (next) {
       const invoker = invokers[rawName] = createInvoker(next)
-      addEvent(el, name, invoker, options)
+      // console.log(10, el, name, invoker, next)
+      addEvent(el, name, invoker.value, options)
     } else if (existingInvoker) {
-      removeEvent(el, name, existingInvoker, options)
+      removeEvent(el, name, existingInvoker.value, options)
       invokers[rawName] = null
     }
   }
@@ -60,6 +61,7 @@ function createInvoker(initialValue) {
 
   }
   invoker.value = initialValue
-  invoker.attached = attached
+  invoker.attached = new Date().getTime()
+  // console.log(64, invoker)
   return invoker
 }

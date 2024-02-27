@@ -2,6 +2,6 @@ export { isProxy, reactive, readonly, shallowReadonly, shallowReactive, Reactive
 
 export { ref, Ref, isRef, shallowRef, toRefs, toRef, proxyRefs } from './ref'
 
-export { effect } from './effect'
+export { effect, ReactiveEffect } from './effect'
 
 export { computed } from './computed'

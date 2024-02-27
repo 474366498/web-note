@@ -19,7 +19,7 @@ export function h(type, props?: object | null, children?): VNode
 
 export function h(type: any, propsOrChildren?: any, children?: any) {
   const l = arguments.length
-  console.log(22, l)
+  // console.log(22, l)
   if (l === 2) {
     if (isObject(propsOrChildren) && !isArray(propsOrChildren)) {
       if (isVNode(propsOrChildren)) {

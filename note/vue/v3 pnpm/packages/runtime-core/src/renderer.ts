@@ -295,7 +295,7 @@ function baseCreateRenderer(options) {
       }
     }
     // a b c d e
-    // a z b c d e f g 
+    // a z b e d c f g 
     else {
       console.log(300, '乱')
       let s1 = i, s2 = i
@@ -317,8 +317,8 @@ function baseCreateRenderer(options) {
           newIndexToPatchMap[index - s2] = s + 1
         }
       }
-
-      console.log(322, i, keyIndexMap, newIndexToPatchMap)  // i=>1 ,  0, 2, 3, 4, 5, 0, 0
+      /*
+      console.log(322, i, keyIndexMap, newIndexToPatchMap)  // i=>1 ,  0, 2, 5, 4, 3, 0, 0
       // 移动或创建节点
       for (let l = toBePatched - 1; l >= 0; l--) {  // toBePatched => 7
         let index = l + s2
@@ -328,10 +328,33 @@ function baseCreateRenderer(options) {
           // console.log(326, child, anchor, c2[index + 1])
           patch(null, child, el, anchor)
         } else {
-          console.log(child, el, anchor, index)
-          hostInsert(child.el, el, anchor)  // 要先通过patch(新旧节点 创建出el对象)
+          // console.log(child, el, anchor, index)
+          hostInsert(child.el, el, anchor)  // 直接创建新的 注：要先通过patch(新旧节点 创建出el对象)
         }
       }
+      */
+
+
+      console.log(322, i, keyIndexMap, newIndexToPatchMap)  // i=>1 ,  0, 2, 5, 4, 3, 0, 0
+      let increasingNewIndexSequence = getSequence(newIndexToPatchMap),
+        j = increasingNewIndexSequence.length - 1
+      console.log(341, increasingNewIndexSequence)
+      for (let l = toBePatched - 1; l >= 0; l--) {
+        let index = l + s2
+        let child = c2[index]
+        let anchor = index + 1 < c2.length ? c2[index + 1].el : null
+        if (newIndexToPatchMap[l] == 0) {
+          patch(null, child, el, anchor)
+        } else {
+          if (j < 0 || i !== increasingNewIndexSequence[j]) {
+            console.log(350, l, child)
+            hostInsert(child.el, el, anchor)
+          } else {
+            j--
+          }
+        }
+      }
+
 
     }
 
@@ -388,7 +411,7 @@ function baseCreateRenderer(options) {
   }
 
   const patch: Function = (n1, n2, container, anchor = null, parentComponent = null, parentSuspense = null) => {
-    console.log('patch', n1, n2, n1 == n2)
+    // console.log('patch', n1, n2, n1 == n2)
     if (n1 == n2) {
       return
     }
@@ -459,4 +482,89 @@ function baseCreateRenderer(options) {
 
 }
 
+function getSequence(arr) {
+  let l = arr.length
+  let result = [0], rl
+  let _result = new Array(l).fill(0)
+  let s, m, e
+  for (let i = 0; i < l; i++) {
+    // console.log('i', i)
+    let item = arr[i]
+    rl = result[result.length - 1]
+    if (arr[rl] < item) {
+      _result[i] = rl
+      result.push(i)
+    }
+    s = 0
+    e = rl
+    while (s < e) {
+      m = (e + s) / 2 | 0
+      let middle = arr[result[m]]
+      if (middle < item) {
+        s = m + 1
+      } else {
+        e = m
+      }
+    }
+    // console.log(i, '-e-', e, s)
+    if (arr[result[e]] > item) {
+      if (s > 0) {
+        _result[i] = result[s - 1]
+      }
+      result[e] = i
+    }
+  }
+  let len = result.length
+  let last = result[len - 1]
+  while (len-- > 0) {
+    result[len] = last
+    last = _result[last]
+  }
+  console.log(_result, result)
+
+  return result
+}
+
+// function getSequence(array) {
+//   let l = array.length
+//   let result = [0], rLast
+//   let _result = new Array(l).fill(0)
+
+//   let s, m, e
+//   for (let i = 0; i < l; i++) {
+//     let item = array[i]
+//     rLast = result[result.length - 1]
+//     if (array[rLast] < item) {
+//       _result[i] = rLast
+//       result.push(i)
+//     }
+
+//     s = 0
+//     e = rLast
+//     while (s < e) {
+//       m = (e + s) / 2 | 0
+//       if (array[result[m]] < item) {
+//         m = s + 1
+//       } else {
+//         e = m
+//       }
+//     }
+
+//     if (array[result[e]] > item) {
+//       if (s > 0) {
+//         _result[i] = result[i - 1]
+//       }
+//       result[e] = i
+//     }
+//   }
+
+//   let len = result.length
+//   let last = result[len - 1]
+//   while (len-- > 0) {
+//     result[len] = last
+//     last = _result[last]
+//   }
+
+//   return result
+// }
 

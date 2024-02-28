@@ -100,18 +100,18 @@ function getSequenceV(arr) {
         }
       }
 
-      if (arr[result[e]] > item) {
+      if (arr[result[e]] > item) {  // 替换
         result[e] = i
-        p[i] = result[e - 1]
+        p[i] = result[e - 1] // 记录替换的前一个
       }
 
     }
 
   }
 
-  let l = result.length
-  let last = result[l - 1]
-
+  //驱节点向前查找 
+  let l = result.length   // 总的长度
+  let last = result[l - 1]  //获取最后一个
   while (l-- > 0) {
     result[l] = last
     last = p[last]

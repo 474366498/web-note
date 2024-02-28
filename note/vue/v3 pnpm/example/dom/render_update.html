@@ -57,14 +57,13 @@
           h('p',{key:'a'},'a') ,
           h('p',{key:'z'},'z') ,
           h('p',{key:'b'},'b') ,
-          h('p',{key:'c'},'c') ,
-          h('p',{key:'d'},'d') ,
           h('p',{key:'e'},'e') ,
+          h('p',{key:'d'},'d') ,
+          h('p',{key:'c'},'c') ,
           h('p',{key:'f'},'f') ,
           h('p',{key:'g'},'g') ,
         ]
         if(proxy.state.flag) {
-
           return h(
             'div',
             {class:'d',style:{color:'red'},a:'a1',onClick:proxy.fn,onMousemove:proxy.fn1,onMouseout:()=>{/*console.log('onMouseout')*/}} , c2

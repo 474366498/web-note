@@ -159,7 +159,7 @@ export function createAppAPI(render) {
       mount(rootContainer, isHydrate) {
         if (!isMounted) {
           // const vnode = createVNode(rootComponent as ConcreteComponent, rootProps)
-          const node = createVNode(rootComponent, rootProps)
+          const node = createVNode(rootComponent, rootProps || {})
           node.appContext = context
           render(node, rootContainer)
           console.log('vnode ts... => js ', node, context)

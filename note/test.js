@@ -1196,8 +1196,8 @@ console.log(_s.match(/[-+]?[0-9]{1,}/g), Number.MAX_SAFE_INTEGER)
 
 
 let arr = [21, 2, 5, 4, 3, 9, 7, 20, 10], arr1 = [12, 3, 5, 7, 4, 8, 1, 9]
-// 0, 1, 2, 5, 7  => 0 2 5 9 20 
-
+// 0, 1, 2, 5, 7  => 0 2 5 9 20
+/*
 function getSequence(arr) {
 	let l = arr.length
 	let result = [0], rl
@@ -1240,11 +1240,52 @@ function getSequence(arr) {
 
 	return result
 }
+*/
 
-// let r = getSequence(arr), r1 = getSequence(arr1)
+function getSequence(array) {
+	let l = array.length
+	let result = [0], rLast
+	let _result = new Array(l).fill(0)
+
+	let s, m, e
+	for (let i = 0; i < l; i++) {
+		let item = array[i]
+		rLast = result[result.length - 1]
+		// console.log(1254, i, array[rLast], item)
+		if (array[rLast] < item) {
+			_result[i] = rLast
+			result.push(i)
+		}
+
+		s = 0
+		e = rLast
+		while (s < e) {
+			m = (e + s) / 2 | 0
+			if (array[result[m]] < item) {
+				s = m + 1
+			} else {
+				e = m
+			}
+		}
+
+		if (array[result[e]] > item) {
+			if (s > 0) {
+				_result[i] = result[s - 1]
+			}
+			result[e] = i
+		}
+	}
+	console.log(77, _result, result)
+	let len = result.length
+	let last = result[len - 1]
+	while (len-- > 0) {
+		result[len] = last
+		last = _result[last]
+	}
+
+	return result
+}
+
+let r = getSequence(arr), r1 = getSequence(arr1)
 // 1, 4, 6, 8 // 1 2 3 5
-// console.log(1216, r, r1)
-
-let p = '135688246492', t = '84246874'
-
-console.log(1250, /^1[3-9][0-9]{9}$/g.test(p))
+console.log(1216, r, r1)

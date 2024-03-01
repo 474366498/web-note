@@ -41,7 +41,6 @@ export function createRenderer<HostNode = RendererNode, HostElement = RendererEl
 }
 
 
-
 function baseCreateRenderer(options) {
 
 
@@ -367,21 +366,38 @@ function baseCreateRenderer(options) {
       if (!instance.isMounted) {
         let vnodeHook
         // const { el, props } = vnode
-        // const { bm, m, parent } = instance 
+        const { bm, m, parent } = instance
+        if (bm) {
+          bm.forEach(el => {
+            el()
+          });
+        }
         let proxy = instance.proxy
         const subTree = (instance.subTree = instance.render.call(proxy, proxy))
         patch(null, subTree, container)
         vnode.el = subTree.el
         console.log(162, subTree)
         instance.isMounted = true
+        if (m) {
+          m.forEach(el => {
+            el()
+          });
+        }
       } else {
         console.log('render effect update', instance, vnode)
+        let { bu, u } = instance
+        if (bu) {
+          bu.forEach(b => b())
+        }
         let proxy = instance.proxy
         let prevTree = instance.subTree
         let nextTree = instance.render.call(proxy, proxy)
         console.log(169, prevTree, nextTree)
         instance.subTree = nextTree
         patch(prevTree, nextTree, container)
+        if (u) {
+          u.forEach(e => e())
+        }
       }
     }
     const effect = (instance.effect = new ReactiveEffect(componentUpdateFn))

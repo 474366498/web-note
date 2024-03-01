@@ -57,8 +57,27 @@ export type Component<Props = any> = any
 
 
 export interface ComponentInternalInstance {
-
+  uid: number,
+  type: any,
+  parent: object | null,
+  root: object | null
+  appContext: object
+  isUnmounted: boolean
 }
+/** 生命周期
+  注 1。在vue3 中 setup 相当于是 vue2中 beforeCreate 和 created 
+     2。vue3中的生命周期函数必须写在 setup中
+     3。vue2 生命周期函数中的this 是指组件实例 而在vue3中this 则指向调用函数 要获取组件实例通过api getCurrentInstance 
+
+  问 vue3生命周期是怎么调用
+    每个组件都有一个组件实例 instance 将组件生命周期与组件实例产生关联
+  怎么产生关联？
+    在调用setup之前将这个实例暴露到全局上，在之后调用setup时 内部执行调用生命周期
+    获取到当前的组件实例
+ 
+ 
+ */
+
 
 // 创建组件实例
 let cId = 0
@@ -111,6 +130,7 @@ export function createComponentInstance(vnode) {
 
   }
   instance.ctx = { _: instance }
+  window.instance = instance
   return instance
   /*
    uid: uid++, //当前实例的id
@@ -207,26 +227,51 @@ export function createComponentInstance(vnode) {
 
 }
 
+declare global {
+  interface Window {
+    instance: any
+  }
+}
+
+
+
 
 export function setupComponent(instance) {
-
   const { props, children } = instance.vnode
+  setCurrentInstance(instance)
   const isStateFul = instance.vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT
   instance.props = props  // 对应源码中的 initProps(instance,props,isStateFul)
   instance.children = children  // initSlots(instance,children) 
 
   isStateFul && setupStatefulComponent(instance)
 }
+export var currentInstance: ComponentInternalInstance | null = null
+
+export const getCurrentInstance: () => object = () => {
+  return currentInstance
+}
+export const setCurrentInstance = target => {
+  console.log(250, target, currentInstance)
+  currentInstance = target
+  console.log(250, currentInstance)
+
+}
+
+
 
 function setupStatefulComponent(instance) {
   instance.proxy = new Proxy(instance.ctx, PublicInstanceProxyHandlers as any)
   const Component = instance.type
   let { data, setup, render } = Component
   instance.data = data() || {}
+  setCurrentInstance(instance)
+  currentInstance = window.instance = instance
+  console.log('before setup', currentInstance)
   if (setup) {
     let setupContext = createContext(instance)
     // instance.setupState = setup(instance.props, setupContext)
     let setupResult = setup(instance.props, setupContext)
+    currentInstance = window.instance = null
     handlerSetupResult(instance, setupResult)
   } else {
     finishComponentSetup(instance)

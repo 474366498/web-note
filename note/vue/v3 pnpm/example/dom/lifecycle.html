@@ -13,8 +13,9 @@
   <script type="module">
     const {ref  , shallowRef , toRef , toRefs } = VueReactivity 
     const { createApp ,reactive} = VueRuntimeDOM 
-    const { h } = VueRuntimeCore
-    console.log(14,createApp ,reactive , VueRuntimeCore) 
+    const { h , onBeforeMount ,onMounted ,onBeforeUpdate ,onUpdated , getCurrentInstance } = VueRuntimeCore
+  
+    // console.log(14,createApp ,reactive , VueRuntimeCore) 
 
     const app = createApp({
       data() {
@@ -35,6 +36,25 @@
         setTimeout(() => {
           state.flag = true 
         }, 3E3);
+        onBeforeMount(function aa (){
+          console.log('before mount')
+          let instance = getCurrentInstance()
+          console.log('html setup' ,40,instance)
+          
+        })
+
+        onMounted(()=>{
+          console.log('mount')
+        })
+
+        onBeforeUpdate(()=>{
+          console.log('before update')
+        })
+
+        onUpdated(()=>{
+          console.log('updated')
+        })
+
         return {
           state ,
           fn,
@@ -42,7 +62,7 @@
         }
       },
       render (proxy) {
-        console.log('html render',this , proxy)
+        console.log('html render',this , proxy.state)
         let c1 = [
           h('p',{key:'a'},'a') ,
           h('p',{key:'b'},'b') ,
@@ -81,7 +101,7 @@
             )
         }
       }
-    },{a:'aaaaaaaaaaaa'},'a','b','Detached Elementsx')
+    })
 
     app.mount('#app')
 

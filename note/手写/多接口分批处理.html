@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多接口分批处理</title>
+</head>
+<body>
+  
+</body>
+
+<script>
+
+// https://juejin.cn/post/7306331039843270667?utm_source=gold_browser_extension
+
+// 接口通过apifox创建 测试接口
+function httpRequest ({url,method='GET',data,success=(res)=>{}}) {
+    let xhr = new XMLHttpRequest()
+    xhr.open(method,url)
+    xhr.addEventListener('loadend',() => {
+      if(xhr.readyState !== 4) return 
+      if(xhr.status === 200) {
+        const response = {
+          data : JSON.parse(xhr.response) ,
+          status :xhr.status
+        }
+        // console.log(27,url,response)
+        success(response)
+      }else {
+        const response = {
+          data : JSON.parse(xhr.response) ,
+          status :xhr.status
+        }
+        console.warn(34,response)
+        // reject(JSON.parse(response))
+      }
+    })
+    if(method === 'GET'|| method ==='DELETE') {
+      xhr.send()
+    }else if(method === 'POST'|| method ==='PUT') {
+      xhr.setRequestHeader('Content-Type','application/json;charset=utf-8')
+      xhr.send(data?JSON.stringify(data):null)
+    }
+  
+}
+
+
+
+class BatchHttp {
+  /**
+   * @param {Object}  http - http请求对象（该http请求拦截器里切勿带有任何有关ui的功能，比如加载对话框、弹窗提示框之类）,用于发起请求，该http请求对象必须满足：返回一个包含取消请求函数的对象，因为在 this.cancelAll() 函数中会使用到
+   * @param {string} [passFlagProp=null] - 用于识别是否忽略某些数据项的字段名（借此可实现“继续上一次完成的批量请求”）；如：passFlagProp='url' 时，在执行 exec 时，会过滤掉 items['url'] 不为空的数据，借此可以实现“继续上一次完成的批量请求”，避免每次都重复所有请求
+   */
+  constructor (http = httpRequest,passFlagProp = null) {
+    // 请求任务数组
+    this.resTasks = [] 
+    // ajax 请求对象
+    this.http = http 
+    // 取消请求标识
+    this.canceled = false 
+    // 识别跳过数据的属性
+    this.passFlagProp = passFlagProp 
+  }
+  /**
+   * @param {array } array 需要拆分的数组
+   * @param {number} size 小数组长度
+   * @returns {array} 拆分后的二维数组 
+  */
+  chunk (array,size) {
+    const chunks = [] 
+    let index =0 
+    while(index<array.length) {
+      chunks.push(array.slice(index,index+size)) 
+      index += size
+    }
+    return chunks 
+  }
+
+  /**
+   * @param {object} reqOptions 请求配置
+   * @param {object} item 数据项
+   * @returns {Promise} 请求Promise
+  */
+  singleRequest (reqOptions,item) {
+    // console.log(74,reqOptions ,item)
+    return new Promise((resolve,reject) => {
+      const task = this.http({
+        url : reqOptions.method !== 'GET' ? reqOptions.url : reqOptions.url+'/'+item ,
+        method : reqOptions.method || 'GET' ,
+        data : reqOptions.data ,
+        success : res => {
+          console.log(93,item,res)
+          resolve({sourceItem:item,res})}
+      })
+      // console.log(81,task,this.resTasks)
+      this.resTasks.push(task)
+    })
+  }
+
+  /**
+   * @param { object} options 函数参数项
+   * @param {array} options.items 数据项数组
+   * @param {object} options.reqOptions  请求配置
+   * @param {number} options.concurrentNum 并发数
+   * @param {function} options.chunkCallback 分块回调 
+   * @returns {Promise} items
+   *  
+  */
+  async batchRequest ({items,reqOptions,concurrentNum=10,chunkCallback=(res)=>{} }){
+    // console.log(96,items,reqOptions)
+    const promiseArray = [] 
+    let data = [] 
+    const passFlagProp = this.passFlagProp 
+    if(!passFlagProp) {
+      data = items 
+    }else {
+        // 若设置独立 passFlagProp 值，则筛选出对应属性值为空的数据（避免每次都重复请求所有数据，实现“继续未完成的批量请求任务”）
+      data = items.filter(item => !Object.hasOwnProperty.call(item,passFlagProp) || !item[passFlagProp])
+    }
+    if(data.length === 0 ) return 
+
+    data.forEach((item,index) => {
+      // 原来的错误逻辑（原来的逻辑，导致所有的 Promise 回调函数都会被直接执行，那么就只有对 response 进行分批的功能了）
+      // const requestPromise = this.singleRequest(reqOptions, item)
+      // promiseArray.push(requestPromise)
+      // -- 修改为：这里暂时只记录下想对应的 data 的数组索引，以便分组用，当然这部分有关分组代码还可以进行精简，比如直接使用 data.map进行收集等方式，但是为了与之前错误逻辑形成对比，这篇文章里还是这样写比较完整
+      promiseArray.push(index)
+    })
+
+    const promiseChunks = this.chunk(promiseArray,concurrentNum)
+    for(let ckg of promiseChunks) {
+      const ck = ckg.map(i => this.singleRequest(reqOptions,data[i]))
+      if(this.canceled) break 
+      console.log(125,ckg , ck )
+      // ck.forEach(p=>{
+      //   p.then(res=>{
+      //     console.log(136,res)
+      //     chunkCallback(res)
+      //   }).catch(err=>{
+      //     chunkCallback(err)
+      //   })
+      // })
+      const ckRes = await Promise.all(ck)
+      chunkCallback(ckRes)
+    }
+  }
+  
+  setPassFlagProp(val) {
+    this.passFlagProp = val 
+  }
+  /* 执行批量请求操作
+  */
+  exec(options) {
+    this.canceled = false 
+    this.batchRequest(options)
+  }
+
+  cancelAll () {
+    this.canceled = true 
+    for(const task of this.resTasks) {
+      task.abort()
+    }
+    this.resTasks = [] 
+  }
+}
+
+let array = [] 
+for(let i = 0 ; i < 1.2e2;i++) {
+  array.push(i) 
+}
+let bh = new BatchHttp()
+
+var myHeaders = new Headers();
+myHeaders.append("User-Agent", "Apifox/1.0.0 (https://apifox.com)");
+myHeaders.append("Accept", "*/*");
+myHeaders.append("Host", "127.0.0.1:4523");
+myHeaders.append("Connection", "keep-alive");
+
+var requestOptions = {
+   method: 'GET',
+   headers: myHeaders,
+   redirect: 'follow',
+   url : 'http://127.0.0.1:4523/m1/2783543-0-default/batchHttp'
+};
+
+bh.exec({items:array,reqOptions:requestOptions,chunkCallback: res=>{
+  console.log(141,res)
+}})
+
+
+</script>
+
+</html>

@@ -89,7 +89,7 @@ class BatchHttp {
         method : reqOptions.method || 'GET' ,
         data : reqOptions.data ,
         success : res => {
-          console.log(93,item,res)
+          // console.log(93,item,res)
           resolve({sourceItem:item,res})}
       })
       // console.log(81,task,this.resTasks)
@@ -131,15 +131,6 @@ class BatchHttp {
     for(let ckg of promiseChunks) {
       const ck = ckg.map(i => this.singleRequest(reqOptions,data[i]))
       if(this.canceled) break 
-      console.log(125,ckg , ck )
-      // ck.forEach(p=>{
-      //   p.then(res=>{
-      //     console.log(136,res)
-      //     chunkCallback(res)
-      //   }).catch(err=>{
-      //     chunkCallback(err)
-      //   })
-      // })
       const ckRes = await Promise.all(ck)
       chunkCallback(ckRes)
     }
@@ -165,7 +156,7 @@ class BatchHttp {
 }
 
 let array = [] 
-for(let i = 0 ; i < 1.2e2;i++) {
+for(let i = 0 ; i < 3.2e1;i++) {
   array.push(i) 
 }
 let bh = new BatchHttp()

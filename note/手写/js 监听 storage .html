@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多接口分批处理</title>
+</head>
+<body>
+  <a href="https://www.jianshu.com/p/89f6d0629af4">localStorage和sessionStorage的监听</a>
+</body>
+
+<script>
+function dispatchEventStorage(){
+  const setLocItem = localStorage.setItem ,
+        setSecItem = sessionStorage.setItem
+  localStorage.setItem = function (key,val) {
+    var setItemEvent = new Event('setItemEvent')
+    setItemEvent.storageType = 'localStorage'
+    setItemEvent.value = val 
+
+    const customEvent = new CustomEvent('customSetItemEvent',{
+      detail : {
+        key ,
+        value:val
+      }
+    })
+
+    window.dispatchEvent(setItemEvent)
+    window.dispatchEvent(customEvent)
+    setLocItem.call(this,...arguments)
+  }
+  sessionStorage.setItem = function (key,val) {
+    var setItemEvent = new Event('setItemEvent')
+    setItemEvent.storageType = 'sessionStorage'
+    setItemEvent.value = val 
+    window.dispatchEvent(setItemEvent)
+    setSecItem.apply(this,arguments)
+  }
+}
+
+dispatchEventStorage()
+
+window.addEventListener('setItemEvent',function (event) {
+  // console.log(event)
+})
+window.addEventListener('customSetItemEvent',e=>{
+  // console.log(45,e)
+})
+
+let s = window.localStorage.getItem('num') 
+console.log(27,s)
+setInterval(() => {
+  window.localStorage.setItem('num',s < 100 ? s++ : 0)
+}, 5e3);
+
+</script>
+
+</html>

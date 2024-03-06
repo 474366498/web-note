@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script type="text/javascript" src="//unpkg.com/vue@3.1.5/dist/vue.global.js?"></script>
+</head>
+<body>
+  <script >
+    console.log(11,Vue)
+    const { compile  } = Vue 
+    let template = `
+      <div class='div' data-id='d' >
+        <ul class='list'>
+          <li @click="e=>clickLi(e)">1</li>  
+          <li>2</li>  
+        </ul>
+        <ul v-if="flg">
+          <li v-for="item in items" key="item.id" >{{item.name}}</li>  
+        </ul>
+      </div>
+    `
+    let ast = compile(template)
+    console.log(ast)
+    /* ast 
+
+    (function anonymous(
+) {
+const _Vue = Vue
+const { createVNode: _createVNode, createCommentVNode: _createCommentVNode } = _Vue
+
+const _hoisted_1 = {
+  class: "div",
+  "data-id": "d"
+}
+const _hoisted_2 = { class: "list" }
+const _hoisted_3 = /*#__PURE__* /_createVNode("li", null, "2", -1 /* HOISTED * /)
+const _hoisted_4 = { key: 0 }
+const _hoisted_5 = { key: "item.id" }
+
+return function render(_ctx, _cache) {
+  with (_ctx) {
+    const { createVNode: _createVNode, renderList: _renderList, Fragment: _Fragment, openBlock: _openBlock, createBlock: _createBlock, toDisplayString: _toDisplayString, createCommentVNode: _createCommentVNode } = _Vue
+
+    return (_openBlock(), _createBlock("div", _hoisted_1, [
+      _createVNode("ul", _hoisted_2, [
+        _createVNode("li", { onClick: e=>clickLi(e) }, "1", 8 /* PROPS * /, ["onClick"]),
+        _hoisted_3
+      ]),
+      flg
+        ? (_openBlock(), _createBlock("ul", _hoisted_4, [
+            (_openBlock(true), _createBlock(_Fragment, null, _renderList(items, (item) => {
+              return (_openBlock(), _createBlock("li", _hoisted_5, _toDisplayString(item.name), 1 /* TEXT * /))
+            }), 128 /* KEYED_FRAGMENT * /))
+          ]))
+        : _createCommentVNode("v-if", true)
+    ]))
+  }
+}
+})
+
+    */
+  </script>
+</body>
+</html>

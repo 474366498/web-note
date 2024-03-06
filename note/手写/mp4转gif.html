@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mp4转gif</title>
+</head>
+<body>
+  <a href="https://juejin.cn/post/7342750487874240531">纯前端也能实现视频转GIF </a>
+  <a href="https://www.zhangxinxu.com/wordpress/2023/11/mp4box-js-webcodecs-mp4-canvas/"> mp4box.js加WebCodecs 解码MP4视频帧并渲染 </a>
+  // HTML部分
+<div id="dropArea" style="width:200px; height:200px; border:1px solid #ccc;">
+  将文件拖到此处
+  <input id="fileBtn" type="file"  value="选择文件" />
+</div>
+ 
+
+</body>
+<script src="//gpac.github.io/mp4box.js/dist/mp4box.all.js?"></script>
+<script>
+// JavaScript部分
+var dropArea = document.getElementById('dropArea'); // 获取容器元素
+var fileBtn = document.getElementById('fileBtn') 
+// 当有文件被拖入时触发dragenter事件
+dropArea.addEventListener("dragenter", function(event) {
+    event.preventDefault(); // 阻止默认行为
+});
+ 
+// 当有文件正在进入目标区域时触发dragover事件
+dropArea.addEventListener("dragover", function(event) {
+    event.preventDefault(); // 阻止默认行为
+});
+ 
+// 当有文件从目标区域移除或者其他地方松开鼠标按钮时触发dragleave事件
+dropArea.addEventListener("dragleave", function(event) {
+    event.preventDefault(); // 阻止默认行为
+});
+ 
+// 当有文件被拖放到目标区域并松开鼠标按钮时触发drop事件
+dropArea.addEventListener("drop", function(event) {
+    event.preventDefault(); // 阻止默认行为
+    console.log(39,event)
+    var files = event.dataTransfer.files; // 获取所有被拖放的文件对象数组
+    if(files.length< 1) return
+    uploadFile(files[0])
+    // for (var i = 0; i < files.length; i++) {
+    //     var file = files[i];
+    //     uploadFile(file);
+    // }
+});
+ 
+fileBtn.addEventListener('change',({target})=>{
+  if(target.files.length < 1) return 
+  uploadFile(target.files[0])
+  // for(let i = 0 ; i < target.files.length;i++) {
+  // }
+})
+function uploadFile(file) {
+  console.log(48,file)
+  if(file.type !== 'video/mp4') return 
+  videoTrack = null 
+  videoDecoder = null 
+  videoFrames.length = 0 
+  nbSampleTotal = 0 
+  countSample = 0 
+  mp4box.stop()
+  
+    // 这里编写上传文件的代码，可以使用Ajax或FormData等技术与服务器交互
+  fileToArrayBuffer(file)  
+  
+}
+var mp4box = MP4Box.createFile() 
+// 视频轨道
+var videoTrack = null ,
+// 视频解码器
+videoDecoder = null ,
+// 解码视频画面列表
+videoFrames = []
+let nbSampleTotal = 0 , countSample = 0 
+
+const getExtradata = () => {
+    const entry = mp4box.moov.traks[0].mdia.minf.stbl.stsd.entries[0] 
+    // console.log(143,entry , DataStream.BIG_ENDIAN) 
+    const box = entry.avcC ?? entry.hvcC ?? entry.vpcC 
+    if(box !== null) {
+      const stream = new DataStream(undefined,0,DataStream.BIG_ENDIAN)
+      box.write(stream)
+      return new Uint8Array(stream.buffer.slice(8))
+    }
+  }
+
+// file转buffer
+function fileToArrayBuffer(file) {
+    const reader = new FileReader()
+    reader.onload = e => {
+      let buffer = e.target.result
+      buffer.fileStart = 0 
+      console.log(96,buffer)
+      mp4box.appendBuffer(buffer)
+      mp4box.flush()
+    } 
+    reader.readAsArrayBuffer(file)
+}
+mp4box.onReady = function (info){
+  console.log(83,info)
+  videoTrack = info.videoTracks[0]
+  if(videoTrack !== null) {
+    mp4box.setExtractionOptions(videoTrack.id,'video',{nbSamples:1e2})
+  }
+
+  const videoW = videoTrack.track_width , videoH = videoTrack.track_height 
+
+  videoDecoder = new VideoDecoder({
+    output : (frame) => {
+      createImageBitmap(frame).then(img => {
+        videoFrames.push({
+          img ,
+          duration:frame.duration ,
+          timestamp : frame.timestamp
+        })
+        frame.close()
+        if(videoFrames.length === nbSampleTotal){
+          console.log(114 , videoFrames)
+          drawCanvas()
+        }
+      })
+    },
+    error : error => {
+      console.error(error)
+    }
+  })
+
+  nbSampleTotal = videoTrack.nb_samples 
+
+  videoDecoder.configure({
+    codec : videoTrack.codec ,
+    codeWidth : videoW ,
+    codeHeight : videoH ,
+    description : getExtradata() 
+  })
+
+  mp4box.start()
+}
+
+// samples其实就是采用数据了
+mp4box.onSamples = function (trackId,ref,samples) {
+  console.log(86,trackId,ref,samples)
+  if(videoTrack.id === trackId) {
+    // mp4box.stop() 
+    countSample += samples.length 
+
+    for(let sample of samples) {
+      let type = sample.is_sync?'key':'delta' 
+      const chunk = new EncodedVideoChunk({
+        type ,
+        timestamp:sample.cts ,
+        duration : sample.duration ,
+        data : sample.data
+      }) 
+      videoDecoder.decode(chunk)
+    }
+
+    if(countSample === nbSampleTotal) {
+      videoDecoder.flush()
+    }
+  }
+}
+
+
+function drawCanvas () {
+  console.log(videoFrames)
+  let index = 0 
+  let canvas = document.createElement('canvas') 
+  canvas.setAttribute('id','canvas')
+  document.body.append(canvas)
+  let ctx = canvas.getContext('2d') 
+  let timer
+  const draw = () => {
+    if(!videoFrames[index]) {
+      timer && clearTimeout(timer)
+      return 
+    }
+    let img = videoFrames[index].img
+    canvas.width = img.width 
+    canvas.height = img.height 
+    ctx.drawImage(img,0,0,img.width,img.height)
+    index ++
+    if(index === videoFrames.length) {
+      index = 0
+    }
+    timer = setTimeout(() => {
+      draw()
+    }, 5e1);
+  }
+
+  draw()
+
+}
+
+</script>
+
+</html>

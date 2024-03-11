@@ -63,3 +63,28 @@ function convertBase(num, formBase = 16, toBase = 10) {
 function uniCharCode(uniTen) {
   return String.fromCharCode(uniTen)
 }
+
+/** 复制节点文本内容 
+ * @param {string} text 是复制的字符串
+ */
+
+function copyToClipboard(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        console.log('copy success')
+      })
+      .catch(error => {
+        console.error('copy error', error)
+      })
+  } else {
+    let txt = document.createElement('input')
+    txt.value = text
+    document.body.append(txt)
+    txt.select()
+    document.execCommand('copy')
+    txt.parentNode.removeChild(txt)
+  }
+}
+
+

@@ -80,6 +80,7 @@ function copyToClipboard(text) {
   } else {
     let txt = document.createElement('input')
     txt.value = text
+    txt.type = 'hidden'
     document.body.append(txt)
     txt.select()
     document.execCommand('copy')

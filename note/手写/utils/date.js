@@ -1,6 +1,6 @@
 /**
  * 时间格式转化 
- * @param {*} date 数字(秒)或时间擢
+ * @param {*} date 数字(秒)或时间擢 如果是毫秒数字长度就是13位
  * @param {*} fmt 格式化格式
  * @returns 
  */
@@ -10,7 +10,9 @@ function formatDate(date, fmt = 'yyyy-MM-dd hh:mm:ss') {
   if (typeof date === 'string') {
     return date
   } else if (typeof date === 'number') {
-    date = new Date(date * 1E3)
+    // console.log(13, ('' + date).length)
+    // date 可能是秒 也可以是毫秒 通过长度判断一下
+    date = new Date(('' + date).length > 12 ? date : date * 1E3)
   }
   let o = {
     'M+': date.getMonth() + 1, // 月份
@@ -35,4 +37,5 @@ function formatDate(date, fmt = 'yyyy-MM-dd hh:mm:ss') {
   return fmt
 }
 
-console.log(formatDate(new Date(), 'yyyy-M-d h:m:s'))
+// console.log(formatDate(new Date(), 'yyyy-M-d h:m:s'))
+console.log(formatDate(1710298637205), Date.now())

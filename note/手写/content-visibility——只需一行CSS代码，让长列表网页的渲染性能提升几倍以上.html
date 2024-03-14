@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <title>content-visibility</title>
+    <style type="text/css">
+      .card {
+        position: relative;
+        overflow: hidden;
+        transition-duration: 0.3s;
+        margin-bottom: 10px;
+        width: 200px;
+        height: 100px;
+        background-color: #ffaa00;
+        /* 572   在class为card中添加 content-visibility: auto;： */
+        content-visibility: auto; 
+         /*当元素的部分内容如<img />标签这种，元素的高度是有图片内容决定的，因此在这种情况下，如果使用content-visibility，则可见视图外的img初始未渲染，高度为0，随着滚动条向下滑动，页面高度增加，会导致滚动条的滚动有问题  */
+        contain-intrinsic-size : 100px;
+      }
+      .card:before {
+        content: '';
+        position: absolute;
+        left: -665px;
+        top: -460px;
+        width: 300px;
+        height: 15px;
+        background-color: rgba(255, 255, 255, 0.5);
+        transform: rotate(-45deg);
+        animation: searchLights 2s ease-in 0s infinite;
+      }
+      @keyframes searchLights {
+        0% {
+        }
+        75% {
+          left: -100px;
+          top: 0;
+        }
+        100% {
+          left: 120px;
+          top: 100px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <p > <a href="https://juejin.cn/post/6908521872577527822">掘金~ content-visibility——只需一行CSS代码，让长列表网页的渲染性能提升几倍以上！</a> </p>
+    <div class="card"></div>
+    <div class="card"></div>
+    <!-- ... -->
+    <!-- 此处省略97个<div class="card"></div> -->
+    <!-- ... -->
+    <div class="card"></div>
+  </body>
+  <script>
+    window.onload = function () {
+      for(let i = 0 ; i < 3e2;i++) {
+        let d = document.createElement('div')
+        d.classList = 'card' 
+        document.body.append(d)
+      }
+    }
+  </script>
+</html>

@@ -119,7 +119,7 @@ function blobToBuffer(blob, callback) {
  * @param {*} mimeType 文件类型
  */
 function base64ToFile(dataUrl, fileName, mimeType = null) {
-  const arr = dataUrl.split(','),
+  let arr = dataUrl.split(','),
     defaultMimeType = arr[0].match(/:(.*?);/)[1],
     bStr = atob(arr[1]),
     n = bStr.length,

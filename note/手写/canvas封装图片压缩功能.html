@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>如何使用Canvas封装图片压缩功能</title>
+</head>
+<body>
+  <p><a href="https://mp.weixin.qq.com/s/JbJQvEMMZsYTQjlDM4D-sA">实用技能！如何使用Canvas封装图片压缩功能</a></p>
+  <input type="file" id="upload" /> 
+
+  <script>
+    const ACCEPT = ['image/jpg', 'image/png', 'image/jpeg'] // 所能接受的类型（自定义）
+    const MAXSIZE = 3 * 1024 * 1024 // 上传图片大小限制（自定义）
+    const MAXSIZE_STR = '3MB'
+    let upload = document.getElementById('upload')
+
+    upload.addEventListener('change',event => {
+      let [file] = event.target.files 
+      if(!file) return 
+      let { type : fileType , size : fileSize} = file 
+
+      if(!ACCEPT.includes(fileType)) {
+        upload.value = ''
+        return 
+      }
+      if(fileSize > MAXSIZE) {
+        upload.value = ''
+        return 
+      }
+      coverImageToBase64(file,base64 => {
+        compress(base64,(n)=>{
+          let f = base64ToFile(n,'yaya.png')
+          console.log(33,n , f)
+        })
+      })
+    })
+
+    function base64ToFile(dataUrl, fileName, mimeType = null) {
+      let arr = dataUrl.split(','),
+        defaultMimeType = arr[0].match(/:(.*?);/)[1],
+        bStr = atob(arr[1]),
+        n = bStr.length,
+        u8arr = new Uint8Array(n)
+      while (n--) {
+        u8arr[n] = bStr.charCodeAt(n)
+      }
+      return new File([u8arr], fileName, { type: mimeType || defaultMimeType })
+    }
+
+    const coverImageToBase64 = (file,callback) => {
+      let reader = new FileReader() 
+      reader.readAsDataURL(file) 
+      reader.onload = function () {
+        callback && callback(reader.result)
+        reader = null 
+      }
+    } , 
+    compress = (b64 , callback = ()=>{}) => {
+      // console.log(45,b64)
+      let maxSize =  8e2 , w , h 
+      const image = document.getElementById('img') || new Image ()
+      image.setAttribute('id','img')
+      image.src = b64 
+      document.body.append(image)
+      image.onload = function (event) {
+        console.log(53,image)
+        let ratio = image.naturalWidth / image.naturalHeight 
+        if(ratio > 1) {
+          console.log('长图')
+          w = image.naturalWidth > maxSize ? maxSize : image.naturalWidth 
+          h = image.naturalWidth > maxSize ? maxSize / ratio : image.naturalHeight 
+        }else {
+          console.log('窄图')
+          h = image.naturalHeight > maxSize ? maxSize : image.naturalHeight 
+          w = image.naturalHeight > maxSize ? maxSize * ratio : image.naturalWidth
+        }
+        
+        const canvas = document.createElement('canvas')
+        canvas.width = w 
+        canvas.height = h
+        const ctx = canvas.getContext('2d') 
+        ctx.clearRect(0,0,w,h)
+        ctx.drawImage(image,0,0,w,h) 
+        const compressImage = canvas.toDataURL('image/png',1)
+        let newImage = document.getElementById('new_img') || document.createElement('img')
+        newImage.setAttribute('id' ,'new_img')
+        newImage.src = compressImage
+        document.body.append(newImage)
+        canvas.parentNode.removeChild(canvas)
+        callback&&callback(compressImage)
+      }
+    }
+
+  </script>
+</body>
+</html>

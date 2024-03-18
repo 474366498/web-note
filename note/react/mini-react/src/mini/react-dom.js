@@ -41,6 +41,7 @@ export function renderDom(element) {
     // type 是 html 标签 
     dom = document.createElement(type)
   } else if (typeof type === 'function') {
+    console.log(44, element)
     dom = document.createDocumentFragment()
     // if (type.prototype.isReactComponent) {
     //   // 类组件 
@@ -64,15 +65,37 @@ export function renderDom(element) {
   //     dom.appendChild(childrenDom)
   //   }
   // }
-  updateAttributes(dom, attributes)
+  updateAttributes(dom, attributes, null)
   return dom
 }
 
 
-function updateAttributes(el, attributes) {
+export function updateAttributes(el, attributes, oldAttributes) {
+
+  if (oldAttributes) {
+    Object.keys(oldAttributes).forEach(key => {
+      if (key.startsWith('on')) {
+        let eventName = key.slice(2).toLowerCase()
+        el.removeEventListener(eventName, oldAttributes[key])
+      } else if (key === 'className') {
+        let classes = oldAttributes[key].split(' ')
+        classes.forEach(_ => {
+          el.classList.remove(_)
+        })
+      } else if (key === 'style') {
+        let style = oldAttributes[key]
+        Object.keys(style).forEach(s => {
+          el.style[s] = 'initial'
+        })
+      } else {
+        el[key] = ''
+      }
+    })
+  }
+
   Object.keys(attributes).forEach(key => {
     if (key.startsWith('on')) {
-      console.log('event')
+      // console.log('event')
       let eventName = key.slice(2).toLocaleLowerCase()
       el.addEventListener(eventName, attributes[key])
     } else if (key === 'className') {

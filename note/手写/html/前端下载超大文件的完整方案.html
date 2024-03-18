@@ -6,11 +6,296 @@
   <title>前端下载超大文件的完整方案</title>
 </head>
 <body>
-  <p><a href="https://juejin.cn/post/7346430066152407040?utm_source=gold_browser_extension">前端下载超大文件的完整方案</a></p>
+  <p><a target="_blank" href="https://juejin.cn/post/7346430066152407040?utm_source=gold_browser_extension">前端下载超大文件的完整方案</a>
+    </p>
+    <p> <a target="_blank" href="https://juejin.cn/post/7237840998986170426">前端超大大文件上传</a></p>
+  <button id="btn"> click download </button>
   
 <!-- https://zcfile.cdxyun.cn/UploadFilesZCJD/UploadFiles/officepublicfiles/2020-10-16/560e068c1eed4e588c42f08a1ea7cce8.mp4 -->
   <script>
     
+    class FileDownloader  {
+      constructor(url,fileName , chunkSize = 2 * 1024 * 1024) {
+        this.url = url 
+        this.fileName = fileName 
+        this.chunkSize = chunkSize 
+        this.fileSize = 0 
+        this.totalChunks = 0
+        this.currentChunk = 0
+        this.downloadedSize = 0 
+        this.chunks = [] 
+        this.abortController = new AbortController()
+        this.paused = false 
+
+      }
+      // 获取文件大小 分片数量 
+      async getFileSize () {
+        let { url , abortController } = this 
+        let abort = new AbortController()
+        const response = await fetch(url,{signal:abort.signal}) 
+        const contentLength = response.headers.get('content-length')
+        console.log('contentLength:',contentLength)
+        this.fileSize = Number(contentLength)
+        this.totalChunks = Math.ceil(this.fileSize / this.chunkSize)
+        abort.abort()
+      }
+
+      async downloadChunk(index) {
+        let start = index * this.chunkSize , end = Math.min(this.fileSize , (index + 1) * this.chunkSize - 1) 
+        const response = await fetch(this.url , {
+          signal : this.abortController.signal ,
+          headers:{ Range : `bytes=${start}-${end}`}
+        })
+        const blob = await response.blob() 
+        this.chunks[index] = blob 
+        this.downloadedSize += blob.size 
+
+        if(!this.paused && this.currentChunk < this.totalChunks - 1) {
+          this.currentChunk ++ 
+          this.downloadChunk(this.currentChunk)
+        }else if (this.currentChunk === this.totalChunks - 1) {
+          console.log('下载完成 合并')
+          this.mergeChunks()
+        }
+      }
+
+      async mergeChunks () {
+        const blob = new Blob(this.chunks,{type : 'application/octet-stream'})
+        const url = window.URL.createObjectURL(blob)
+        let link = document.createElement('a') 
+        link.href = url 
+        link.download = this.fileName 
+        document.body.appendChild(link) 
+        link.click() 
+        setTimeout(() => {
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+        }, 10);
+      }
+
+      async start () {
+        if(this.chunks.length === 0) {
+          await this.getFileSize()
+        }
+        this.downloadChunk(this.currentChunk)
+      }
+
+      pause () {
+        this.paused = true 
+      }
+      restart() {
+        this.paused = false 
+        this.downloadChunk(this.currentChunk)
+      }
+
+      cancel () {
+        this.abortController.abort() 
+        this.chunks = [] 
+        this.currentChunk = 0 
+        this.downloadedSize = 0
+      }
+
+    }
+
+
+
+    // const url = "https://example.com/largefile.zip";
+    let url = 'https://zcfile.cdxyun.cn/UploadFilesZCJD/UploadFiles/officepublicfiles/2020-10-16/560e068c1eed4e588c42f08a1ea7cce8.mp4' // 600M
+    // let url ='https://zcfile.cdxyun.cn/UploadFilesZCJD/UploadFiles/officepublicfiles/2023-04-23/9f68269d7e0d4823aa3d96db86d43f29.rar' // 3.79M
+    const fileName = "cce8.mp4";
+    const downloader = new FileDownloader(url,fileName)
+    let status = '' 
+    document.getElementById('btn').addEventListener('click',()=>{
+      console.log(100,status)
+      switch (status) {
+        case '':
+        downloader.start() 
+          status = 'paly'
+          break;
+        case 'paly':
+          downloader.pause()
+          status ='paused'
+          break
+        default:
+          downloader.restart()
+          status = 'paly'
+          break;
+      } 
+    })
+
+
+    class IndexedDBWrapper {
+      constructor (dbName , storeName) {
+        this.dbName = dbName
+        this.storeName = storeName 
+        this.db = null 
+      }
+
+      openDatabase () {
+        return new Promise((resolve,reject) =>{
+          const request = indexedDB.open(this.dbName) 
+          request.onerror = ()=> {
+            console.error('Failed to open database')
+            reject()
+          }
+          request.onsuccess = () => {
+            this.db = request.result 
+            resolve()
+          }
+          request.onupgradeneeded = ()=>{
+            this.db = request.result 
+            if(!this.db.objectStoreNames.contains(this.storeName)) {
+              this.db.createObjectStore(this.storeName,{keyPath:'id'})
+            }
+          }
+
+        })
+      }
+
+      addData(data) {
+        return new Promise((res,rej) => {
+          const transaction = this.db.transaction(this.storeName,'readwrite') 
+          const objectStore = transaction.objectStore(this.storeName)
+          const request = objectStore.add(data) 
+          request.onerror = (error) =>{
+            console.log('Failed to add data',error)
+            rej()
+          }
+          request.onsuccess = () => {
+            res()
+          }
+        })
+      }
+
+      getDataById(id) {
+        return new Promise((res,rej) =>{
+          const transaction = this.db.transaction([this.storeName],'readonly')
+          const objectStore = transaction.objectStore(this.storeName)
+          const request = objectStore.get(id)
+
+          request.onerror = (error)=>{
+            console.error(`Failed to get data with id: ${id}`,error)
+            rej()
+          }
+
+          request.onsuccess = () =>{
+            res(request.result)
+          }
+        })
+      }
+
+      getAllData () {
+        return new Promise((res,rej) =>{
+          const transaction = this.db.transaction([this.storeName],'readonly')
+          const objectStore = transaction.objectStore(this.storeName)
+          const request = objectStore.getAll()
+          request.onerror = (error)=>{
+            console.error(`Failed to get all data`,error)
+            rej()
+          }
+
+          request.onsuccess = () =>{
+            res(request.result)
+          }
+        })
+      }
+
+      updateData (data) {
+        return new Promise((res,rej) =>{
+          const transaction = this.db.transaction([this.storeName],'readwrite')
+          const objectStore = transaction.objectStore(this.storeName)
+          const request = objectStore.put(data)
+          request.onerror = ()=>{
+            console.error(`Failed to update data`)
+            rej()
+          }
+
+          request.onsuccess = () =>{
+            res()
+          }
+        })
+      }
+
+      deleteDataById (id) {
+        return new Promise((res,rej) =>{
+          const transaction = this.db.transaction([this.storeName],'readwrite')
+          const objectStore = transaction.objectStore(this.storeName)
+          const request = objectStore.delete(id)
+          request.onerror = ()=>{
+            console.error(`Failed to delete data with id: ${id}`)
+            rej()
+          }
+
+          request.onsuccess = () =>{
+            res()
+          }
+        })
+      }
+
+      deleteStore () {
+        return new Promise((res,rej)=>{
+          const version = this.db.version + 1
+          this.db.close()
+          const request = indexedDB.open(this.dbName, version);
+
+          request.onupgradeneeded = () => {
+            this.db = request.result;
+            this.db.deleteObjectStore(this.storeName);
+            res();
+          };
+
+          request.onsuccess = () => {
+            res();
+          };
+
+          request.onerror = () => {
+            console.error("Failed to delete object store");
+            rej();
+          };
+        })
+      }
+
+    }
+    
+    const dbName = "myDatabase";
+    const storeName = "myStore";
+
+    const dbWrapper = new IndexedDBWrapper(dbName, storeName);
+
+    dbWrapper.openDatabase().then(() => {
+      const data = { id: 1, name: "John Doe", age: 30 };
+
+      dbWrapper.addData(data).then(() => {
+        console.log("Data added successfully");
+        dbWrapper.getDataById(1).then((result) => {
+          console.log("Data retrieved:", result);
+          
+          const updatedData = { id: 1, name: "Jane Smith", age: 35 };
+        
+          dbWrapper.updateData(updatedData).then(() => {
+            console.log("Data updated successfully");
+
+            dbWrapper.getDataById(1).then((updatedResult) => {
+              console.log("Updated data retrieved:", updatedResult);
+
+              dbWrapper.deleteDataById(1).then(() => {
+                console.log("Data deleted successfully");
+
+                dbWrapper.getAllData().then((allData) => {
+                  console.log("All data:", allData);
+
+                  dbWrapper.deleteStore().then(() => {
+                    console.log("Object store deleted successfully");
+                  });
+                });
+              });
+            });
+          });
+          
+        });
+      });
+    });
+
   </script>
 </body>
 </html>

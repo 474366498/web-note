@@ -168,7 +168,100 @@ function pressImg(file, quality = .8, callback = (e) => { console.log(e) }, size
 // blob base64 file base64 end
 
 
+/** 
+ * 大文件分片下载 类
+ * @param {string} url 文件下载地址
+ * @param {string} fileName 文件名
+ * @param {number} chunkSize 分片每片大小
+ * @returns {class} {start : fn ,pause:fn , restart:fn ,cancel:fn } 
+ */
+class FileDownloader {
+  constructor(url, fileName, chunkSize = 2 * 1024 * 1024) {
+    this.url = url
+    this.fileName = fileName
+    this.chunkSize = chunkSize
+    this.fileSize = 0
+    this.totalChunks = 0
+    this.currentChunk = 0
+    this.downloadedSize = 0
+    this.chunks = []
+    this.abortController = new AbortController()
+    this.paused = false
 
+  }
+  // 获取文件大小 分片数量 
+  async getFileSize() {
+    let { url, abortController } = this
+    let abort = new AbortController()
+    const response = await fetch(url, { signal: abort.signal })
+    const contentLength = response.headers.get('content-length')
+    console.log('contentLength:', contentLength)
+    this.fileSize = Number(contentLength)
+    this.totalChunks = Math.ceil(this.fileSize / this.chunkSize)
+    abort.abort()
+  }
+
+  async downloadChunk(index) {
+    let start = index * this.chunkSize, end = Math.min(this.fileSize, (index + 1) * this.chunkSize - 1)
+    const response = await fetch(this.url, {
+      signal: this.abortController.signal,
+      headers: { Range: `bytes=${start}-${end}` }
+    })
+    const blob = await response.blob()
+    this.chunks[index] = blob
+    this.downloadedSize += blob.size
+
+    if (!this.paused && this.currentChunk < this.totalChunks - 1) {
+      this.currentChunk++
+      this.downloadChunk(this.currentChunk)
+    } else if (this.currentChunk === this.totalChunks - 1) {
+      console.log('下载完成 合并')
+      this.mergeChunks()
+    }
+  }
+
+  async mergeChunks() {
+    const blob = new Blob(this.chunks, { type: 'application/octet-stream' })
+    const url = window.URL.createObjectURL(blob)
+    let link = document.createElement('a')
+    link.href = url
+    link.download = this.fileName
+    document.body.appendChild(link)
+    link.click()
+    setTimeout(() => {
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    }, 10);
+  }
+  // 开始下载
+  async start() {
+    if (this.chunks.length === 0) {
+      await this.getFileSize()
+    }
+    this.downloadChunk(this.currentChunk)
+  }
+  // 暂停下载
+  pause() {
+    this.paused = true
+  }
+  // 重新下载
+  restart() {
+    this.paused = false
+    this.downloadChunk(this.currentChunk)
+  }
+  // 清空下载信息
+  cancel() {
+    this.abortController.abort()
+    this.chunks = []
+    this.currentChunk = 0
+    this.downloadedSize = 0
+  }
+
+}
+
+let url = 'https://zcfile.cdxyun.cn/UploadFilesZCJD/UploadFiles/officepublicfiles/2020-10-16/560e068c1eed4e588c42f08a1ea7cce8.mp4' // 600M
+const fileName = "cce8.mp4";
+const downloader = new FileDownloader(url, fileName)
 
 
 

@@ -67,6 +67,14 @@ function getBrowserType() {
   return ''
 }
 
+// 判断是否是fromData
+function isFromData(obj) {
+  return Object.prototype.toString.call(obj) === '[object FormData]'
+}
+
+
+
+
 /**
  * 通过链接下载文件
  * @param {*} url 

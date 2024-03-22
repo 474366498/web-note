@@ -1,6 +1,6 @@
 
 import { activePinia, piniaSymbol, setActivePinia, Pinia } from "./rootStore"
-import { computed, effectScope, getCurrentInstance, inject, isRef, isReactive, reactive, toRefs, watch } from "vue"
+import { computed, effectScope, getCurrentInstance, inject, isRef, isReactive, reactive, toRefs, watch, EffectScope } from "vue"
 import { isString, isFunction, isObject } from "./utils"
 import {
   addSubscription,
@@ -116,7 +116,7 @@ function createStore(pinia, id) {
 function createSetupStore(id: string, setup: Function, pinia: Pinia, isOptions = false) {
   // console.log(45, id, setup, pinia)
   // store自己的scope,pinia._e是全局的scope
-  let scope
+  let scope: EffectScope
 
   const store = createStore(pinia, id)
 
@@ -184,6 +184,9 @@ function createSetupStore(id: string, setup: Function, pinia: Pinia, isOptions =
   console.log('setup function pinia', pinia, setupStore)
   store.id = id
   pinia._s.set(id, store)
+  pinia._p.forEach(fn => {
+    Object.assign(store, scope.run(() => fn({ store })))
+  })
   Object.assign(store, setupStore)
   return store
 }

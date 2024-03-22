@@ -27,7 +27,7 @@ onMounted(() => {
   setTimeout(() => {
     console.log('停止所有副作用');
     useCounter1.$dispose()
-  }, 5000);
+  }, 50);
 
   // useCounter1.$onAction((option) => {
   //   let { after, onError, args, name, store } = option;

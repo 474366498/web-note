@@ -21,6 +21,7 @@ export function createPinia() {
       setActivePinia(pinia)
       console.log(16, app)
       app.provide(piniaSymbol, pinia)
+      app.config.globalProperties.$pinia = pinia
     },
     state
   }

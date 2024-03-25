@@ -14,6 +14,7 @@ function formatDate(date, fmt = 'yyyy-MM-dd hh:mm:ss') {
     // date 可能是秒 也可以是毫秒 通过长度判断一下
     date = new Date(('' + date).length > 12 ? date : date * 1E3)
   }
+
   let o = {
     'M+': date.getMonth() + 1, // 月份
     'd+': date.getDate(),  //日
@@ -23,12 +24,14 @@ function formatDate(date, fmt = 'yyyy-MM-dd hh:mm:ss') {
     'q+': Math.floor((date.getMonth() + 3) / 3), //季度
     'S': date.getMilliseconds() // 毫秒
   }
+
   if (!date || date == null) return null
 
   if (/(y+)/.test(fmt)) {
     fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
   }
   console.log(25, fmt)
+  // return false
   for (let k in o) {
     if (new RegExp('(' + k + ')').test(fmt)) {
       fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))

@@ -4,7 +4,7 @@
 
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue'
+import { defineComponent, onMounted , effectScope, computed , watch , watchEffect, ref } from 'vue'
 import { store1 ,store2,store3 } from './stores/small' 
 
 
@@ -17,6 +17,37 @@ export default defineComponent({
     console.log('useStore1',useStore1 )
     // console.log('useStore2' , useStore2)
     console.log('useStore3' , useStore3)
+
+    /* 关于 effectScope 
+    // EffectScope 就是类似一个组件的生命周期开始和结束，对应 EffectScope 的 run 和 stop
+    // watch 与 watchEffect  watch:长期对数据进行监听  watchEffect ：一开始对数据进行一次监听
+    const count = ref(5)
+    const scope  = effectScope()
+
+    scope.run(() => {
+      const double = computed(() => count.value * 2) 
+      watch(double, () => {
+        console.log('effectScope watch count change ',double.value)
+      })
+
+      watchEffect(() => {
+        console.log('effectScope watchEffect count change ')
+      })
+    })
+    
+
+    watch(count, (v) => {
+      console.log('watch count',v)
+    })
+    var timer: number 
+    timer = setInterval(() => {
+      if (count.value >= 10) {
+        timer && clearInterval(timer)
+        scope && scope.stop()
+      }
+      count.value++
+    },2e3)
+    */
 
     onMounted(() => {
       

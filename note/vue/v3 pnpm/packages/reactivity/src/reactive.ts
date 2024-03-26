@@ -110,7 +110,8 @@ function createReactiveObject(target, isReadonly, baseHandlers, collectionHandle
   if (targetType === TargetType.INVALID) {
     return target
   }
-
+  // 判断当前代理对象的类型,如果是array object采用baseHandlers
+  // 如果是map set weakMap weakSet采用collectionHandlers
   const proxy = new Proxy(target, targetType === TargetType.COLLECTION ? collectionHandlers : baseHandlers)
   console.log(103, proxy)
   proxyMap.set(target, proxy)

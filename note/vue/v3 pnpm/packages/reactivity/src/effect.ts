@@ -50,6 +50,22 @@ export const ITERATE_KEY = Symbol('iterate')
 export const MAP_KEY_ITERATE_KEY = Symbol('Map key iterate')
 
 export class ReactiveEffect<T = any> {
+  /**
+    * 当前副作用被那些变量所依赖
+    * 例如:
+    *  effect(()=>{
+    *   console.log(proxy.a)
+    *  })
+    *  effect(()=>{
+    *   console.log(proxy.a)
+    *  })
+    *
+    *  每一个effect的回调函数都会产生一个ReactiveEffect实例
+    *  第一个effect中有proxy.a被读取,那么就会被收集依赖,则
+    *  对于第一个ReactiveEffect实例来说deps中就有有proxy.a
+    *  也就是target key 指向的dep,这个dep是一个集合,代表的是
+    *  target key对应的dep
+    */
   active = true
   deps: Dep[] = []
   parent: ReactiveEffect | undefined = undefined
@@ -90,6 +106,21 @@ export class ReactiveEffect<T = any> {
     }
 
     try {
+      //可能有嵌套的effect,当执行到effect回调函数中有effect的时候
+      //现在的activeEffect相当于最新创建的effect的父级effect
+      /*
+        例如:effect(()=>{
+            现在指向外部的effect
+            console.log(proxy.a)
+            effect(()=>{
+              在这里面的时候activeEffect指向内部effect
+              console.log(proxy.b)
+            })
+            现在需要将activeEffect恢复为外部effect
+            console.log(proxy.b)
+        })
+        当然对应的parent也应该改变,这就是try finally的作用
+      */
       this.parent = activeEffect
       activeEffect = this
       shouldTrack = true

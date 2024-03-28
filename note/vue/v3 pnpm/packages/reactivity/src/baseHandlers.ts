@@ -132,6 +132,7 @@ function createSetter(shallow = false) {
     }
     if (!shallow) {
       if (!isShallow(value) && !isReadonly(value)) {
+        //防止如果后面操作了value 引起二次setter
         oldVal = toRaw(oldVal)
         value = toRaw(value)
       }

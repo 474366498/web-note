@@ -33,7 +33,7 @@ const path = require('path')
 
 const bit = 1024
 
-// console.log(31, webpack)
+console.log(31, process.env.NODE_ENV, process.env.VUE_APP_NODE_ENV)
 
 module.exports = {
   publicPath: BASE_URL,

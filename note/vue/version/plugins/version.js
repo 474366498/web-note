@@ -84,16 +84,24 @@ function createVersionFile() {
   fs.readFile(resolve('../package.json'), 'utf-8', (err, data) => {
     if (err) return
     let version = JSON.parse(data).version || '0.0.1'
-    let writeCont = `window.appInfo = {
-      version:'${version}',
-      buildTime : ${Date.now()}
+    let writeJson = `{
+      "version":"${version}",
+      "buildTime" : ${Date.now()}
     }`
+    let writeCont = `window.appInfo = ${writeJson}`
+    fs.writeFile(resolve('../dist/version.json'), writeJson, (error) => {
+      if (error) {
+        console.log(81, err)
+        return
+      }
+      console.log('写入json成功！')
+    })
     fs.writeFile(resolve('../dist/version.js'), writeCont, (error) => {
       if (error) {
         console.log(81, err)
         return
       }
-      console.log('写入成功！')
+      console.log('写入js成功！')
       mergeFileContent()
     })
   })
@@ -102,8 +110,10 @@ function createVersionFile() {
 // 合并代码内容
 function mergeFileContent() {
   let html = fs.readFileSync(resolve('../dist/index.html'), 'utf-8')
-  console.log(html)
+  let newHtml = html.replace('<body>', `<script id="app-version-s" src="./version.js?${Date.now()}"></script><body>`)
+  fs.writeFileSync(resolve('../dist/index.html'), newHtml)
+  console.log(newHtml)
 }
-createVersionFile()
+// createVersionFile()
 
 module.exports = RobotPlugin

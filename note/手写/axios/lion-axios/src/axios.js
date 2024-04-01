@@ -24,5 +24,4 @@ axios.isCancel = isCancel;
 axios.create = function (config) {
   return createInstance(mergeConfig(defaults, config));
 };
-
 export default axios;

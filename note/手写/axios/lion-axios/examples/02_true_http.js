@@ -1,4 +1,4 @@
-const baseURL = "https://reqres.in/api/users";
+const baseURL = "http://127.0.0.1:4523/m1/2783543-0-default/pet";
 
 // axios({
 //   method: "post",
@@ -14,24 +14,43 @@ const baseURL = "https://reqres.in/api/users";
 
 axios({
   method: "get",
-  url: `${baseURL}?foo=bar`,
+  url: `${baseURL + '/' + Math.ceil(Math.random() * 1e2)}?foo=bar`,
   responseType: "json",
   params: {
     bar: "baz",
   },
 }).then((res) => {
-  console.log(res);
+  console.log('get', res);
 });
 
 axios({
-  method: "get",
-  url: `${baseURL}?foo=bar`,
-  params: {
-    bar: "baz1",
-  },
-}).then((res) => {
-  console.log(res);
-});
+  method: 'put',
+  url: `${baseURL}`,
+  responseType: 'json',
+  data: {
+    b: 123
+  }
+}).then(res => {
+  console.log('put', res)
+}).catch(error => {
+  console.error('put', error)
+})
+
+axios.delete(`${baseURL}/${Math.ceil(Math.random() * 1e1)}`, { params: { a: 123 } }).then(res => {
+  console.log('delete', res)
+}).catch(error => {
+  console.error('delete', error)
+})
+
+// axios({
+//   method: "get",
+//   url: `${baseURL}?foo=bar`,
+//   params: {
+//     bar: "baz1",
+//   },
+// }).then((res) => {
+//   console.log(res);
+// });
 
 // axios({
 //   method: "get",

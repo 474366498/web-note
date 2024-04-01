@@ -1,5 +1,5 @@
 axios.defaults.headers.common["test3"] = 123;
-
+console.log(2, axios.defaults)
 const baseURL = "https://reqres.in/api/users";
 
 axios({

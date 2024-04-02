@@ -35,7 +35,7 @@ const starts = Object.create(null),
 // starts 补充内容
 // v1 defaults 里面的内容
 function deepMergeStart(v1, v2) {
-  console.log(36, v1, starts, v2)
+  // console.log(36, v1, starts, v2)
   if (isPlainObject(v2)) {
     return deepMerge(v1, v2)
   } else if (typeof v2 !== 'undefined') {
@@ -53,7 +53,7 @@ function deepMergeStart(v1, v2) {
 
 
 export default function mergeConfig(_, config) {
-  console.log(35, _, config)
+  // console.log(35, _, config)
   if (!config) config = {}
 
   const _config = Object.create(null)
@@ -74,7 +74,7 @@ export default function mergeConfig(_, config) {
     const start = starts[key] || defaultStart
     _config[key] = start(_[key], config[key])
   }
-  console.log(48, _config)
+  // console.log(48, _config)
   return _config
 }
 

@@ -1,7 +1,8 @@
 
 import { transformURL } from './url'
-import { transformData } from './data'
-import { transformHeaders } from "./header"
+// import { transformData } from './data'
+import { transformHeaders, flattenHeaders } from "./header"
+import transform from './transform'
 
 export function isDate(v) {
   return toString.call(v) === '[object Date]'
@@ -34,8 +35,12 @@ export function extend(to, from, ctx) {
 
 export function processConfig(config) {
   config.url = transformURL(config)
-  config.data = transformData(config)
-  config.headers = transformHeaders(config)
+  // config.data = transformData(config)
+  config.data = transform(config.data, config.headers, config.transformRequest)
+  // console.log('utils 41', config)
+  // config.headers = transformHeaders(config)
+  config.headers = flattenHeaders(config.headers, config.method)
+  // console.log('utils 41', config)
 }
 
 export const deepMerge = (...objs) => {

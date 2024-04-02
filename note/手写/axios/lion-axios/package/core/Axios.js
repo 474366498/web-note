@@ -28,7 +28,7 @@ export class Axios {
     }
     // 合并默认配置与用户传进来的配置
     config = mergeConfig(this.defaults, config)
-    console.log(27, config, this.interceptors)
+    // console.log(27, config, this.interceptors)
 
     const chain = [
       {
@@ -44,7 +44,7 @@ export class Axios {
     this.interceptors.response.forEach(r => chain.push(r))
 
     let promise = Promise.resolve(config)
-    console.log(43, promise, chain)
+    // console.log(43, promise, chain)
     let i = 0
     while (i < chain.length) {
       promise = promise.then(chain[i].resolved, chain[i].rejected)

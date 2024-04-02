@@ -1,19 +1,35 @@
+import { parseHeaders } from '../helpers/header'
 
-function parseHeaders() {
-
-}
 // es6 
 export const xhr = config => {
   return new Promise((resolve, reject) => {
-    const { data = null, url, method = 'get', headers = {}, responseType = 'json' } = config
+    console.log(6, config)
+    const {
+      data = null,
+      url,
+      method = 'get',
+      headers = {},
+      responseType = 'json',
+      timeout,
+      cancelToken,
+      withCredentials // 在同域情况下，发送请求会默认携带当前域下的 cookie，但是跨域的情况下，默认是不会携带请求域下的 cookie，如果想携带，只需要设置请求的 xhr 对象的 withCredentials 为 true 即可。
+    } = config
 
     const request = new XMLHttpRequest()
-    request.open(method.toUpperCase(), url, true)
     // 判断用户是否设置了返回数据类型
     if (responseType) {
       request.responseType = responseType
     }
-
+    // 设置timeout
+    if (timeout) {
+      request.timeout = timeout
+    }
+    // 设置跨域 cookie 
+    if (withCredentials) {
+      request.withCredentials = withCredentials
+    }
+    console.log(31, request)
+    request.open(method.toUpperCase(), url, true)
     request.onreadystatechange = () => {
       if (request.readyState !== 4) return
       if (request.status === 0) return
@@ -30,8 +46,21 @@ export const xhr = config => {
         request
       }
       console.log(32, response)
-      resolve(response)
+      if (response.status >= 200 && response.status < 300) {
+        resolve(response)
+      } else {
+        reject()
+      }
     }
+
+    request.onerror = () => {
+      reject()
+    }
+    request.ontimeout = () => {
+      reject()
+    }
+
+    console.log('xhr 35', headers)
     Object.keys(headers).forEach(name => {
       // console.log(36, name, headers[name])
       // Refused to set unsafe header "User-Agent"  拒绝设置不安全标头用户代理
@@ -42,6 +71,17 @@ export const xhr = config => {
         request.setRequestHeader(name, headers[name])
       }
     })
+
+    if (cancelToken) {
+      cancelToken.promise
+        .then(reason => {
+          request.abort()
+          console.log(74, reason)
+          reject(reason)
+        })
+        .catch(() => { })
+    }
+
     request.send(data)
 
   })

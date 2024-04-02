@@ -24,4 +24,4 @@ axios({
     }
   });
 
-source.cancel("Operation canceled by the user.");
+// source.cancel("Operation canceled by the user.");

@@ -1,5 +1,5 @@
 import { parseHeaders } from '../helpers/header'
-
+import { createError } from '../core/error'
 // es6 
 export const xhr = config => {
   return new Promise((resolve, reject) => {
@@ -49,15 +49,37 @@ export const xhr = config => {
       if (response.status >= 200 && response.status < 300) {
         resolve(response)
       } else {
-        reject()
+        reject(
+          createError(
+            `Request failed with status code ${response.status}`,
+            config,
+            null,
+            request,
+            response
+          )
+        )
       }
     }
 
     request.onerror = () => {
-      reject()
+      reject(
+        createError(
+          `Network Error`,
+          config,
+          null,
+          request
+        )
+      )
     }
     request.ontimeout = () => {
-      reject()
+      reject(
+        createError(
+          `Timeout of ${config.timeout} ms exceeded`,
+          config,
+          'ECONNABORTED',
+          request
+        )
+      )
     }
 
     console.log('xhr 35', headers)

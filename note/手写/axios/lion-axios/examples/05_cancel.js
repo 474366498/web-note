@@ -1,6 +1,6 @@
 const CancelToken = axios.CancelToken;
 const source = CancelToken.source();
-const baseURL = "https://reqres.in/api/users";
+const baseURL = "https://reqres.in/api/users ";
 
 axios({
   method: "get",

@@ -1289,3 +1289,5 @@ function getSequence(array) {
 let r = getSequence(arr), r1 = getSequence(arr1)
 // 1, 4, 6, 8 // 1 2 3 5
 console.log(1216, r, r1)
+
+

@@ -1162,6 +1162,11 @@ Promise 代表异步操作的最终结果 jquery用它自己的方式处理 prom
 | chrome| firefox |  ie   |  opera |safari |
 | latest| latest | 10+    | latest | latest |
 
+|123|234|345|
+|:-|:-:|-:|
+|abc|bcd|cde|
+|abc|bcd|cde|
+|abc|bcd|cde|
 
  *** chrome latest *** 
  *** firefox latest *** 

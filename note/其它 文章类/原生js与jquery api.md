@@ -1158,8 +1158,8 @@ Promise 代表异步操作的最终结果 jquery用它自己的方式处理 prom
   + ![npm-dom](http://github.com/npm-dom)以及![webmodules](http://github.com/webmodules) - 在NPM上提供独立DOM模块的组织 
   + 9.1 
 ## 浏览器支持 
-|:----:| :-----: | :-----:|:------:|:-----:|
 | chrome| firefox |  ie   |  opera |safari |
+|:----:| :-----: | :-----:|:------:|:-----:|
 | latest| latest | 10+    | latest | latest |
 
 |123|234|345|

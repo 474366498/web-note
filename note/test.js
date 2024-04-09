@@ -1177,7 +1177,7 @@ str = str.replace(/\&#x[\d\w]{1,};/gi, function ($1) {
 	// console.log(1177, $1)
 	return uniCharCode($1)
 })
-console.log(1180, str)
+// console.log(1180, str)
 
 function uniCharCode(uni) {
 	let uni16 = uni.replace(/\&#x/gi, '')
@@ -1192,7 +1192,7 @@ function convertBase(num, formBase = 16, toBase = 10) {
 
 let s = '4193 with words', _s = '-4234 asdfj'
 
-console.log(_s.match(/[-+]?[0-9]{1,}/g), Number.MAX_SAFE_INTEGER)
+// console.log(_s.match(/[-+]?[0-9]{1,}/g), Number.MAX_SAFE_INTEGER)
 
 
 let arr = [21, 2, 5, 4, 3, 9, 7, 20, 10], arr1 = [12, 3, 5, 7, 4, 8, 1, 9]
@@ -1275,7 +1275,7 @@ function getSequence(array) {
 			result[e] = i
 		}
 	}
-	console.log(77, _result, result)
+	// console.log(77, _result, result)
 	let len = result.length
 	let last = result[len - 1]
 	while (len-- > 0) {
@@ -1288,6 +1288,46 @@ function getSequence(array) {
 
 let r = getSequence(arr), r1 = getSequence(arr1)
 // 1, 4, 6, 8 // 1 2 3 5
-console.log(1216, r, r1)
+// console.log(1216, r, r1)
 
 
+
+const obj = {
+	prop() { },
+	foo: 'bar'
+}
+
+obj.foo = 'baz'
+obj.lumpy = 'woof'
+delete obj.prop
+
+const o = Object.seal(obj)
+
+console.log(o === obj, Object.isSealed(obj))
+
+obj.foo = 'quux'
+
+Object.defineProperty(obj, 'foo', {
+	get() {
+		return 'g'
+	}
+})
+
+obj.quaxxor = 'the friendy duck'
+
+delete obj.foo
+
+console.log(obj, o)
+
+function fail() {
+	'use strict'
+	delete obj.foo
+	obj.sparky = 'arf'
+}
+
+fail()
+
+Object.defineProperty(obj, 'ohai', { value: 17 })
+Object.defindProperty(obj, 'foo', {
+	value: 'edit'
+})

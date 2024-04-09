@@ -312,7 +312,7 @@
 # object 方法 
 ![mdn](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor)
 
-1. assign
+1. assign 复制
 ``` javascript 
 const target = { a: 1, b: 2 };
 const source = { b: 4, c: 5 };
@@ -327,7 +327,60 @@ console.log(returnedTarget === target);
 
 ``` 
 
-2. create 
+``` javascript 
+
+const obj = {
+  foo : 1 ,
+  get bar () {
+    return 2
+  }
+} ,
+obj1 = {
+  a : 10 ,
+  log : ()=>{
+
+  }
+}
+let copy = Object.assign({},obj,obj1) 
+console.log(copy)
+/*
+Object { foo: 1, bar: Getter, a: 10, log: log() }
+  a: 10
+  bar: 
+  foo: 1
+  log: function log()
+  length: 0
+  name: "log"
+  <prototype>: function ()
+  <get bar()>: function bar()
+  <prototype>: Object { … }
+*/
+// 这是一个将完整描述符复制的赋值函数
+function completeAssign(target,...sources) {
+  sources.forEach(source => {
+    const descriptors = Object.keys(source).reduce((descriptors,key)=>{
+      descriptors[key] = Object.getOwnPropertyDescriptor(source,key)
+      return descriptors
+    },{})
+
+    Object.getOwnPropertySymbols(source).forEach(s=>{
+      const descriptor = Object.getOwnPropertyDescriptor(source,s) 
+      if(descriptor.enumerable) {
+        descriptors[s] = descriptor
+      }
+    })
+    Object.defineProperties(target,descriptors)
+  })
+  return target 
+}
+
+copy = completeAssign({},obj,obj1)
+console.log(copy)
+
+```
+
+
+2. create 创建
 ``` javascript 
 const person = {
   isHuman: false,
@@ -345,7 +398,43 @@ me.printIntroduction();
 // Expected output: "My name is Matthew. Am I human? true"
 
 ``` 
-3. defineProperties
+
+``` javascript 
+
+function Shape () {
+  this.x = 0 
+  this.y = 0 
+}
+
+Shape.prototype.move = function (x,y)  {
+  this.x += x 
+  this.y += y 
+  console.info('shape moved')
+}
+
+function Rectangle () {
+  Shape.call(this)
+}
+
+Rectangle.prototype = Object.create(Shape.prototype,{
+  constructor : {
+    value : Rectangle , 
+    enumerable:false ,
+    writable:true ,
+    configurable:true
+  }
+})
+
+const rect = new Rectangle() 
+console.log("rect 是 Rectangle 类的实例吗？", rect instanceof Rectangle); // true
+console.log("rect 是 Shape 类的实例吗？", rect instanceof Shape); // true
+rect.move(1, 1); // 打印 'Shape moved.'
+
+```
+
+
+
+3. defineProperties 编辑或新建属性(多个)
 ``` javascript 
 const object1 = {};
 
@@ -361,7 +450,34 @@ console.log(object1.property1);
 // Expected output: 42
 
 ```
-4. defineProperty 
+
+``` javascript 
+Object.defineProperties(obj, {
+	a: {
+		value: 1,
+		writable: true,
+		enumerable: true
+	},
+	b: {
+		// value: true,
+		enumerable: true,
+		get  () {
+			console.log('get obj.b')
+			return this.value
+		},
+		set: function (v) {
+			console.log('set obj.b', v)
+			this.value = v
+			return true
+		}
+	}
+})
+obj.b = false
+console.log(1376, obj, obj.b)
+
+```
+
+4. defineProperty 编辑或新建属性(一个)
 ``` javascript 
 const object1 = {};
 
@@ -377,7 +493,163 @@ console.log(object1.property1);
 // Expected output: 42
 
 ```
-5. entries 
+
+``` javascript  
+// 默认
+const o = {}; // 创建一个新对象
+
+// 通过 defineProperty 使用数据描述符添加对象属性的示例
+Object.defineProperty(o, "a", {
+  value: 37,
+  writable: true,
+  enumerable: true,
+  configurable: true,
+});
+// 'a' 属性存在于对象 o 中，其值为 37
+
+// 通过 defineProperty 使用访问器属性描述符添加对象属性的示例
+let bValue = 38;
+Object.defineProperty(o, "b", {
+  get() {
+    return bValue;
+  },
+  set(newValue) {
+    bValue = newValue;
+  },
+  enumerable: true,
+  configurable: true,
+});
+o.b; // 38
+// 'b' 属性存在于对象 o 中，其值为 38。
+// o.b 的值现在始终与 bValue 相同，除非重新定义了 o.b。
+
+// 数据描述符和访问器描述符不能混合使用
+Object.defineProperty(o, "conflict", {
+  value: 0x9f91102,
+  get() {
+    return 0xdeadbeef;
+  },
+});
+// 抛出错误 TypeError: value appears only in data descriptors, get appears only in accessor descriptors
+
+```
+
+```javascript 
+// enumerable 
+
+const o = {};
+Object.defineProperty(o, "a", {
+  value: 1,
+  enumerable: true,
+});
+Object.defineProperty(o, "b", {
+  value: 2,
+  enumerable: false,
+});
+Object.defineProperty(o, "c", {
+  value: 3,
+}); // enumerable 默认为 false
+o.d = 4; // 通过赋值创建属性时 enumerable 默认为 true
+Object.defineProperty(o, Symbol.for("e"), {
+  value: 5,
+  enumerable: true,
+});
+Object.defineProperty(o, Symbol.for("f"), {
+  value: 6,
+  enumerable: false,
+});
+
+for (const i in o) {
+  console.log(i);
+}
+// 打印 'a' 和 'd'（总是按这个顺序）
+
+Object.keys(o); // ['a', 'd']
+
+o.propertyIsEnumerable("a"); // true
+o.propertyIsEnumerable("b"); // false
+o.propertyIsEnumerable("c"); // false
+o.propertyIsEnumerable("d"); // true
+o.propertyIsEnumerable(Symbol.for("e")); // true
+o.propertyIsEnumerable(Symbol.for("f")); // false
+
+const p = { ...o };
+p.a; // 1
+p.b; // undefined
+p.c; // undefined
+p.d; // 4
+p[Symbol.for("e")]; // 5
+p[Symbol.for("f")]; // undefined
+
+
+```
+
+``` javascript 
+// configurable 
+const o = {};
+Object.defineProperty(o, "a", {
+  get() {
+    return 1;
+  },
+  configurable: false,
+});
+
+Object.defineProperty(o, "a", {
+  configurable: true,
+}); // 抛出 TypeError
+Object.defineProperty(o, "a", {
+  enumerable: true,
+}); // 抛出 TypeError
+Object.defineProperty(o, "a", {
+  set() {},
+}); // 抛出 TypeError（set 在之前未定义）
+Object.defineProperty(o, "a", {
+  get() {
+    return 1;
+  },
+}); // 抛出 TypeError
+// （即使新的 get 做的事情完全相同）
+Object.defineProperty(o, "a", {
+  value: 12,
+}); // 抛出 TypeError
+// ‘value’只有在 writable 为 true 时才可以被修改
+
+console.log(o.a); // 1
+delete o.a; // 无法删除；严格模式下会抛出错误
+console.log(o.a); // 1
+
+```
+
+``` javascript 
+//set get 
+function Archiver() {
+  let temperature = null;
+  const archive = [];
+
+  Object.defineProperty(this, "temperature", {
+    get() {
+      console.log("get!");
+      return temperature;
+    },
+    set(value) {
+      temperature = value;
+      archive.push({ val: temperature });
+    },
+  });
+
+  this.getArchive = () => archive;
+}
+
+const arc = new Archiver();
+arc.temperature; // 'get!'
+arc.temperature = 11;
+arc.temperature = 13;
+arc.getArchive(); // [{ val: 11 }, { val: 13 }]
+
+
+```
+
+5. entries key value 键值对
 ```javascript 
 const object1 = {
   a: 'somestring',
@@ -393,7 +665,39 @@ for (const [key, value] of Object.entries(object1)) {
 // "b: 42"
 
 ```
-6. freeze 
+
+``` javascript 
+// entries 示例
+
+const obj = { foo: "bar", baz: 42 };
+console.log(Object.entries(obj)); // [ ['foo', 'bar'], ['baz', 42] ]
+
+// 类数组对象
+const obj = { 0: "a", 1: "b", 2: "c" };
+console.log(Object.entries(obj)); // [ ['0', 'a'], ['1', 'b'], ['2', 'c'] ]
+
+// 具有随机键排序的类数组对象
+const anObj = { 100: "a", 2: "b", 7: "c" };
+console.log(Object.entries(anObj)); // [ ['2', 'b'], ['7', 'c'], ['100', 'a'] ]
+
+// getFoo 是一个不可枚举的属性
+const myObj = Object.create(
+  {},
+  {
+    getFoo: {
+      value() {
+        return this.foo;
+      },
+    },
+  },
+);
+myObj.foo = "bar";
+console.log(Object.entries(myObj)); // [ ['foo', 'bar'] ]
+
+
+``` 
+
+6. freeze 冻结对象
 ``` javascript 
 const obj = {
   prop: 42,
@@ -408,7 +712,61 @@ console.log(obj.prop);
 // Expected output: 42
 
 ```
-7. fromEntries 
+
+``` javascript 
+// 冻结对象
+const obj = {
+  prop() {},
+  foo: "bar",
+};
+
+// 冻结前：可以添加新属性，也可以更改或删除现有属性
+obj.foo = "baz";
+obj.lumpy = "woof";
+delete obj.prop;
+
+// 冻结。
+const o = Object.freeze(obj);
+
+// 返回值和我们传入的对象相同。
+o === obj; // true
+
+// 对象已冻结。
+Object.isFrozen(obj); // === true
+
+// 现在任何更改都会失败。
+obj.foo = "quux"; // 静默但什么都没做
+// 静默且没有添加属性
+obj.quaxxor = "the friendly duck";
+
+// 严格模式下，这样的尝试会抛出 TypeError
+function fail() {
+  "use strict";
+  obj.foo = "sparky"; // 抛出 TypeError
+  delete obj.foo; // 抛出 TypeError
+  delete obj.quaxxor; // 返回 true，因为属性‘quaxxor’从未被添加过。
+  obj.sparky = "arf"; // 抛出 TypeError
+}
+
+fail();
+
+// 尝试通过 Object.defineProperty 更改；
+// 下面的两个语句都会抛出 TypeError。
+Object.defineProperty(obj, "ohai", { value: 17 });
+Object.defineProperty(obj, "foo", { value: "eit" });
+
+// 同样无法更改原型
+// 下面的两个语句都会抛出 TypeError。
+Object.setPrototypeOf(obj, { x: 20 });
+obj.__proto__ = { x: 20 };
+
+
+```
+
+
+
+
+7. fromEntries 键值对列表转为一个对象
 ``` javascript 
 const entries = new Map([
   ['foo', 'bar'],
@@ -421,7 +779,66 @@ console.log(obj);
 // Expected output: Object { foo: "bar", baz: 42 }
 
 ```
-8. getOwnPropertyDescriptor
+
+``` javascript 
+let o, d;
+
+o = {
+  get foo() {
+    return 17;
+  },
+};
+d = Object.getOwnPropertyDescriptor(o, "foo");
+console.log(d);
+// {
+//   configurable: true,
+//   enumerable: true,
+//   get: [Function: get foo],
+//   set: undefined
+// }
+
+o = { bar: 42 };
+d = Object.getOwnPropertyDescriptor(o, "bar");
+console.log(d);
+// {
+//   configurable: true,
+//   enumerable: true,
+//   value: 42,
+//   writable: true
+// }
+
+o = { [Symbol.for("baz")]: 73 };
+d = Object.getOwnPropertyDescriptor(o, Symbol.for("baz"));
+console.log(d);
+// {
+//   configurable: true,
+//   enumerable: true,
+//   value: 73,
+//   writable: true
+// }
+
+o = {};
+Object.defineProperty(o, "qux", {
+  value: 8675309,
+  writable: false,
+  enumerable: false,
+});
+d = Object.getOwnPropertyDescriptor(o, "qux");
+console.log(d);
+// {
+//   value: 8675309,
+//   writable: false,
+//   enumerable: false,
+//   configurable: false
+// }
+
+
+```
+
+
+
+
+8. getOwnPropertyDescriptor 该对象描述给定对象上特定属性（即直接存在于对象上而不在对象的原型链中的属性）的配置。返回的对象是可变的，但对其进行更改不会影响原始属性的配置。
 ```javascript 
 const object1 = {
   property1: 42,
@@ -436,7 +853,12 @@ console.log(descriptor1.value);
 // Expected output: 42
 
 ```
-9. getOwnPropertyDescriptors 
+
+
+
+
+9. getOwnPropertyDescriptors 返回给定对象的所有自有属性
+
 ```javascript 
 const object1 = {
   property1: 42,
@@ -452,7 +874,49 @@ console.log(descriptors1.property1.value);
 
 ```
 
-10. getOwnPropertyNames 
+``` javascript 
+let o, d
+o = {
+	get foo() {
+		return 1
+	},
+	set foo(v) {
+		this.foo = v
+	},
+	b: {
+		get() {
+			this.b = 12
+			return
+		},
+		set(v) {
+			this.b = v
+		},
+		enumerable: true
+	}
+}
+d = Object.getOwnPropertyDescriptors(o)
+/*
+{
+  foo: {
+    get: [Function: get foo],
+    set: [Function: set foo],
+    enumerable: true,
+    configurable: true
+  },
+  b: {
+    value: { get: [Function: get], set: [Function: set], enumerable: true },
+    writable: true,
+    enumerable: true,
+    configurable: true
+  }
+}
+*/
+
+
+```
+
+
+10. getOwnPropertyNames 返回一个数组(包含给定对象中所有自有属性（包括不可枚举属性 但不包含使用symbol的属性）)
 ```javascript 
 const object1 = {
   a: 1,
@@ -464,7 +928,62 @@ console.log(Object.getOwnPropertyNames(object1));
 // Expected output: Array ["a", "b", "c"]
 
 ```
-11. getOwnPropertySymbols
+``` javascript 
+const arr = ["a", "b", "c"];
+console.log(Object.getOwnPropertyNames(arr).sort());
+// ["0", "1", "2", "length"]
+
+// 类数组对象
+const obj = { 0: "a", 1: "b", 2: "c" };
+console.log(Object.getOwnPropertyNames(obj).sort());
+// ["0", "1", "2"]
+
+Object.getOwnPropertyNames(obj).forEach((val, idx, array) => {
+  console.log(`${val} -> ${obj[val]}`);
+});
+// 0 -> a
+// 1 -> b
+// 2 -> c
+
+// 不可枚举属性
+const myObj = Object.create(
+  {},
+  {
+    getFoo: {
+      value() {
+        return this.foo;
+      },
+      enumerable: false,
+    },
+  },
+);
+myObj.foo = 1;
+
+console.log(Object.getOwnPropertyNames(myObj).sort()); // ["foo", "getFoo"]
+
+
+```
+
+``` javascript 
+// 原型链上的属性不会被列出
+function ParentClass() {}
+ParentClass.prototype.inheritedMethod = function () {};
+
+function ChildClass() {
+  this.prop = 5;
+  this.method = function () {};
+}
+ChildClass.prototype = new ParentClass();
+ChildClass.prototype.prototypeMethod = function () {};
+
+console.log(Object.getOwnPropertyNames(new ChildClass()));
+// ["prop", "method"]
+
+
+```
+
+
+11. getOwnPropertySymbols 返回一个包含给定对象所有自有 Symbol 属性的数组
 ``` javascript 
 const object1 = {};
 const a = Symbol('a');
@@ -479,7 +998,19 @@ console.log(objectSymbols.length);
 // Expected output: 2
 
 ```
-12. getPrototypeOf
+``` javascript
+const obj = { a: 123 }
+let a = Symbol('a'), b = Symbol.for('b')
+obj[a] = 'localSymbol'
+obj[b] = 'globalSymbol'
+
+console.log(Object.getOwnPropertyNames(obj), Object.getOwnPropertySymbols(obj))
+// [ 'a' ] [ Symbol(a), Symbol(b) ]
+
+```
+
+
+12. getPrototypeOf 返回指定对象的原型（即内部 [[Prototype]] 属性的值）
 ``` javascript 
 const prototype1 = {};
 const object1 = Object.create(prototype1);
@@ -488,7 +1019,8 @@ console.log(Object.getPrototypeOf(object1) === prototype1);
 // Expected output: true
 
 ```
-13. groupBy 
+13. groupBy  Object.groupBy() 静态方法根据提供的回调函数返回的字符串值对给定可迭代对象中的元素进行分组。返回的对象具有每个组的单独属性，其中包含组中的元素的数组
+*** 有些浏览器不支持 groupBy *** 
 ```javascript 
 const inventory = [
   { name: "芦笋", type: "蔬菜", quantity: 5 },
@@ -517,7 +1049,37 @@ const result = Object.groupBy(inventory, ({ type }) => type);
 
 ```
 
-14. hasOwn 
+``` javascript 
+const inventory = [
+	{ name: "芦笋", type: "蔬菜", quantity: 5 },
+	{ name: "香蕉", type: "水果", quantity: 0 },
+	{ name: "山羊", type: "肉", quantity: 23 },
+	{ name: "樱桃", type: "水果", quantity: 5 },
+	{ name: "鱼", type: "肉", quantity: 22 },
+];
+const result = Object.groupBy(inventory, (item) => {
+	console.log(item)
+	return item.quantity > 5 ? "ok" : "restock"
+})
+
+console.log(1308, result)
+/* 结果是：
+{
+  restock: [
+    { name: "芦笋", type: "蔬菜", quantity: 5 },
+    { name: "香蕉", type: "水果", quantity: 0 },
+    { name: "樱桃", type: "水果", quantity: 5 }
+  ],
+  ok: [
+    { name: "山羊", type: "肉", quantity: 23 },
+    { name: "鱼", type: "肉", quantity: 22 }
+  ]
+}
+*/
+
+```
+
+14. hasOwn 指定的对象中直接定义了指定的属性，则返回 true；否则返回 false
 ```javascript 
 const object1 = {
   prop: 'exists',
@@ -532,7 +1094,7 @@ console.log(Object.hasOwn(object1, 'toString'));
 console.log(Object.hasOwn(object1, 'undeclaredPropertyValue'));
 // Expected output: false
 ``` 
-15. prototype.hasOwnProperty 
+15. prototype.hasOwnProperty hasOwnProperty() 方法返回一个布尔值，表示对象 __自有属性（而不是继承来的属性）__ 中是否具有指定的属性。
 ```javascript 
 
 const object1 = {};
@@ -547,7 +1109,7 @@ console.log(object1.hasOwnProperty('toString'));
 console.log(object1.hasOwnProperty('hasOwnProperty'));
 // Expected output: false
 ```
-15. is 
+15. is 确定两个值是否为相同值。
 ```javascript 
 console.log(Object.is('1', 1));
 // Expected output: false
@@ -562,7 +1124,36 @@ const obj = {};
 console.log(Object.is(obj, {}));
 // Expected output: false
 ```
-16. isExtensible
+``` javascript 
+// 案例 1：评估结果和使用 === 相同
+Object.is(25, 25); // true
+Object.is("foo", "foo"); // true
+Object.is("foo", "bar"); // false
+Object.is(null, null); // true
+Object.is(undefined, undefined); // true
+Object.is(window, window); // true
+Object.is([], []); // false
+const foo = { a: 1 };
+const bar = { a: 1 };
+const sameFoo = foo;
+Object.is(foo, foo); // true
+Object.is(foo, bar); // false
+Object.is(foo, sameFoo); // true
+
+// 案例 2: 带符号的 0
+Object.is(0, -0); // false
+Object.is(+0, -0); // false
+Object.is(-0, -0); // true
+
+// 案例 3: NaN
+Object.is(NaN, 0 / 0); // true
+Object.is(NaN, Number.NaN); // true
+
+
+```
+
+
+16. isExtensible  Object.isExtensible() 静态方法判断一个对象是否是可扩展的（是否可以在它上面添加新的属性）。
 ```javascript 
 const object1 = {};
 
@@ -576,7 +1167,29 @@ console.log(Object.isExtensible(object1));
 
 
 ```
-17. isFrozen
+
+``` javascript 
+
+// 新对象是可拓展的。
+const empty = {};
+Object.isExtensible(empty); // true
+
+// 它们可以变为不可拓展的
+Object.preventExtensions(empty);
+Object.isExtensible(empty); // false
+
+// 根据定义，密封对象是不可拓展的。
+const sealed = Object.seal({});
+Object.isExtensible(sealed); // false
+
+// 根据定义，冻结对象同样也是不可拓展的。
+const frozen = Object.freeze({});
+Object.isExtensible(frozen); // false
+
+```
+
+
+17. isFrozen   Object.isFrozen() 静态方法判断一个对象是否被冻结。
 ```javascript 
 const object1 = {
   property1: 42,
@@ -591,7 +1204,86 @@ console.log(Object.isFrozen(object1));
 // Expected output: true
 
 ``` 
-18. prototype.isPrototypeOf
+
+``` javascript 
+// 一个新对象是默认是可扩展的，所以它也是非冻结的。
+Object.isFrozen({}); // false
+
+// 一个不可扩展的空对象同时也是一个冻结对象。
+const vacuouslyFrozen = Object.preventExtensions({});
+Object.isFrozen(vacuouslyFrozen); // true
+
+// 一个非空对象默认也是非冻结的。
+const oneProp = { p: 42 };
+Object.isFrozen(oneProp); // false
+
+// 即使令对象不可扩展，它也不会被冻结，因为属性仍然是可配置的（而且可写的）。
+Object.preventExtensions(oneProp);
+Object.isFrozen(oneProp); // false
+
+// 此时，如果删除了这个属性，则它会成为一个冻结对象。
+delete oneProp.p;
+Object.isFrozen(oneProp); // true
+
+// 一个不可扩展的对象，拥有一个不可写但可配置的属性，则它仍然是非冻结的。
+const nonWritable = { e: "plep" };
+Object.preventExtensions(nonWritable);
+Object.defineProperty(nonWritable, "e", {
+  writable: false,
+}); // 令其不可写
+Object.isFrozen(nonWritable); // false
+
+// 把这个属性改为不可配置，会让这个对象成为冻结对象。
+Object.defineProperty(nonWritable, "e", {
+  configurable: false,
+}); // 令其不可配置
+Object.isFrozen(nonWritable); // true
+
+// 一个不可扩展的对象，拥有一个不可配置但可写的属性，则它也是非冻结的。
+const nonConfigurable = { release: "the kraken!" };
+Object.preventExtensions(nonConfigurable);
+Object.defineProperty(nonConfigurable, "release", {
+  configurable: false,
+});
+Object.isFrozen(nonConfigurable); // false
+
+// 把这个属性改为不可写，会让这个对象成为冻结对象。
+Object.defineProperty(nonConfigurable, "release", {
+  writable: false,
+});
+Object.isFrozen(nonConfigurable); // true
+
+// 一个不可扩展的对象，拥有一个访问器属性，则它仍然是非冻结的。
+const accessor = {
+  get food() {
+    return "yum";
+  },
+};
+Object.preventExtensions(accessor);
+Object.isFrozen(accessor); // false
+
+// 把这个属性改为不可配置，会让这个对象成为冻结对象。
+Object.defineProperty(accessor, "food", {
+  configurable: false,
+});
+Object.isFrozen(accessor); // true
+
+// 使用 Object.freeze 是冻结一个对象最方便的方法。
+const frozen = { 1: 81 };
+Object.isFrozen(frozen); // false
+Object.freeze(frozen);
+Object.isFrozen(frozen); // true
+
+// 根据定义，一个冻结对象是不可拓展的。
+Object.isExtensible(frozen); // false
+
+// 同样，根据定义，一个冻结对象也是密封对象。
+Object.isSealed(frozen); // true
+
+```
+
+
+18. prototype.isPrototypeOf 用于检查一个对象是否存在于另一个对象的原型链中
 ```javascript 
 function Foo() {}
 function Bar() {}
@@ -605,7 +1297,35 @@ console.log(Foo.prototype.isPrototypeOf(bar));
 console.log(Bar.prototype.isPrototypeOf(bar));
 // Expected output: true
 ```
-19. isSealed
+
+``` javascript 
+class Foo {}
+class Bar extends Foo {}
+class Baz extends Bar {}
+
+const foo = new Foo();
+const bar = new Bar();
+const baz = new Baz();
+
+// 原型链：
+// foo: Foo --> Object
+// bar: Bar --> Foo --> Object
+// baz: Baz --> Bar --> Foo --> Object
+console.log(Baz.prototype.isPrototypeOf(baz)); // true
+console.log(Baz.prototype.isPrototypeOf(bar)); // false
+console.log(Baz.prototype.isPrototypeOf(foo)); // false
+console.log(Bar.prototype.isPrototypeOf(baz)); // true
+console.log(Bar.prototype.isPrototypeOf(foo)); // false
+console.log(Foo.prototype.isPrototypeOf(baz)); // true
+console.log(Foo.prototype.isPrototypeOf(bar)); // true
+console.log(Object.prototype.isPrototypeOf(baz)); // true
+
+
+```
+
+
+
+19. isSealed  判断一个对象是否被密封
 ```javascript
 const object1 = {
   property1: 42,
@@ -619,7 +1339,55 @@ Object.seal(object1);
 console.log(Object.isSealed(object1));
 // Expected output: true
 ``` 
-20. keys
+
+``` javascript 
+// 新建的对象默认不是密封的。
+const empty = {};
+Object.isSealed(empty); // false
+
+// 如果你令一个空对象不可扩展，则它同时也会变成个密封对象。
+Object.preventExtensions(empty);
+Object.isSealed(empty); // true
+
+// 但如果这个对象不是空对象，则它不会变成密封对象，因为密封对象的所有自身属性必须是不可配置的。
+const hasProp = { fee: "fie foe fum" };
+Object.preventExtensions(hasProp);
+Object.isSealed(hasProp); // false
+
+// 如果把这个属性变的不可配置，则这个属性也就成了密封对象。
+Object.defineProperty(hasProp, "fee", {
+  configurable: false,
+});
+Object.isSealed(hasProp); // true
+
+// 密封一个对象最简单的方法当然是 Object.seal。
+const sealed = {};
+Object.seal(sealed);
+Object.isSealed(sealed); // true
+
+// 根据定义，密封对象是不可扩展的。
+Object.isExtensible(sealed); // false
+
+// 一个密封对象可能被冻结，但不一定。
+Object.isFrozen(sealed); // true
+//（所有属性也是不可写的）
+
+const s2 = Object.seal({ p: 3 });
+Object.isFrozen(s2); // false
+//（'p' 仍然可写）
+
+const s3 = Object.seal({
+  get p() {
+    return 0;
+  },
+});
+Object.isFrozen(s3); // true
+//（对于访问器属性，只有可配置性才有影响）
+
+
+```
+
+20. keys  返回一个由给定对象自身的可枚举的字符串键属性名组成的数组
 ```javascript
 const object1 = {
   a: 'somestring',
@@ -630,7 +1398,38 @@ const object1 = {
 console.log(Object.keys(object1));
 // Expected output: Array ["a", "b", "c"]
 ```
-21. preventExtensions
+
+``` javascript 
+// 简单数组
+const arr = ["a", "b", "c"];
+console.log(Object.keys(arr)); // ['0', '1', '2']
+
+// 类数组对象
+const obj = { 0: "a", 1: "b", 2: "c" };
+console.log(Object.keys(obj)); // ['0', '1', '2']
+
+// 键的顺序随机的类数组对象
+const anObj = { 100: "a", 2: "b", 7: "c" };
+console.log(Object.keys(anObj)); // ['2', '7', '100']
+
+// getFoo 是一个不可枚举的属性
+const myObj = Object.create(
+  {},
+  {
+    getFoo: {
+      value() {
+        return this.foo;
+      },
+    },
+  },
+);
+myObj.foo = 1;
+console.log(Object.keys(myObj)); // ['foo']
+
+```
+
+
+21. preventExtensions  可以防止新属性被添加到对象中（即防止该对象被扩展）。它还可以防止对象的原型被重新指定。
 ```javascript 
 const object1 = {};
 
@@ -646,7 +1445,42 @@ try {
 }
 
 ```
-22. prototype.PropertyIsEnumerable
+
+``` javascript 
+// Object.preventExtensions 将原对象变的不可扩展，并且返回原对象。
+const obj = {};
+const obj2 = Object.preventExtensions(obj);
+obj === obj2; // true
+
+// 字面量方式定义的对象默认是可扩展的。
+const empty = {};
+Object.isExtensible(empty); // true
+
+// 可以将其改变为不可扩展的。
+Object.preventExtensions(empty);
+Object.isExtensible(empty); // false
+
+// 使用 Object.defineProperty 方法为一个不可扩展的对象添加新属性会抛出异常。
+const nonExtensible = { removable: true };
+Object.preventExtensions(nonExtensible);
+Object.defineProperty(nonExtensible, "new", {
+  value: 8675309,
+}); // 抛出 TypeError
+
+// 在严格模式中，为一个不可扩展对象的新属性赋值会抛出 TypeError 异常。
+function fail() {
+  "use strict";
+  // 抛出 TypeError
+  nonExtensible.newProperty = "FAIL";
+}
+fail();
+
+
+
+```
+
+
+22. prototype.PropertyIsEnumerable  propertyIsEnumerable() 方法返回一个布尔值，表示指定的属性是否是对象的可枚举自有属性
 ```javascript 
 const object1 = {};
 const array1 = [];
@@ -662,7 +1496,76 @@ console.log(array1.propertyIsEnumerable(0));
 console.log(array1.propertyIsEnumerable('length'));
 // Expected output: false
 ```
-23. seal
+``` javascript 
+// 使用 propertyIsEnumerable()
+const o = {};
+const a = [];
+o.prop = "是可枚举的";
+a[0] = "是可枚举的";
+
+o.propertyIsEnumerable("prop"); // true
+a.propertyIsEnumerable(0); // true
+
+```
+
+``` javascript 
+// 用户自定义对象和内置对象
+const a = ["是可枚举的"];
+
+a.propertyIsEnumerable(0); // true
+a.propertyIsEnumerable("length"); // false
+
+Math.propertyIsEnumerable("random"); // false
+globalThis.propertyIsEnumerable("Math"); // false
+
+```
+
+``` javascript 
+// 自有属性和继承属性
+const o1 = {
+  enumerableInherited: "是可枚举的",
+};
+Object.defineProperty(o1, "nonEnumerableInherited", {
+  value: "是不可枚举的",
+  enumerable: false,
+});
+const o2 = {
+  // o1 是 o2 的原型
+  __proto__: o1,
+  enumerableOwn: "是可枚举的",
+};
+Object.defineProperty(o2, "nonEnumerableOwn", {
+  value: "是不可枚举的",
+  enumerable: false,
+});
+
+o2.propertyIsEnumerable("enumerableInherited"); // false
+o2.propertyIsEnumerable("nonEnumerableInherited"); // false
+o2.propertyIsEnumerable("enumerableOwn"); // true
+o2.propertyIsEnumerable("nonEnumerableOwn"); // false
+
+
+```
+
+``` javascript 
+// 测试 Symbol 属性
+const sym = Symbol("可枚举的");
+const sym2 = Symbol("不可枚举的");
+const o = {
+  [sym]: "是可枚举的",
+};
+Object.defineProperty(o, sym2, {
+  value: "是不可枚举的",
+  enumerable: false,
+});
+
+o.propertyIsEnumerable(sym); // true
+o.propertyIsEnumerable(sym2); // false
+
+```
+
+
+23. seal   密封一个对象。密封一个对象会阻止其扩展并且使得现有属性不可配置。密封对象有一组固定的属性：不能添加新属性、不能删除现有属性或更改其可枚举性和可配置性、不能重新分配其原型。只要现有属性的值是可写的，它们仍然可以更改。seal() 返回传入的同一对象
 ```javascript 
 const object1 = {
   property1: 42,
@@ -677,7 +1580,59 @@ delete object1.property1; // Cannot delete when sealed
 console.log(object1.property1);
 // Expected output: 33
 ```
-24. setPrototypeOf 
+
+``` javascript 
+const obj = {
+  prop() {},
+  foo: "bar",
+};
+
+// 可以添加新属性，可以更改或删除现有属性。
+obj.foo = "baz";
+obj.lumpy = "woof";
+delete obj.prop;
+
+const o = Object.seal(obj);
+
+o === obj; // true
+Object.isSealed(obj); // true
+
+// 更改密封对象的属性值仍然有效。
+obj.foo = "quux";
+
+// 但不能将数据属性转换成访问者属性，反之亦然。
+Object.defineProperty(obj, "foo", {
+  get() {
+    return "g";
+  },
+}); // 抛出 TypeError
+
+// 现在，除了属性值之外的任何更改都将失败。
+obj.quaxxor = "the friendly duck";
+// 静默不添加属性
+delete obj.foo;
+// 静默不添删除属性
+
+// ...且严格模式下，这种尝试将会抛出 TypeError。
+function fail() {
+  "use strict";
+  delete obj.foo; // 抛出一个 TypeError
+  obj.sparky = "arf"; // 抛出一个 TypeError
+}
+fail();
+
+// 尝试通过 Object.defineProperty 添加属性也会抛出错误。
+Object.defineProperty(obj, "ohai", {
+  value: 17,
+}); // 抛出 TypeError
+Object.defineProperty(obj, "foo", {
+  value: "eit",
+}); // 更改现有属性值
+
+
+```
+
+24. setPrototypeOf  Object.setPrototypeOf() 静态方法可以将一个指定对象的原型（即内部的 [[Prototype]] 属性）设置为另一个对象或者 null
 ```javascript
 const obj = {};
 const parent = { foo: 'bar' };
@@ -690,7 +1645,7 @@ Object.setPrototypeOf(obj, parent);
 console.log(obj.foo);
 // Expected output: "bar"
 ```
-25. prototype.toLocaleString 
+25. prototype.toLocaleString  toLocaleString() 方法返回一个表示对象的字符串。该方法旨在由派生对象重写，以达到其特定于语言环境的目的。
 ```javascript
  const date1 = new Date(Date.UTC(2012, 11, 20, 3, 0, 0));
 
@@ -702,7 +1657,7 @@ const number1 = 123456.789;
 console.log(number1.toLocaleString('de-DE'));
 // Expected output: "123.456,789"
 ```
-26. prototype.toString
+26. prototype.toString toString() 方法返回一个表示该对象的字符串。该方法旨在重写（自定义）派生类对象的类型转换的逻辑
 ```javascript
 function Dog(name) {
   this.name = name;
@@ -718,7 +1673,7 @@ console.log(dog1.toString());
 // Expected output: "Gabby"
 ```
 
-27. prototype.valueOf
+27. prototype.valueOf  Object 实例的 valueOf() 方法将 this 值转换成对象。该方法旨在被派生对象重写，以实现自定义类型转换逻辑。
 ```javascript
 function MyNumberType(n) {
   this.number = n;
@@ -733,7 +1688,7 @@ const object1 = new MyNumberType(4);
 console.log(object1 + 3);
 // Expected output: 7
 ```
-28. values
+28. values  Object.values() 静态方法返回一个给定对象的自有可枚举字符串键属性值组成的数组
 ```javascript 
 const object1 = {
   a: 'somestring',

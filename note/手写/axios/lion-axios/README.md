@@ -1,6 +1,9 @@
 # lion-axios
 
 [!手写 axios 库并发布至 npm 线上完整过程 ](https://juejin.cn/post/6914138611789070349?searchId=202403291448187B0F99009497EC504C56#heading-12)
+[!最全、最详细Axios源码解读---看这一篇就足够了](https://juejin.cn/post/7016255507392364557?searchId=2024032914382242C9CFC2B873BF869DAC)
+[!Axios源码深度剖析 - AJAX新王者 ](https://juejin.cn/post/6844903613609803783?from=search-suggest)
+
 lion-axios 是一个基于 promise 的 HTTP 库，学习 axios lib 源码而产生。
 
 # 启动项目

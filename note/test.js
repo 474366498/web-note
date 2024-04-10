@@ -1291,43 +1291,17 @@ let r = getSequence(arr), r1 = getSequence(arr1)
 // console.log(1216, r, r1)
 
 
+function forEach(obj, fn) {
+	if (Array.isArray(obj)) {
+		for (let i = 0; i < obj.length; i++) {
+			fn.apply(null, [obj[i], i, obj])
+		}
+	} else {
 
-const obj = {
-	prop() { },
-	foo: 'bar'
-}
-
-obj.foo = 'baz'
-obj.lumpy = 'woof'
-delete obj.prop
-
-const o = Object.seal(obj)
-
-console.log(o === obj, Object.isSealed(obj))
-
-obj.foo = 'quux'
-
-Object.defineProperty(obj, 'foo', {
-	get() {
-		return 'g'
 	}
-})
-
-obj.quaxxor = 'the friendy duck'
-
-delete obj.foo
-
-console.log(obj, o)
-
-function fail() {
-	'use strict'
-	delete obj.foo
-	obj.sparky = 'arf'
 }
 
-fail()
-
-Object.defineProperty(obj, 'ohai', { value: 17 })
-Object.defindProperty(obj, 'foo', {
-	value: 'edit'
+forEach(['post', 'put', 'patch'], function (method, i, data) {
+	console.log(1305, method, i, data)
 })
+

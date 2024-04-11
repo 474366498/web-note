@@ -39,6 +39,18 @@ const get = (target: MapTypes, key: unknown, isReadonly = false, isShallow = fal
     rawKey = toRaw(key)
 
   if (!isReadonly) {
+    /**
+    * 为了实现在effect函数中无论是使用了以proxyKey
+    * 还是以rawKey为键进行收集的依赖,在effect外部
+    * 修改proxyMap的proxyKey或rawKey都能触发依赖
+    * 更新,当使用proxyKey为键时,需要进行两次track
+    * 例如:当前在effect中获取的是proxyKey那么进行
+    * 两次track,在depsMap中就会有两个entries,分别
+    * 是以rawKey和proxyKey指向的deps但是指向的deps
+    * 不改变 那么在set中修改值的时候,无论是修改的
+    * proxyKey还是rawKey都能在depsMap中找到正确的
+    * 依赖进行更新
+    */
     if (key !== rawKey) {
       track(rawTarget, TrackOpTypes.GET, key)
     }
@@ -118,7 +130,10 @@ const get = (target: MapTypes, key: unknown, isReadonly = false, isShallow = fal
     const target = toRaw(this)
     const { has, get } = getProto(target)
     let hadKey = has.call(target, key)
-
+    //删除的key可能是proxyKey也可能是rawKey
+    //所以需要判断,判断的时候时候需要使用has
+    //方法,所以需要对target还原,实际上所有的
+    //操作都不能使用receiver,会造成二次依赖触发
     if (!hadKey) {
       key = toRaw(key)
       hadKey = has.call(target, key)

@@ -189,6 +189,10 @@ export function toRef<T extends object, K extends keyof T>(object: T, key: K, de
   return isRef(val) ? val : (new ObjectRefImpl(object, key, defaultValue) as any)
 }
 
+//ObjectRefImpl实例访问value的时候相当于是
+//访问的proxy[key]这样就依旧是响应式的
+//同理设置的时候proxy[key] = xxx也是响应式的
+//我们只需要访问.value和设置.value就可以了
 class ObjectRefImpl<T extends object, K extends keyof T> {
   public readonly __v_isRef = true
 

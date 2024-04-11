@@ -22,7 +22,8 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
-console.log(26, import.meta, process.env, process.env.VUE_APP_NODE_ENV)
+console.log(26, router, import.meta, process.env, process.env.VUE_APP_NODE_ENV)
+
 
 function checkVersion() {
   return new Promise((resolve, reject) => {
@@ -56,5 +57,6 @@ router.beforeEach(async (to, from, next) => {
   }
   next()
 })
+
 
 export default router

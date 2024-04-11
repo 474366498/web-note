@@ -1,4 +1,4 @@
-# version
+# version node version 18.1.0
 
 ## Project setup
 ```

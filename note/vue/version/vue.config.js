@@ -9,7 +9,10 @@ const { defineConfig } = require('@vue/cli-service')
 // module.exports = defineConfig({
 //   transpileDependencies: true
 // })
-//  npm install terser-webpack-plugin  --save-dev
+// return false
+
+
+// npm install terser-webpack-plugin  --save-dev
 // cnpm install compression-webpack-plugin@6.1.1 -D       gzip压缩插件，需要引入
 // cnpm i image-webpack-loader@8.1.0 --save-dev           图片压缩，不需要引入
 // npm i webpack-bundle-analyzer@4.7.0 --save-dev         打包分析插件
@@ -28,13 +31,12 @@ const VersionPlugin = require('./plugins/version')
 
 const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i    // 开启gzip压缩 按需写入
 const isProduction = process.env.NODE_ENV === 'production'
-const BASE_URL = process.env.NODE_ENV === 'production' ? './' : './'
+const BASE_URL = process.env.NODE_ENV === 'production' ? './' : '/'
 const path = require('path')
 
 const bit = 1024
 
-console.log(31, process.env.NODE_ENV, process.env.VUE_APP_NODE_ENV)
-
+console.log(31, process.env.NODE_ENV, process.env.VUE_APP_NODE_ENV, BASE_URL)
 module.exports = {
   publicPath: BASE_URL,
   outputDir: 'dist',
@@ -46,9 +48,6 @@ module.exports = {
   devServer: {
     host: '0.0.0.0',
     port: 8080,
-    proxy: {
-
-    }
   },
 
   chainWebpack: config => {

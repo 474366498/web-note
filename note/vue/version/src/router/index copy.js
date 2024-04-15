@@ -2,17 +2,6 @@ import * as MinRouter from '../min-router'
 import { createRouter, createWebHistory, createRouterMatcher } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import store from '@/store'
-
-const Error = {
-  template: `
-    <div class="user">
-      <h2>User {{ $route.params.id }}</h2>
-      <router-view></router-view>
-    </div>
-  `,
-}
-console.log(6, HomeView, Error)
-
 const routes = [
   {
     path: '/',
@@ -27,11 +16,7 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
   },
-  {
-    path: '/:pathMatch(.*)',
-    name: 'Error',
-    component: () => import(/* webpackChunkName: "error" */ '../views/Error.vue')
-  }
+  { path: '/*', name: 'Error', component: HomeView }
 ]
 
 console.log(22, MinRouter)
@@ -87,11 +72,5 @@ router.beforeEach(async (to, from, next) => {
   next()
 })
 */
-
-
-router.beforeEach((t, f, n) => {
-  console.log(26, t)
-  n()
-})
 
 export default router

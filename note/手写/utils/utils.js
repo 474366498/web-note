@@ -210,3 +210,6 @@ function compose(...fns) {
   }
   return fns.reduce((fna, fnb) => (...args) => fna(fnb(...args)))
 }
+
+
+

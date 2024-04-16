@@ -1,5 +1,29 @@
 
 
+// 页面加载
+document.addEventListener('DOMContentLoaded', function () {
+  console.log('当DOM完全加载和解析完成后触发')
+})
+
+// 页面加载完成
+window.addEventListener('load', function () {
+  console.log('当所有DOM、CSS、JS、图片等都加载完成后触发。')
+})
+
+// 页面卸载
+window.addEventListener('beforeunload', () => {
+  console.log('在用户离开页面前触发，可以用来提示用户是否有未保存的更改。')
+})
+
+// 检测页面的可见性
+document.addEventListener('visibilitychange', function () {
+  if (document.hidden) {  // 隐藏
+    console.log('标签页被切换到后台')
+  } else {  // 最大化
+    console.log('标签页被切换到前台')
+  }
+})
+
 // 是否有class str
 export const hasClass = function (el, classStr) {
   return el.className.indexOf(classStr) >= 0

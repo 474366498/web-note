@@ -98,3 +98,29 @@ const onFiles = () => {
   }
 
 }
+
+
+
+// web worker 实现下载 start
+// https://mp.weixin.qq.com/s/Mpe7vxdeWlXQI3Jl5VYqSw
+// fileWorker.js 
+onmessage = function (event) {
+  const file = event.data
+
+  // 执行下载
+  fetch(file.url)
+    .then(res => res.blob())
+    .then(blob => {
+      postMessage(blob)
+    })
+}
+
+// 主线程
+const worker = new Worker('fileWorker.js')
+worker.postMessage(file)
+worker.onmessage = function downFile(event) {
+  console.log('处理下载')
+}
+
+// web worker 实现下载 end 
+

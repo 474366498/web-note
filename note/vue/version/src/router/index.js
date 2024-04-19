@@ -36,21 +36,28 @@ const routes = [
 
 console.log(22, MinRouter)
 
-const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
-})
-const matchers = createRouterMatcher(router.options.routes, router.options)
 
-const _router = MinRouter.createRouter({
+
+const router = MinRouter.createRouter({
   // history: '',
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
 
-console.log(34, router, _router, matchers)
+console.log(34, router)
 
-console.log(35, process.env.BASE_URL, router, import.meta, process.env, process.env.VUE_APP_NODE_ENV)
+
+
+// const router = createRouter({
+//   history: createWebHistory(process.env.BASE_URL),
+//   routes
+// })
+// router.beforeEach((t, f, n) => {
+//   console.log(26, t)
+//   n()
+// })
+// const matchers = createRouterMatcher(router.options.routes, router.options)
+// console.log(35, process.env.BASE_URL, router, import.meta, process.env, process.env.VUE_APP_NODE_ENV)
 
 /*
 
@@ -89,9 +96,6 @@ router.beforeEach(async (to, from, next) => {
 */
 
 
-router.beforeEach((t, f, n) => {
-  console.log(26, t)
-  n()
-})
+
 
 export default router

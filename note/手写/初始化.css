@@ -35,7 +35,10 @@ body {
   font-size: 14px;
   font-family: Verdana, Arial, Helvetica, sans-serif;
 }
-
+body:has(dialog[open]) {
+  overflow: hidden
+} 
+/* 这行选择器表示，只要有属性为open的弹窗，body就自动锁定，无论有多少层弹窗 */
 td,
 th,
 caption {

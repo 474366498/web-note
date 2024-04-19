@@ -17,8 +17,7 @@ export function createRouteRecordMatcher(record, patent, options) {
 
   if (parent) {
     if (!matcher.record.aliasOf === !parent?.record?.aliasOf) {
-      console.log(20, parent)
-      // (parent.children || parent.children=[]).push(matcher)
+      (parent.children || (parent.children = [])).push(matcher)
     }
 
   }

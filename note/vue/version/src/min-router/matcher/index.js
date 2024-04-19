@@ -113,7 +113,61 @@ export function createRouterMatcher(routes, globalOptions) {
   function insertMatcher(matcher) {
     console.log('insert', matcher)
     let i = 0
+    matchers.push(matcher)
+    console.log(121, matchers)
+  }
 
+  const resolve = (location, currentLocation) => {
+    let matcher
+    let params = {}
+    let path = '', name = ''
+
+    console.log('matcher resolve', location, currentLocation)
+    if ('name' in location && location.name) {
+      matcher = matcherMap.get(location.name)
+      if (!matcher) {
+        console.error(`${location.name} is not found`)
+        return false
+      }
+      name = matcher.record.name
+      params = assign(
+        paramsFromLocation(currentLocation.params, matcher.keys.filter(k => !k.optional).map(k => k.name)),
+        location.params && paramsFromLocation(location.params, matcher.keys.map(k => k.name))
+      )
+      path = matcher.stringify(params)
+    } else if ('path' in location) {
+      console.log(matchers)
+      path = location.path
+      matcher = matchers.find(m => m.re.test(path))
+      if (matcher) {
+        params = matcher.parse(path)
+        name = matcher.record.name
+      }
+    } else {
+      matcher = currentLocation.name
+        ? matcherMap.get(currentLocation.name)
+        : matchers.find(n => m.re.test(currentLocation.path))
+      if (!matcher) {
+        return new Error(`${location}, ${currentLocation},`)
+      }
+      name = matcher.record.name
+      params = assign({}, currentLocation.params, location.params)
+      path = matcher.stringify(params)
+    }
+
+    const matched = []
+    let parentMatcher = matcher
+    while (parentMatcher && parentMatcher !== window) {
+      matched.unshift(parentMatcher.record)
+      parentMatcher = parentMatcher.parent
+    }
+    return {
+      name,
+      path,
+      params,
+      matched,
+      // meta : mergeMetaFields(matched)
+    }
   }
 
   routes.forEach(route => addRoute(route))
@@ -121,7 +175,7 @@ export function createRouterMatcher(routes, globalOptions) {
   return {
     addRoute,
     removeRoute,
-
+    resolve
   }
 
 }

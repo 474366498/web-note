@@ -1,4 +1,8 @@
 
+
+export * from './callbacks'
+
+
 export const assign = Object.assign
 
 export const noop = () => { }
@@ -16,4 +20,4 @@ export function applyToParams(fn, params) {
   return newParams
 }
 
-
+export const isArray = Array.isArray 

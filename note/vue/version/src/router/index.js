@@ -1,4 +1,4 @@
-import * as MinRouter from '../min-router'
+// import * as MinRouter from '../min-router'
 import { createRouter, createWebHistory, createRouterMatcher } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import store from '@/store'
@@ -34,11 +34,11 @@ const routes = [
   }
 ]
 
-console.log(22, MinRouter)
+// console.log(22, MinRouter)
 
 
 
-const router = MinRouter.createRouter({
+const router = createRouter({
   // history: '',
   history: createWebHistory(process.env.BASE_URL),
   routes
@@ -59,7 +59,7 @@ console.log(34, router)
 // const matchers = createRouterMatcher(router.options.routes, router.options)
 // console.log(35, process.env.BASE_URL, router, import.meta, process.env, process.env.VUE_APP_NODE_ENV)
 
-/*
+
 
 function checkVersion() {
   return new Promise((resolve, reject) => {
@@ -93,7 +93,6 @@ router.beforeEach(async (to, from, next) => {
   }
   next()
 })
-*/
 
 
 

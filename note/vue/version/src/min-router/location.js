@@ -1,3 +1,4 @@
+import { isArray } from "./utils"
 
 
 
@@ -76,4 +77,48 @@ export function resolveRelativePath(to, from) {
 
   return (fromSegments.slice(0, position).join('/') + '/' + toSegments.slice(toPosition - (toPosition === toSegments.length ? 1 : 0)).join('/'))
 
+}
+
+
+export function isSameRouteLocation(stringifyQuery, a, b) {
+  const aLastIndex = a.matched.length - 1,
+    bLastIndex = b.matched.length - 1
+
+  return (
+    aLastIndex > -1 &&
+    aLastIndex === bLastIndex &&
+    isSameRouteRecord(a.matched[aLastIndex], b.matched[bLastIndex]) &&
+    isSameRouteLocationParams(a.params, b.params) &&
+    stringifyQuery(a.query) === stringifyQuery(b.query) &&
+    a.hash === b.hash
+  )
+}
+
+export function isSameRouteRecord(a, b) {
+  return (a.aliasOf || a) === (b.aliasOf || b)
+}
+
+export function isSameRouteLocationParams(a, b) {
+  if (Object.keys(a).length !== Object.keys(b).length) return false
+
+  for (let key in a) {
+    if (!isSameRouteLocationParamsValue(a[key], b[key])) return false
+  }
+  return true
+
+}
+
+function isSameRouteLocationParamsValue(a, b) {
+  return isArray(a)
+    ? isEquivalentArray(a, b)
+    : isArray(b)
+      ? isEquivalentArray(b, a)
+      : a === b
+}
+
+
+function isEquivalentArray(a, b) {
+  return isArray(b)
+    ? a.length === b.length && a.every((v, i) => v === b[i])
+    : a.length === 1 && a[0] === b
 }

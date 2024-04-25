@@ -29,8 +29,7 @@
   6. 生成HTML文件 
 
     > 预渲染 vue 插件
-    ``` c
-    npm install  prerender-spa-plugin -S 
+    ```c npm install  prerender-spa-plugin -S ```
 
     // vue.config.js 进行配置 
 
@@ -96,6 +95,7 @@
   nuxtServerInit(store,context) {} 
   store       vuex 上下文
   context     nuxt 上下文
+
   ##### middleware
   middleware 
   *** middleware/auth.js *** 
@@ -337,6 +337,8 @@
 
   ```
   ##### 局部 
+
+
   ``` html
     <template>
       ...
@@ -374,3 +376,146 @@
 
 
   ```
+
+
+
+
+
+
+
+
+
+
+### nuxt head 
+
+#### 默认全局配置
+
+*** nuxt.config.js *** 
+
+``` javascript 
+  ...,
+  head: {
+    title: 'demo',
+    htmlAttrs: {
+      lang: 'en'
+    },
+    meta: [
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { hid: 'description', name: 'description', content: '' },
+      { name: 'format-detection', content: 'telephone=no' }
+    ],
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+    ]
+  },
+
+```
+#### 组件局部 
+
+``` javascript 
+    export default {
+      head () {
+        return {
+          title :'子路由页面title' ,
+          meta : [
+            {hid :'description',name : 'description' , content :'子路由页面详细描述'},
+            {hid :'keywords',name : 'keywords' , content :'子路由页面关键词'},
+          ]
+        }
+      },
+      // 动态方法式
+      head() {
+        console.log(14, this.$route)
+        return {
+          title: `${this.title}~${this.$route.params.id || '暂无id'}`,
+          meta: [
+            {hid : 'description',name :'description',content:`${this.$route.name}页面详细描述`} , 
+            {hid : 'keywords',name :'keywords',content:`${this.$route.name}页面详细描述、${this.$route.fullPath}`} , 
+          ]
+        }
+      }
+    }
+
+```
+
+### CSS 
+1. 全局的在 nuxt.config.js 中进行配置 
+2. 局部(组件)内的css 和vue spa单页面一样 可用sass scss less ...
+
+159 023 23239
+
+### plugins 
+![官网 plugins](https://www.nuxtjs.cn/api/configuration-plugins)
+
+
+### modules 
+  #### nuxtjs 中使用 axios 
+
+  ##### @nuxtjs/axios
+  1. npm install @nuxtjs/axios -S 
+  2. 修改配置 nuxt.config.js 
+  ``` javascript 
+    ... ,
+    modules : [
+      '@nextjs/axios'
+    ]
+
+  ```
+  ##### axios 
+  1. npm install axios -S 
+
+  ##### asyncData 生命周期 中使用axios 
+  *** asyncData 只能在pages路由页面中使用 components中的组件是无法使用的 ***
+  
+  ``` javascript 
+    export default {
+      data () {
+        return {
+          list : []
+        }
+      } ,
+      async asyncData (context) {
+        const { data } = axios.get(`接口地址`)
+        // 为什么不用this.list 进行赋值 ？
+        // 因为这是在组件初始化之前 没有this对象  
+        return { 
+          list : data.list  
+        }
+      }
+    }
+
+  ```
+
+  ##### fetch 
+  *** fetch 在组件(components/\*\*.vue)中使用 *** 
+  ![官方文档中以操作vuex为主](https://www.nuxtjs.cn/api/pages-fetch)
+
+  ___ components/\*\*.vue ___
+  ``` javascript 
+    export default {
+      data () {
+        return {
+          list : []
+        }
+      },
+      async fetch () {
+        // 这里可以用this 
+        const res = await this.$axios.get(`接口地址`)
+        this.list = res.data 
+      }
+    }
+
+
+  ```
+
+
+
+
+
+
+### 路由守卫
+### 路由守卫
+### 路由守卫
+### 路由守卫
+### 路由守卫

@@ -488,7 +488,7 @@
   ```
 
   ##### fetch 
-  *** fetch 在组件(components/\*\*.vue)中使用 *** 
+  *** fetch 在页面(pages/\*\*.vue)、组件(components/\*\*.vue)中都可以使用 *** 
   ![官方文档中以操作vuex为主](https://www.nuxtjs.cn/api/pages-fetch)
 
   ___ components/\*\*.vue ___
@@ -514,7 +514,69 @@
 
 
 
-### 路由守卫
+### nuxt 配置代理
+
+1. npm install @nuxtjs/axios @nuxtjs/proxy -S 
+
+2. nuxt.config.js  
+
+``` javascript 
+  ... ,
+  modules : [
+    '@nuxtjs/axios' ,
+    '@nuxtjs/proxy'
+  ],
+  axios : {
+    proxy : true ,
+    retry : { retries : 3} ,
+    baseUrl : process.env._ENV == 'production' ? '正式地址' :'开发地址'
+  },
+  proxy : {
+    '/api' : {
+      target : `http://${接口地址}`,
+      pathRewrite : {
+        '^/api' : ''
+      }
+    }
+  }
+
+``` 
+3. 页面文件
+
+``` html 
+<template>
+  <div></div>
+</template>
+<script>
+  export default {
+    name : 'IndexPage' ,
+    data () {
+      return {
+        list
+      }
+    } ,
+    async asyncData ({$axios}) {
+      const res = await $axios.get('接口地址')
+      return {
+        list : res.data 
+      }
+    }
+  }
+</script>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### 路由守卫
 ### 路由守卫
 ### 路由守卫

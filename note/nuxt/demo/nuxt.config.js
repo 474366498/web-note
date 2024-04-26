@@ -22,6 +22,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/axios'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -33,9 +34,26 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy',
+    'cookie-universal-nuxt'
   ],
+  axios: {
+    baseURL: 'http://localhost:3000', // 假设Nuxt.js运行在3000端口
+  },
+  proxy: {
+    '/api/': { // 代理到目标服务器的接口 用的本地的apifox
+      target: 'http://127.0.0.1:4523/m1/2783543-0-default',
+      changeOrigin: true,
+      pathRewrite: {
+        '^/api/': ''
+      }
+    }
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
+  // nuxt2引入axios.js页面刷新报错问题：require() of ES Module
   build: {
+    transpile: ['axios']
   }
 }

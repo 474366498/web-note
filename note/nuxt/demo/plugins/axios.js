@@ -1,6 +1,14 @@
 
-export default ({ $axios }) => {
+
+export default (app) => {
+  var { $axios, store } = app
+  console.log(3, app)
   $axios.onRequest(config => {
+    console.log('request', store)
+    let token = store.state.token
+    if (token) {
+      // config.headers.common['Authorization'] = `Bearer ${token} `
+    }
     console.log(44, config)
   })
 

@@ -19,10 +19,17 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
   ],
+  // loading : false ,
+  loading: '~/components/loading.vue',
+  // loading: {
+  //   color: 'skyblue',
+  //   height: '10px'
+  // },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/plugins/axios'
+    '~/plugins/axios',
+    '~/api/index.js'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

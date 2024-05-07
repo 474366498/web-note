@@ -198,9 +198,44 @@
 
 ## Vuex 引入 
 
+  ### 把vue-cli的store引入到nuxtjs项目中 修改store的返回
+  ``` javascript 
+    const store = () => new Vuex.Store({
+      modules : {
+        user ,
+        ...
+      }
+    })
+    export default store 
+  ```
+
+## 引入第三方插件模块 
+  *** 加密解密 crypto-js *** 
+  *** element-ui *** 
+  1. npm i element-ui -S 
+  2. 配置 nuxt.config.js 
+  ``` javascript 
+      ... ,
+      // element-ui 样式
+      css : [
+        'element-ui/lib/theme-chalk/index.css'
+      ],
+      plugins : [
+        '~/plugins/element'
+      ]
+  ```
+  3. 在根目录下创建 ~/plugins/element.js
+  ```javascript 
+      import Vue from 'vue' 
+      import ElementUI from 'element-ui'
+      Vue.use(ElementUI)
+    
+  ```
+
+##  token持久化存储 
+
+
   ###   
-
-
 
 
 ##  
@@ -208,7 +243,11 @@
   ### 
 
 
+##  
+
+  ### 
+
 
 ##  
 
-  ###   
+  ### 

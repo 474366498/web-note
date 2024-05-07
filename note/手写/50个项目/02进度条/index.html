@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
     <title>Progress Steps</title>
   </head>
   <body>
@@ -140,6 +139,15 @@ next.addEventListener('click', () => {
     }
 
     update()
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(res=>{
+        console.log(145,res)
+      },error=>{
+        console.error(error)
+      })
+    }else {
+      console.warn('不支持 geo')
+    }
 })
 
 prev.addEventListener('click', () => {

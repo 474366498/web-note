@@ -233,17 +233,32 @@
   ```
 
 ##  token持久化存储 
+  1. npm install cookie-universal-nuxt -S 
 
+  2. nuxt.config.js 配置
+  ``` javascript 
+    ... ,
+    modules : [
+      'cookie-universal-nuxt'
+    ] 
+  ```
+  3. 方法  [!npm ~ cookie-universal-nuxt api](https://www.npmjs.com/package/cookie-universal-nuxt)   
 
-  ###   
-
-
-##  
+##  添加中间件 读取token 
+  *** 中间件 主要用于作导航守卫用 *** 
 
   ### 
 
 
-##  
+## 项目上线 
+  1. npm run build 
+  2. 将打包好的
+  *** .nuxt => 隐藏文件  static  nuxt.config.js  package.json ***  
+  这些文件上传到服务器
+  3. 在服务器上执行 npm install 
+  4. 在服务器运行项目 npm run start 打开的也是 localhost:3000
+  需要使用nginx做代理 => 项目实际地址
+  5. 
 
   ### 
 

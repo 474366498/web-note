@@ -12,6 +12,7 @@ export default {
   name: 'login',
   mounted() {
     apiUser = this.$apiUser()
+    console.log(15,localStorage)
   },
   methods: {
     ...mapMutations(['setToken']),
@@ -29,6 +30,7 @@ export default {
         this.$apiGet()
         apiUser && apiUser.add()
         // this.setToken(res.data.id)
+        localStorage.setItem('token',res.token)
         this.$store.commit('setToken', res.token)
         this.$router.push({path:'/'})
       })

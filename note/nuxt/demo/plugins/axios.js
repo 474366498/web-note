@@ -2,12 +2,12 @@
 
 export default (app) => {
   var { $axios, store } = app
-  console.log(3, app)
+  // console.log(3, app)
   $axios.onRequest(config => {
-    console.log('request', store)
+    console.log('request', store, config)
     let token = store.state.token
     if (token) {
-      // config.headers.common['Authorization'] = `Bearer ${token} `
+      config.headers['Authorization'] = `Bearer ${token} `
     }
     console.log(44, config)
   })

@@ -830,6 +830,9 @@ query: { },
 }
 */
 
+import * as user from './user'
+
+console.log(835, user)
 export default ({ app, $axios }, inject) => {
   // console.log('api', app, $axios, inject)
   /*
@@ -869,4 +872,5 @@ export default ({ app, $axios }, inject) => {
     del: () => console.log('api map del '),
     update: () => console.log('api map update '),
   })
+  inject('apiUserModule', { ...user })
 }

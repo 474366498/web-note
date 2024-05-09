@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+  <script src="http://demo.haoji.me/2017/02/08-js-xlsx/js/xlsx.core.min.js"></script>
+<body>
+  <!-- https://blog.csdn.net/weixin_34050389/article/details/89611224?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-89611224-blog-132413149.235%5Ev43%5Epc_blog_bottom_relevance_base3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-89611224-blog-132413149.235%5Ev43%5Epc_blog_bottom_relevance_base3&utm_relevant_index=2 -->
+
+  <!-- vue使用xlsx-js-style导出excel表格、合并表格及设置样式 https://blog.csdn.net/qq_40837982/article/details/131601478 -->
+
+  <!-- 如何使用JavaScript实现纯前端读取和导出excel文件 https://blog.csdn.net/xiaolinlife/article/details/134479800 -->
+  <button onclick="downloadExcel()">xlsx</button>
+</body>
+<script>
+  var json = [
+    {
+      id : 1 ,
+      "列表头1":"数据1-1",
+      "列表头2":"数据1-2",
+      "列表头3":"数据1-3",
+      "列表头4":"数据1-4",
+      "列表头5":"数据1-5",
+      "列表头6":"数据1-6"
+    },
+    {
+      id : 2 ,
+      "列表头1":"数据2-1",
+      "列表头2":"数据2-2",
+      "列表头3":"数据2-3",
+      "列表头4":"数据2-4",
+      "列表头5":"数据2-5",
+      "列表头6":"数据2-6"
+    },
+    {
+      id : 3 ,
+      "列表头1":"数据3-1",
+      "列表头2":"数据3-2",
+      "列表头3":"数据3-3",
+      "列表头4":"数据3-4",
+      "列表头5":"数据3-5",
+      "列表头6":"数据3-6"
+    },
+    {
+      id : 4 ,
+      "列表头1":"数据4-1",
+      "列表头2":"数据4-2",
+      "列表头3":"数据4-3",
+      "列表头4":"数据4-4",
+      "列表头5":"数据4-5",
+      "列表头6":"数据4-6"
+    }
+  ] ,
+  // 这里的数据是用来定义导出的格式类型 
+  wopts = {
+    bookType :'xlsx',
+    bookSST : true ,
+    type:'binary'
+  }
+
+  const style = {
+    fill: {
+      fgColor: { rgb: "FFFFAA00" } // 背景颜色为黄色
+    },
+    font: {
+      name: "Arial",
+      family: "2",
+      sz: "14", // 字体大小
+      color: { rgb: "FF0000" }, // 字体颜色为红色
+      bold: true // 字体加粗
+    },
+    alignment : {
+      vertical :'center' ,
+      horizontal :'center'
+    }
+  },
+  // 将样式添加到单元格式中
+  cellXfs = {
+    count: 1,
+    xf: [style]
+  };
+  const downloadExcel = () => {
+    var wb = { SheetNames:['Sheet1'] , Sheets : {} , Props : {} } 
+    let data = XLSX.utils.json_to_sheet(json) 
+    data['B2'] = { t:'s' , v:'B2 B2 B2 B2 B2'} 
+    data['B5'] = { t:'s' , v:'B5 B5 B5'}
+    
+    data['!merges'] = [
+      {
+        s : {  // s 开始位置
+          c : 1 , // c 开始列
+          r:1     // 开始取值范围
+        },
+        e : {  //  e 结束位置
+          c:4, // 结束列
+          r:1  // 结束范围
+        }
+      },
+      {
+        s : {
+          c :1 ,
+          r:4
+        },
+        e : {
+          c:4,
+          r:4
+        }
+      },
+    ]
+    data['!cellXfs'] = cellXfs 
+    wb.Sheets['Sheet1'] = data 
+    console.log(54 ,wb)
+    let blob = new Blob([s2ab(XLSX.write(wb,wopts))],{type:'application/octet-stream'}) 
+    let fileName = '这是下载的文件名.'+(wopts.bookType == 'biff2' ?'xls':wopts.bookType)
+    console.log(57,blob,fileName)
+    saveAs(blob , fileName )
+  }, s2ab = (s) => {
+    if(typeof ArrayBuffer !== 'undefined') {
+      var buf = new ArrayBuffer(s.length) 
+      var view = new Uint8Array(buf) 
+      for(let i = 0 ; i != s.length;i++) view[i] = s.charCodeAt(i) & 0xFF 
+      return buf 
+    }else {
+      var buf = new Array(s.length) 
+      for(let i = 0 ; i != s.length;i++) view[i] = s.charCodeAt(i) & 0xFF 
+      return buf
+    }
+  }, saveAs = (blob,fileName) => {
+    let downLink = document.createElement('a') 
+    downLink.download = fileName || '默认文件名'
+    downLink.href = window.URL.createObjectURL(blob) 
+    downLink.click()
+    setTimeout(() => {
+      window.URL.revokeObjectURL(blob)
+    }, 2e3);
+  }
+
+
+</script>
+</html>

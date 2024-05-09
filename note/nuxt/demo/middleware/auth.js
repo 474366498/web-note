@@ -1,6 +1,6 @@
-export default (state) => {
-  let { app, store, redirect } = state
-  console.log('auth 2', state, app, store)
+export default (App) => {
+  let { app, store, redirect } = App
+  console.log('auth 2', App, app, store)
   store.commit('getToken')
   let token = store.state.token
   console.log('token', token)

@@ -30,6 +30,7 @@ export default {
   },
   methods: {
     logout() {
+      localStorage.clear()
       this.$store.commit('setToken', '')
       this.$router.push({path:'/'})
     }

@@ -1,6 +1,35 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true }
+  alias: {
+    '@': './'
+  },
+  devtools: { enabled: true },
+  modules: [
+    '@nuxt/content', // 在用的时候要注意 content下的md文件名要与pages页面中的文件(夹/名)相对应
+  ],
+  content: {
+    documentDriven: true
+  },
+
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false
+    }
+  ],
+
+  css: [
+    '~/assets/index.scss'
+  ],
+
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {}
+    }
+  },
+
+
 })
 
 /*
@@ -56,5 +85,26 @@ export default defineNuxtConfig({
  
   // 其他配置...
 })
+
+
+
+import { resolve } from 'path' 
+export default difineNuxtConfig ({
+  alias : {
+  "@" : resolve(__dirname,'/')
+  },
+  css : [
+    '~/assets/main.scss' ,    // 需要 npm install sass 
+  ]
+})
+
+
+
+
+
+
+
+
+
 
 */

@@ -12,6 +12,8 @@ useSeoMeta({
   ogDescription: '这是我的神奇网站，让我告诉你关于它的一切。',
   ogImage: 'https://example.com/image.png',
   twitterCard: 'summary_large_image',
+  // 绕开资源防盗链
+  referrer:'no-referrer'
 })
 </script>
 

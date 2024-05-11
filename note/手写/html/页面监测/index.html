@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>20分钟页面不操作，页面失效</title>
+</head>
+<body>
+  <div>编辑页面哦</div>
+  <a href="https://mp.weixin.qq.com/s/x8hxM9beAgyFjr7IGT0u1A"> 实战（简单）：20分钟页面不操作，页面失效</a>
+  <input onChange="onChange(this)" />
+</body>
+
+<script>
+  const myWorker = new Worker('./worker.js')
+  console.log(myWorker)
+  myWorker.postMessage('start')
+
+  const onTimeStart = () => {
+    myWorker.postMessage('start')
+  },onTimeEnd = () =>{
+    myWorker.postMessage('end')
+  },onTimeReset = () =>{
+    onTimeEnd()
+    onTimeStart()
+  }
+
+  const  campaignListLock = () => {
+    console.log('发起续租请求')
+  } , pageGoBack = () => {
+    console.log('页面返回')
+  }
+
+  myWorker.addEventListener('message',e => {
+    console.log(34,e) 
+
+    campaignListLock()
+
+    if(e.data.sum >= 20) {
+      onTimeEnd()
+      if(document.visibilityState === 'visible') {
+        console.warn('页面失效')
+        pageGoBack()
+        timeCount = 1 
+      }
+      document.addEventListener('visibilitychange', () => {
+        if(document.visibilityState ==='visible' && timeCount == 0) {
+          console.warn('页面失效')
+          pageGoBack()
+          timeCount = 1 
+        }
+      })
+    }
+
+  })
+  
+  function onChange (e) {
+    console.log(57,e , e.value)
+    onTimeReset()
+  }
+</script>
+</html>

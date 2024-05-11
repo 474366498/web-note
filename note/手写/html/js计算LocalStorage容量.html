@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <a href="https://mp.weixin.qq.com/s/tVinOHsevZxUIj-YshtnTw">不管你信不信，面试官让我使用 JS 计算 LocalStorage 的容量！</a>
+</body>
+<script>
+  /*
+const computedTotal = () => {
+  return new Promise((resolve) => {
+    let str = "0123456789";
+
+    // 首先，我们创建一个10 KB字符串
+    while (str.length < 5120) {
+      str += "0123456789";
+    }
+
+    // 清除本地存储
+    localStorage.clear();
+
+    let temp = str;
+    console.log(25,temp)
+    // 继续将10 KB累积到LocalStore中
+    const timer = setInterval(() => {
+      try {
+        localStorage.setItem("temp", temp);
+        temp += str; // 将另外10 KB添加到临时字符串
+      } catch {
+        // 如果抛出错误，这意味着我们已经超出了最大存储空间
+        // 考虑每个字符为2字节，以KB为单位计算大小
+        resolve((temp.length * 2) / 1024);
+        clearInterval(timer);
+        // 计算后记得清除LocalStore
+        localStorage.clear();
+      }
+    }, 30);
+  });
+};
+
+(async () => {
+  const total = await computedTotal();
+  console.log(`最大容量: ${total}KB`); // 10240KB
+})();
+
+*/
+
+const computedUse  = () => {
+  let cache = 0 
+
+  for(let k in localStorage) {
+    if(localStorage.hasOwnProperty(k)){
+      cache += localStorage.getItem(k).length * 2 
+    }
+  }
+  return (cache / 1024).toFixed(2)
+}
+
+(async ()=>{
+  let  o = '0123456789'
+  for(let i = 0 ; i < 1e3 ; i++) {
+    o+= '0123456789'
+  }
+
+  localStorage.setItem('o',o)
+
+  const useCache = computedUse()
+  console.log('useCache' , useCache)
+})()
+
+
+
+
+</script>
+</html>

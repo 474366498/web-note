@@ -42,3 +42,55 @@ function formatDate(date, fmt = 'yyyy-MM-dd hh:mm:ss') {
 
 // console.log(formatDate(new Date(), 'yyyy-M-d h:m:s'))
 console.log(formatDate(1710298637205), Date.now())
+
+
+
+
+// 倒计时 几种方式 start
+// https://mp.weixin.qq.com/s/ZR3tnuGeDs3iXAby9Wo2Tg
+function example1(leftTime) {
+  let t = leftTime;
+  setInterval(() => {
+    t = t - 1000;
+    console.log(t);
+  }, 1000);
+}
+example1(10);
+
+function example2(leftTime) {
+  let t = leftTime;
+  setTimeout(
+    () => {
+      t = t - 1000;
+      if (t > 0) {
+        console.log(t);
+        example2(t);
+      } console.log(t);
+    }, 1000);
+}
+function example4(leftTime) {
+  let t = leftTime;
+  function start() {
+    requestAnimationFrame(() => {
+      t = t - 1000;
+      setTimeout(() => {
+        console.log(t);
+        start();
+      }, 1000);
+    });
+  }
+  start();
+}
+
+function example5(leftTime) {
+  const now = performance.now();
+  function start() {
+    setTimeout(() => {
+      const diff = leftTime - (performance.now() - now);
+      console.log(diff);
+      requestAnimationFrame(start);
+    }, 1000);
+  }
+  start();
+}
+// 倒计时 几种方式 end 

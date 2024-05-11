@@ -12,6 +12,7 @@
 </body>
 
 <script>
+  let timeCount = 0 
   const myWorker = new Worker('./worker.js')
   console.log(myWorker)
   myWorker.postMessage('start')

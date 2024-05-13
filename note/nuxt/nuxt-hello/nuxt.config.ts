@@ -1,5 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  app: {
+    head: {
+      title: 'This is a about nuxt3 app',
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+      ],
+      link: [
+        { rel: 'stylesheet', href: 'https://awesome-lib.css' }
+      ]
+    },
+  },
   alias: {
     '@': './'
   },

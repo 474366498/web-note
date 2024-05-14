@@ -1,6 +1,6 @@
 <template>
   <section>
-    <AppHeader /> 
+    <!-- <AppHeader />  -->
     <!-- <NuxtWelcome /> -->
     <!-- <div>nuxt-hello</div> -->
     <NuxtLayout>

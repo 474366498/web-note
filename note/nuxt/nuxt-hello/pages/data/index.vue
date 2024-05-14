@@ -17,7 +17,7 @@ const { data: lazyAsyncData, pending: lazyAsyncLoading } = await useLazyAsyncDat
   'productsLazy',
   ()=> $fetch('/api/products/lazy')
 )
-console.log('useLazyAsyncData:',lazyAsyncData,lazyAsyncLoading)
+console.log('useLazyAsyncData:',lazyAsyncData.value.length,lazyAsyncLoading)
 
 const { data:fetchData, pending:fetchLoading, ...others } = await useFetch('/api/products', {
   onRequest({ request,options}) {
@@ -26,12 +26,12 @@ const { data:fetchData, pending:fetchLoading, ...others } = await useFetch('/api
   key: 'fetch data',
   method : 'post'
 })
-console.log('useFetch:', fetchData, fetchLoading,others)
+console.log('useFetch:', fetchData.value.length, fetchLoading,others)
 
 const { data:lazyData, pending:loading } = await useLazyFetch('/api/products/lazy', {
   
 })
-console.log('useLazyFetch:',lazyData,loading)
+console.log('useLazyFetch:',lazyData.value.length,loading)
 
 
 

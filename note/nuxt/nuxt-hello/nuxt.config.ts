@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// console.log(2222222222222222, process.env.NUXT_SERVER_API)
 export default defineNuxtConfig({
   app: {
     head: {
@@ -39,6 +40,15 @@ export default defineNuxtConfig({
       autoprefixer: {}
     }
   },
+  // 环境变量 私有令牌
+  runtimeConfig: {
+    shoeStoreApiSecret: 'my-secret-key',
+    serverApi: process.env.NUXT_SERVER_API || 'server_api',
+    public: {
+      shoeStoreApiBase: '/shoe-api',
+      fileApi: process.env.NUXT_FILE_API
+    }
+  }
 
 
 })

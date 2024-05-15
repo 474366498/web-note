@@ -26,3 +26,8 @@ console.log('app',foo , use , test)
 // console.log('app asyncData' , data,pending,error , refresh )
 
 </script>
+
+<style lang="scss">
+@use '~/assets/index.import.scss';
+
+</style>

@@ -344,6 +344,44 @@ export default defineNuxtConfig({
 
 ```
 
+### 资源 
+``` html
+<p><code> &lt;img src="/nuxt.png" alt="nuxt.png" &gt; </code></p>
+<img src="/nuxt.png" alt="nuxt.png">
+<p><code> &lt;img src="~/assets/nuxt.png" alt="nuxt.png" /&gt; </code></p>
+<img src="~/assets/nuxt.png" alt="nuxt.png" />
 
+```
+*** 全局样式导入 *** 
+``` css
+// _colors.(scss|sass)
+// scss 
+$primary: #49240f;
+$secondary : #e4a79d;
+
+//sass 
+$primary: #49240f
+$secondary : #e4a79d
+
+```
+
+``` ts 
+export default defineNuxtConfig ({
+  ... ,
+  vite : {
+    css : {
+      preprocessorOptions : {
+        sass : {
+          additionalData :`@use '@/assets/_colors.sass ' as *`
+        },
+        scss : {
+          additionalData : `@use '@/assets/_colors.scss' as *`
+        }
+      }
+    }
+  }
+})
+
+```
 
 

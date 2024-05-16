@@ -3,9 +3,9 @@
     <!-- <AppHeader />  -->
     <!-- <NuxtWelcome /> -->
     <!-- <div>nuxt-hello</div> -->
-    <NuxtLayout>
+    <!-- <NuxtLayout> -->
       <NuxtPage /> 
-    </NuxtLayout>
+    <!-- </NuxtLayout> -->
     
     <!-- 
       <ComFooButton /> 
@@ -29,5 +29,15 @@ console.log('app',foo , use , test)
 
 <style lang="scss">
 @use '~/assets/index.import.scss';
+
+
+.page-enter-active , .page-leave-active {
+  transition:all 4s ;
+}
+
+.page-leave-to , .page-enter-from {
+  opacity: .1; 
+  filter : blur(1rem);
+}
 
 </style>

@@ -62,26 +62,69 @@ env : {
 #### head 
 
 ``` javascript 
-head : {
-  title :'name' ,
-  htmlAttrs : {
-    lang :'zh-CN' 
-  },
-  meta : [
-    {charset : 'utf-8'} ,
-    {name:'viewport',content:'width=device-width,initial-scale=1,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,shrink-to-fit=no'},
-    {hid:'description',name:'description',content:''}
-  ],
-  link : [
-    {rel:'icon',type:'image/x-icon',href:'/favicon.ico'},
-    {rel:'stylesheet',type:'text/css',href:'/xxx.css'}
-  ],
-  script : [
-    {src:'/***.js'}
-  ]
-}
+export default defineNuxtConfig({
+  app : {
+    head : {
+      title :'name' ,
+      htmlAttrs : {
+        lang :'zh-CN' 
+      },
+      meta : [
+        {charset : 'utf-8'} ,
+        {name:'viewport',content:'width=device-width,initial-scale=1,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,shrink-to-fit=no'},
+        {hid:'description',name:'description',content:''}
+      ],
+      link : [
+        {rel:'icon',type:'image/x-icon',href:'/favicon.ico'},
+        {rel:'stylesheet',type:'text/css',href:'/xxx.css'}
+      ],
+      script : [
+        {src:'/***.js'}
+      ]
+    }
+  }
+})
+
 
 ```
+#### useHead  useSeoMeta ![seo-meta](https://www.nuxt.com.cn/docs/getting-started/seo-meta)
+*** 页面内使用 *** 
+
+``` html 
+<script setup>
+useHead({
+  title :'' ,
+  meta : [
+    {name:'description' , content:''}
+  ],
+  bodyAttrs : {
+    class : 'test'
+  } ,
+  script : [
+    {},
+    `${scriptText}`
+  ],
+  style : [
+    {} ,
+    `${cssText}`
+  ]
+})
+
+useSeoMeta({
+  title: '我的神奇网站',
+  ogTitle: '我的神奇网站',
+  description: '这是我的神奇网站，让我来告诉你关于它的一切。',
+  ogDescription: '这是我的神奇网站，让我来告诉你关于它的一切。',
+  ogImage: 'https://example.com/image.png',
+  twitterCard: 'summary_large_image',
+})
+
+</script>  
+
+```
+
+
+
 #### loading 
 
 ``` javascript
@@ -344,6 +387,15 @@ export default defineNuxtConfig({
 
 ```
 
+
+
+
+
+
+
+
+
+
 ### 资源 
 ``` html
 <p><code> &lt;img src="/nuxt.png" alt="nuxt.png" &gt; </code></p>
@@ -383,5 +435,213 @@ export default defineNuxtConfig ({
 })
 
 ```
+### 过渡效果 ![过渡效果](https://www.nuxt.com.cn/docs/getting-started/transitions)
+
+#### 页面过渡
+
+*** nuxt.config.ts *** 
+``` typescript 
+export default defineNuxtConfig({
+  app :{
+    pageTransition:{name :'page' , mode:'out-in'}
+  }
+})
+
+```
+
+*** 页面.vue *** 
+``` html 
+<!-- app.vue -->
+<template>
+  <NuxtPage />
+</template>
+<style>
+  .page-enter-active , .page-leave-active {
+    transition : all .4s ;
+  }
+  .page-enter-from , .page-leave-to {
+    opacity : 0 ;
+    filter:blur(1rem);
+  }
+</style>
+
+<!-- 路由页面 -->
+<template>
+  <div> 具体路由页面 </div>
+</template>
+<script setup>
+  ... 
+</script>
+```
+
+#### 布局过渡
+
+*** nuxt.config.ts *** 
+``` typescript 
+export default defineNuxtConfig({
+  app : {
+    layoutTransition:{name:'layout' , mode:'out-in'}
+  }
+})
+
+```
+*** 布局 、页面 .vue *** 
+``` html 
+<!-- app.vue -->
+<template>
+  <NuxtLayout> 
+    <NuxtPage /> 
+  </NuxtLayout>
+</template>
+<style>
+.layout-enter-active , .layout-leave-active {
+  transition:all .4s ;
+}
+.layout-enter-from , .layout-leave-to {
+  filter:grayscale(1);
+}
+
+</style>
+
+<!-- layouts/default.vue -->
+<template>
+  <div>
+    <pre> default </pre>
+    <slot />
+  </div>
+</template>
+<style scoped>
+  div {
+    background : lightgreen 
+  }
+</style>
+
+<!-- layouts/orange.vue -->
+<template>
+  <div>
+    <pre>orange</pre>
+    <slot /> 
+  </div>
+</template>
+<style scoped>
+  div{
+    background:#eebb90 ;
+    padding:20px;
+    height:100vh;
+  }
+</style> 
+
+<!-- pages/index.vue -->
+<template>
+  <div>
+    <h1>index</h1> 
+  </div>
+</template>
+
+<!-- pages/about.vue -->
+<template>
+  <div>
+    <h1>about</h1>
+  </div>
+</template>  
+<script setup lang='ts'>
+definePateMeta({
+  layout :'orange'
+})
+
+</script>
+
+<!-- pages/about.vue 另一种方法 -->
+<template>
+  <div>
+    <h1>about</h1>
+  </div>
+</template>  
+<script setup lang='ts'>
+definePageMeta({
+  layout :'orange' ,
+  layoutTransition: {
+    name :'slide-in' ,  // 效果 name
+    mode :'out-in' ,
+    // 钩子函数
+    onBeforeEnter : el => {
+      console.log('进入之前...')
+    }，
+    onEnter:(el,done) => {
+
+    }，
+    onAfterEnter : el => {}
+  }
+})
+
+</script>  
+
+```
+
+
+### 数据获取 ![数据获取](https://www.nuxt.com.cn/docs/getting-started/data-fetching)
+
+
+
+### 状态管理 ![状态管理](https://www.nuxt.com.cn/docs/getting-started/state-management)
+
+### 错误处理 ![错误处理](https://www.nuxt.com.cn/docs/getting-started/error-handling)
+
+#### vue渲染生命周期
+*** plugins/error-handler.ts *** 
+```typescript  
+export default defineNuxtPlugin(nuxtApp => {
+  nuxtApp.vueApp.config.errorHandler = (error,instance,info) => {
+    // 处理错误，例如上报到一个服务
+  }
+  // 也可以
+  nuxtApp.hook('vue:error',(error,instance,info) => {
+    // 处理错误，例如上报到一个服务
+  })
+})
+
+```
+#### 错误页面
+> 通过在应用程序源目录中添加 ~/error.vue，可以自定义默认错误页面，与 app.vue 放在一起。
+*** error.vue *** 
+``` html 
+<script setup lang='ts'>
+  // 尽管它被称为“错误页面”，但它不是一个路由，不应该放在 ~/pages 目录中。出于同样的原因，你不应该在此页面中使用 definePageMeta
+const props = defineProps({
+  error : Object 
+})
+const handleError = () => clearError({redirect:'/'})
+  </script>
+
+<template>
+  <div>
+    <h2>{{error.statusCode}}</h2>
+    <button @click="handleError">清除错误</button>
+  </div>  
+</template>
+
+```
+
+
+
+
+### 
+
+
+
+
+
+
+
+
+
+
+
+### 
+
+
+
+
+
 
 

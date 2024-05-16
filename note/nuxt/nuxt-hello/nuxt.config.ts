@@ -2,6 +2,7 @@
 // console.log(2222222222222222, process.env.NUXT_SERVER_API)
 export default defineNuxtConfig({
   app: {
+
     head: {
       title: 'This is a about nuxt3 app',
       meta: [
@@ -11,6 +12,12 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: 'https://awesome-lib.css' }
       ]
     },
+    pageTransition: {
+      name: 'page', mode: 'out-in'
+    },
+    layoutTransition: {
+      name: 'layout', mode: 'in-out'
+    }
   },
   alias: {
     '@': './'
@@ -48,8 +55,15 @@ export default defineNuxtConfig({
       shoeStoreApiBase: '/shoe-api',
       fileApi: process.env.NUXT_FILE_API
     }
+  },
+  routeRules: {
+    // 
+    '/': { prerender: true },
+    '/api/*': { cache: { maxAge: 5e3 } },
+    '/old-page': {
+      redirect: { to: '/new-page', statusCode: 302 }
+    }
   }
-
 
 })
 

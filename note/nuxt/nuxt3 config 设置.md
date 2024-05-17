@@ -603,7 +603,7 @@ export default defineNuxtPlugin(nuxtApp => {
 ```
 #### 错误页面
 > 通过在应用程序源目录中添加 ~/error.vue，可以自定义默认错误页面，与 app.vue 放在一起。
-*** error.vue *** 
+*** error.vue 怎么跳不过去？？*** 
 ``` html 
 <script setup lang='ts'>
   // 尽管它被称为“错误页面”，但它不是一个路由，不应该放在 ~/pages 目录中。出于同样的原因，你不应该在此页面中使用 definePageMeta
@@ -637,7 +637,29 @@ const handleError = () => clearError({redirect:'/'})
 
 
 
-### 
+### 其它.......
+
+#### Authoring Nuxt Layers 
+*** 基本示例 *** 
+
+``` typescript 
+// nuxt.config.ts 
+
+export default defineNuxtConfig({
+  extends : [
+    './base'
+  ]
+})
+// base/nuxt.config.ts 
+export default defineNuxtConfig({
+  
+})
+
+```
+
+
+
+
 
 
 

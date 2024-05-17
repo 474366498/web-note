@@ -5,6 +5,7 @@
       <div> layout default </div>
       <slot />  
     </section>
+    <BaseComponent /> 
     <div> layout footer</div>
   </section>
 </template>

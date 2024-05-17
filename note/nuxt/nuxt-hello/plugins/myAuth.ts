@@ -6,5 +6,6 @@ export default defineNuxtPlugin(nuxtApp => {
   addRouteMiddleware('named-test', () => {
     console.log('plugins => auth : named-test')
   })
-  console.log(99999, nuxtApp)
+  // console.log(99999, nuxtApp)
+  console.log('plugins myAuth')
 })

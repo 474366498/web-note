@@ -3,9 +3,13 @@
     <!-- <AppHeader />  -->
     <!-- <NuxtWelcome /> -->
     <!-- <div>nuxt-hello</div> -->
-    <!-- <NuxtLayout> -->
+    <NuxtLayout>
+      <div id="layout-main-">
+      <NuxtLoadingIndicator color="#ff0000" height="30" duration="5000" />
       <NuxtPage /> 
-    <!-- </NuxtLayout> -->
+      <BaseComponent />
+      </div>
+    </NuxtLayout>
     
     <!-- 
       <ComFooButton /> 

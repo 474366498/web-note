@@ -9,7 +9,7 @@ setTimeout(() => {
   //     query:{id:'12773'}
   //   })
   // )
-  
+  return new Error('')
 
 }, 6e3);
 

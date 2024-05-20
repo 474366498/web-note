@@ -5,7 +5,7 @@
     <!-- <div>nuxt-hello</div> -->
     <NuxtLayout>
       <div id="layout-main-">
-      <NuxtLoadingIndicator color="#ff0000" height="30" duration="5000" />
+      <NuxtLoadingIndicator color="#ff0000" :height="30" :duration="5000" :throttle="2000" />
       <NuxtPage /> 
       <BaseComponent />
       </div>
@@ -23,8 +23,11 @@
 
 const foo = useFoo() , use = useUse() , test = useTest()
 
-console.log('app',foo , use , test)
+console.log('app', foo, use, test)
 
+const appInfo = useNuxtApp()
+console.log('app.vue nuxt app:',appInfo) 
+appInfo.provide('appVue','appVue')
 // const { data,pending,error , refresh } = await useAsyncData('mountains',()=>$fetch('https://api.nuxtjs.dev/mountains'))
 
 // console.log('app asyncData' , data,pending,error , refresh )

@@ -99,11 +99,11 @@ H3Event {
 */
 export default defineEventHandler((event) => {
   console.log('products index', event)
-  const method = getMethod(event).toUpperCase(),
-    body = readRawBody(event)
+  // const method = getMethod(event).toUpperCase(),
+  //   body = readRawBody(event)
   // console.log('products index method:', method)
   // console.log('products index body:', body)
-  console.log(1066666666666, data.length)
+  // console.log(1066666666666, data.length)
   return {
     data
   }

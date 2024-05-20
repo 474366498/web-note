@@ -48,7 +48,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   experimental: {
-    clientFallback: true // <NuxtClientFallback />
+    clientFallback: true,// <NuxtClientFallback />
+    componentIslands: 'local+remote'
   },
 
   extends: [
@@ -101,9 +102,8 @@ export default defineNuxtConfig({
       // removePagesMatching(/\.ts$/, pages)
     }
   },
-  modules: [
-    '@nuxt/content', // 在用的时候要注意 content下的md文件名要与pages页面中的文件(夹/名)相对应
-  ],
+  modules: [// 在用的时候要注意 content下的md文件名要与pages页面中的文件(夹/名)相对应
+  '@nuxt/content', "@nuxt/image"],
 
   postcss: {
     plugins: {

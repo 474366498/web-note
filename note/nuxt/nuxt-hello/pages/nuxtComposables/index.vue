@@ -167,7 +167,7 @@ export default {
       </li>
       <li>
         <h5><a href="https://www.nuxt.com.cn/docs/api/composables/use-request-headers">useRequestHeaders</a></h5>
-        <p>在浏览器中useRequestEvent 返回undefined {{ requestHeaders?.url||'not found' }}</p>
+        <p>在浏览器中useRequestHeaders 返回undefined {{ requestHeaders?.url||'not found' }}</p>
       </li>
       <li>
         <h5><a href="https://www.nuxt.com.cn/docs/api/composables/use-request-url">useRequestURL</a></h5>

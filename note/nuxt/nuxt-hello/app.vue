@@ -23,10 +23,10 @@
 
 const foo = useFoo() , use = useUse() , test = useTest()
 
-console.log('app', foo, use, test)
+console.log('app.vue 26', foo.value, use.value, test.value)
 
 const appInfo = useNuxtApp()
-console.log('app.vue nuxt app:',appInfo) 
+console.log('app.vue appInfo of keys:',Object.keys(appInfo) ) 
 appInfo.provide('appVue','appVue')
 // const { data,pending,error , refresh } = await useAsyncData('mountains',()=>$fetch('https://api.nuxtjs.dev/mountains'))
 

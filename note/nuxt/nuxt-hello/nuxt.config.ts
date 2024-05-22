@@ -103,7 +103,10 @@ export default defineNuxtConfig({
     }
   },
   modules: [// 在用的时候要注意 content下的md文件名要与pages页面中的文件(夹/名)相对应
-  '@nuxt/content', "@nuxt/image"],
+    '@nuxt/content',
+    "@nuxt/image",
+    "./modules/use"
+  ],
 
   postcss: {
     plugins: {
@@ -129,8 +132,8 @@ export default defineNuxtConfig({
     }
   }
   */
+  ssr: false
 })
-
 /*
 
  

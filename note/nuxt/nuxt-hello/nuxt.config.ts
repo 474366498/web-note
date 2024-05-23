@@ -53,6 +53,7 @@ export default defineNuxtConfig({
   },
 
   extends: [
+    '@nuxt/examples-ui',
     './base'
   ],
   hooks: {

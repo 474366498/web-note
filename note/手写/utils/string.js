@@ -89,4 +89,19 @@ function copyToClipboard(text) {
   }
 }
 
+/** 使用URLSearchParams获取URL的搜索参数
+ * 
+ * @param {*} name 要查找的字段名
+ * @returns 
+ */
 
+const getQueryByName = name => {
+  const query = new URLSearchParams(location.search)
+  return decodeURIComponent(query.get(name))
+}
+// url: https://sunday.com/?name=fatfish&age=100
+// const name = getQueryByName('name') // fatfish
+// const age = getQueryByName('age') // 100
+
+// 格式化货币
+const formatMoney = m => m.toLocaleString()

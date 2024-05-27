@@ -67,11 +67,44 @@ function getBrowserType() {
   return ''
 }
 
+// 判断移动设备是Android 还是 ios
+
+const getOSType = () => {
+  let u = navigator.userAgent,
+    app = navigator.appVersion
+  // ios  'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/117.0.0.0'
+  // android 'Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36 Edg/117.0.0.0'
+  let isAndroid = u.indexOf("Android") > -1 || u.indexOf("Linux") > -1
+  let isIOS = !!u.match(/\(i[^]+( U)? CPU.+Mac OS X/)
+  if (isIOS) {
+    return 0
+  } else if (isAndroid) {
+    return 1
+  } else {
+    return 2
+  }
+}
+
+
 // 判断是否是fromData
 function isFromData(obj) {
   return Object.prototype.toString.call(obj) === '[object FormData]'
 }
 
+// 平滑滚动至页面顶部
+const scrollToTop = () => {
+  const c = document.documentElement.scrollTop || document.body.scrollTop
+  if (c > 0) {
+    window.requestAnimationFrame(scrollToTop)
+    window.scrollTo(0, c - c / 8)
+  }
+}
+
+// 获取当前页面滚动距离
+const getScrollPosition = (el = window) => ({
+  x: el.pageXOffset !== undefined ? el.pageXOffset : el.scrollLeft,
+  y: el.pageYOffset !== undefined ? el.pageYOffset : el.scrollTop
+})
 
 
 

@@ -1,3 +1,3 @@
 export function sayHello(msg = 'World') {
-  console.log(`Hello ${msg}`)
+  console.log(`composables auto-imports Hello ${msg}`)
 }

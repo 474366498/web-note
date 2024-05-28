@@ -61,7 +61,7 @@ function getFile(url) {
 // JS 文件base64、File、Blob、ArrayBuffer互转 https://blog.csdn.net/qq_46051205/article/details/124252245?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-124252245-blog-108580073.pc_relevant_3mothn_strategy_recovery&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-124252245-blog-108580073.pc_relevant_3mothn_strategy_recovery&utm_relevant_index=1
 // 更多 https://www.cnblogs.com/panwudi/p/16901169.html
 /**
- *  file 转 base64
+ *  blob 、file 转 base64
  * @param {*} file 
  * @param {*} callback 
  */

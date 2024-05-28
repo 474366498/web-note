@@ -106,6 +106,49 @@ const getScrollPosition = (el = window) => ({
   y: el.pageYOffset !== undefined ? el.pageYOffset : el.scrollTop
 })
 
+/**
+ * xhr 事件监听
+ * @param {*} url 地址
+ * @param {*} method 方法
+ * @param {*} options 具体监听哪些事件
+ * xhr 事件 
+ *    loadstart - 接收到响应数据时触发
+ *    progress - 当请求接收到更多数据时 周期性的触发
+ *    error - request 发生错误时
+ *    abort - request 被停止时 如当调用 XMLHttpRequest.abort()时
+ *    load - request请求成功完成时
+ *    loadend - request请求结束时(无论成功还是失败、中断)
+ */
+function xhrEventHandler(url, method = 'GET', options = {}) {
+  const xhr = new XMLHttpRequest()
+  xhr.addEventListener('progress', options?.progress || updateProgress)
+  xhr.addEventListener('load', options?.load || loadHandler)
+  xhr.addEventListener('error', options?.error || errorHandler)
+  xhr.addEventListener('abort', options?.abort || abortHandler)
+
+  xhr.open(method, url, true)
+
+  function updateProgress(event) {
+    if (event.lengthComputable) {
+      // 计算进度
+      const percentComplete = (event.loaded / event.total) * 100;
+      console.log(percentComplete.toFixed(2) + '%');
+      // 你可以在这里更新进度条或者显示进度百分比
+    }
+  }
+  function loadHandler(event) {
+    console.log('传输完成！')
+  }
+  function errorHandler(event) {
+    console.log('传输失败！')
+  }
+  function abortHandler(event) {
+    console.log('请求取消')
+  }
+
+}
+
+
 
 
 /**

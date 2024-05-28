@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../dist/echarts.js"></script>
+</head>
+<body>
+  <div id="main" style="width:600px;height: 400px;"> </div>
+</body>
+  <script>
+    var chartDom = document.getElementById('main');
+    var myChart = echarts.init(chartDom);
+    var option;
+
+    option = {
+      title: {
+        text: 'Temperature Change in the Coming Week'
+      },
+      tooltip: {
+        trigger: 'axis'
+      },
+      legend: {},
+      toolbox: {
+        show: true,
+        feature: {
+          dataZoom: {
+            yAxisIndex: 'none'
+          },
+          dataView: { 
+            readOnly: false ,
+            lang:['数据视图', '关闭', '刷新']
+          },
+          magicType: { type: ['line', 'bar'] },
+          restore: {},
+          saveAsImage: {}
+        }
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          formatter: '{value} °C'
+        }
+      },
+      series: [
+        {
+          name: 'Highest',
+          type: 'line',
+          data: [10, 11, 13, 11, 12, 12, 9],
+          markPoint: {
+            data: [
+              { type: 'max', name: 'Max',itemStyle:{color:'#f00'} },
+              { type: 'min', name: 'Min' }
+            ]
+          },
+          markLine: {
+            data: [
+              { type: 'average', name: 'Avg' },
+              { type: 'median', name: 'Med' ,lineStyle:{color:'#0f0'}}
+            ]
+          }
+        },
+        {
+          name: 'Lowest',
+          type: 'line',
+          data: [1, -2, 2, 5, 3, 2, 0],
+          markPoint: {
+            data: [
+              { name: '周最低',type:'min',  xAxis: 1, yAxis: -1.5 },
+              {name:'dd',type:'max'}
+            ]
+          },
+          markLine: {
+            data: [
+              { type: 'average', name: 'Avg' },
+              [
+                {
+                  symbol: 'none',
+                  x: '90%',
+                  yAxis: 'max'
+                },
+                {
+                  symbol: 'circle',
+                  label: {
+                    position: 'start',
+                    formatter: 'Max'
+                  },
+                  type: 'max',
+                  name: '最高点'
+                }
+              ]
+            ]
+          }
+        }
+      ]
+    };
+
+    option && myChart.setOption(option);
+  </script>
+</html>

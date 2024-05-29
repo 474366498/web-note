@@ -29,6 +29,13 @@
           show: false,
           type: 'continuous',
           seriesIndex: 0,
+          inRange:{
+            color:['red','green','yellow'],
+            symbolSize: [10, 30]
+          },
+          outOfRange:{
+            color:['green']
+          },
           min: 0,
           max: 400
         },
@@ -44,6 +51,10 @@
           show: false,
           type: 'continuous',
           seriesIndex: 1,
+          inRange:{
+            color:['red','green','yellow'],
+            symbolSize: [10, 30]
+          },
           dimension: 0,
           min: 0,
           max: dateList.length - 1

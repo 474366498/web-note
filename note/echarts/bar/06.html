@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../dist/echarts.js"></script>
+</head>
+<body>
+  <div id="main" style="width:600px;height: 400px;"> </div>
+</body>
+  <script>
+  var chartDom = document.getElementById('main');
+  var myChart = echarts.init(chartDom);
+  var option;
+
+  option = {
+    title: {
+      text: 'World Population'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    legend: {},
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'value',
+      boundaryGap: [0, 0.01]
+    },
+    yAxis: {
+      type: 'category',
+      data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World']
+    },
+    series: [
+      {
+        name: '2011',
+        type: 'bar',
+        data: [18203, 23489, 29034, 104970, 131744, 630230]
+      },
+      {
+        name: '2012',
+        type: 'bar',
+        data: [19325, 23438, 31000, 121594, 134141, 681807]
+      }
+    ]
+  };
+
+  option && myChart.setOption(option);
+
+
+
+  const promise1 = Promise.resolve(1);
+  const promise2 = Promise.resolve(2);
+  const promise3 = Promise.resolve(3);
+
+  Promise.myAll = function (promises) {
+    let res , rej 
+
+    const p = new Promise((response,reject)=>{
+        res = response 
+        rej = reject 
+    })
+    console.log(71,res,rej)
+    const result = [] 
+    let count = 0  
+    let fulledCount = 0 
+
+    for(let pr of promises) {
+        let i = count 
+        count ++ 
+        Promise.resolve(pr).then(r=>{
+            result[i] = r 
+            fulledCount ++ 
+            if(fulledCount === count) {
+                res(result)
+            }
+        },reason => {
+            rej(reason)
+        })
+    }
+
+    if(count === 0) {
+        res(result)
+    }
+    return p
+}
+
+Promise.myAll([promise1, promise2, promise3]).then(res=>{
+    console.log(res)
+}).catch(err=>{
+    console.error(err)
+})
+Promise.myAll([]).then(res=>{
+  console.log(102,res)
+})
+  </script>
+</html>

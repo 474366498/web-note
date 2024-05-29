@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../dist/echarts.js"></script>
+</head>
+<body>
+  <div id="main" style="width:600px;height: 400px;"> </div>
+</body>
+  <script>
+  var chartDom = document.getElementById('main');
+  var myChart = echarts.init(chartDom);
+  var option;
+
+  option = {
+    title: [
+      {
+        text: 'Radial Polar Bar Label Position (middle)',
+        subtext:'sub text' ,
+        textAlign:'auto',
+        left:50
+      }
+    ],
+    polar: {
+      radius: [30, '80%']
+    },
+    radiusAxis: {
+      max: 5
+    },
+    angleAxis: {
+      type: 'category',
+      data: ['a', 'b', 'c', 'd'],
+      startAngle: 75
+    },
+    tooltip: {},
+    series: {
+      type: 'bar',
+      data: [2, 1.2, 2.4, 3.6],
+      coordinateSystem: 'polar',
+      label: {
+        show: true,
+        position: 'middle',
+        formatter: '{b}: {c}'
+      }
+    },
+    animation: false
+  };
+
+  option && myChart.setOption(option);
+  </script>
+</html>

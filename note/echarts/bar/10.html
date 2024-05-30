@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../dist/echarts.js"></script>
+</head>
+<body>
+  <div id="main" style="width:600px;height: 400px;"> </div>
+</body>
+  <script>
+  var chartDom = document.getElementById('main');
+  var myChart = echarts.init(chartDom);
+  var option;
+
+  var series = [
+    {
+      data: [120, 200, 150, 80, 70, 110, 130],
+      type: 'bar',
+      stack: 'a',
+      name: 'a'
+    },
+    {
+      data: [10, 46, 64, '-', 0, '-', 0],
+      type: 'bar',
+      stack: 'a',
+      name: 'b'
+    },
+    {
+      data: [30, '-', 0, 20, 10, '-', 0],
+      type: 'bar',
+      stack: 'a',
+      name: 'c'
+    },
+
+    {
+      data: [30, '-', 0, 20, 10, '-', 0],
+      type: 'bar',
+      stack: 'b',
+      name: 'd'
+    },
+    {
+      data: [10, 20, 150, 0, '-', 50, 10],
+      type: 'bar',
+      stack: 'b',
+      name: 'e'
+    }
+  ];
+  const stackInfo = {};
+  for (let i = 0; i < series[0].data.length; ++i) {
+    for (let j = 0; j < series.length; ++j) {
+      const stackName = series[j].stack;
+      if (!stackName) {
+        continue;
+      }
+      if (!stackInfo[stackName]) {
+        stackInfo[stackName] = {
+          stackStart: [],
+          stackEnd: []
+        };
+      }
+      const info = stackInfo[stackName];
+      const data = series[j].data[i];
+      if (data && data !== '-') {
+        if (info.stackStart[i] == null) {
+          info.stackStart[i] = j;
+        }
+        info.stackEnd[i] = j;
+      }
+    }
+  }
+  for (let i = 0; i < series.length; ++i) {
+    const data = series[i].data;
+    const info = stackInfo[series[i].stack];
+
+    series[i].emphasis = {
+      focus: 'series'
+    }
+
+    for (let j = 0; j < series[i].data.length; ++j) {
+      // const isStart = info.stackStart[j] === i;
+      const isEnd = info.stackEnd[j] === i;
+      const topBorder = isEnd ? 20 : 0;
+      const bottomBorder = 0;
+      data[j] = {
+        value: data[j],
+        itemStyle: {
+          borderRadius: [topBorder, topBorder, bottomBorder, bottomBorder]
+        }
+      };
+    }
+  }
+  console.log(89,stackInfo , series)
+
+  option = {
+    title:{
+      text:'圆角柱子'
+    },
+    tooltip:{
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    legend:{},
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: series
+  };
+
+  option && myChart.setOption(option);
+  </script>
+</html>

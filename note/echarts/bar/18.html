@@ -49,7 +49,7 @@
         type: 'value',
         name: 'Precipitation',
         min: 0,
-        max: 250,
+        max: 300,
         interval: 50,
         axisLabel: {
           formatter: '{value} ml'
@@ -58,11 +58,21 @@
       {
         type: 'value',
         name: 'Temperature',
-        min: 0,
-        max: 25,
-        interval: 5,
+        // min: 0,
+        // max: 30,
+        // interval: 5,
+        axisLine:{
+          lineStyle:{
+            color:'#f00'
+          }
+        } ,
         axisLabel: {
           formatter: '{value} °C'
+        },
+        splitLine : {
+          lineStyle:{
+            color:'#0f0'
+          }
         }
       }
     ],
@@ -106,5 +116,6 @@
   };
 
   option && myChart.setOption(option);
+  console.log(echarts)  // graphic
   </script>
 </html>

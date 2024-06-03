@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../dist/echarts.js"></script>
+</head>
+<body>
+  <div id="main" style="width:600px;height: 400px;"> </div>
+</body>
+  <script>
+   var chartDom = document.getElementById('main');
+var myChart = echarts.init(chartDom);
+var option;
+
+option = {
+  tooltip: {},
+  angleAxis: {
+    max: 4,
+    startAngle: 30,
+    splitLine: {
+      show: true
+    }
+    // data : ['a','b','c','d','e']
+  },
+  radiusAxis: {
+    type: 'category',
+    name: '圈圈',
+    data: ['v', 'w', 'x', 'y', { value: 'z' }],
+    z: 10
+  },
+  polar: {},
+  series: [
+    {
+      type: 'bar',
+      data: [4, 3, 2, 1, 0.5],
+      coordinateSystem: 'polar',
+      name: 'Without Round Cap',
+      roundCap: true,
+      itemStyle: {
+        color: 'pink',
+        borderColor: 'red',
+        opacity: 0.8,
+        borderWidth: 1
+      }
+    },
+    {
+      type: 'bar',
+      data: [4, 3, 2, 1, 0.25],
+      coordinateSystem: 'polar',
+      name: 'With Round Cap',
+      roundCap: true,
+      itemStyle: {
+        borderColor: 'green',
+        opacity: 0.8,
+        borderWidth: 1
+      }
+    },
+    {
+      type: 'bar',
+      data: [4, 3, 2, 1, 0.1],
+      coordinateSystem: 'polar',
+      name: 'User Round Cap',
+      roundCap: true,
+      itemStyle: {
+        borderColor: 'green',
+        opacity: 0.8,
+        borderWidth: 1
+      }
+    }
+  ],
+  legend: {
+    show: true,
+    data: ['Without Round Cap', 'With Round Cap', 'User Round Cap']
+  }
+};
+
+option && myChart.setOption(option);
+  </script>
+</html>

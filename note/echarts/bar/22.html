@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../dist/echarts.js"></script>
+</head>
+<body>
+  <div id="main" style="width:600px;height: 400px;"> </div>
+</body>
+  <script>
+  var chartDom = document.getElementById('main');
+  var myChart = echarts.init(chartDom);
+  var option;
+
+  const data = [];
+  for (let i = 0; i < 5; ++i) {
+    data.push(Math.round(Math.random() * 200));
+  }
+  option = {
+    xAxis: {
+      type:'value',
+      max: 'dataMax'
+    },
+    yAxis: {
+      type: 'category',
+      data: ['A', 'B', 'C', 'D', 'E'],
+      inverse: true,
+      animationDuration: 300,
+      animationDurationUpdate: 300,
+      max: 3 // only the largest 3 bars will be displayed   只显示最大的3条
+    },
+    series: [
+      {
+        realtimeSort: true,
+        name: 'X',
+        type: 'bar',
+        data: data,
+        label: {
+          show: true,
+          position: 'right',
+          valueAnimation: true
+        }
+      }
+    ],
+    legend: {
+      show: true
+    },
+    animationDuration: 0,
+    animationDurationUpdate: 3000,
+    animationEasing: 'linear',
+    animationEasingUpdate: 'linear'
+  };
+  function run() {
+    let reset = !!data.find(item=>item > 1e5)
+    // console.log(reset)
+    if(reset){
+      data.length = 0 
+      for (let i = 0; i < 5; ++i) {
+        data.push(Math.round(Math.random() * 200));
+      }
+    }else{
+
+      for (var i = 0; i < data.length; ++i) {
+        if (Math.random() > 0.9) {
+          data[i] += Math.round(Math.random() * 2000);
+        } else {
+          data[i] += Math.round(Math.random() * 200);
+        }
+      }
+    }
+    myChart.setOption({
+      series: [
+        {
+          type: 'bar',
+          data
+        }
+      ]
+    });
+  }
+  setTimeout(function () {
+    run();
+  }, 0);
+  setInterval(function () {
+    run();
+  }, 3000);
+
+  option && myChart.setOption(option);
+  </script>
+</html>

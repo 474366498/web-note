@@ -218,6 +218,22 @@ export function effect<T = any>(fn: () => T, options?: ReactiveEffectOptions): R
 export let shouldTrack = true
 const trackStack: boolean[] = []
 
+export function pauseTracking() {
+  trackStack.push(shouldTrack)
+  shouldTrack = false
+}
+
+export function enableTracking() {
+  trackStack.push(shouldTrack)
+  shouldTrack = true
+}
+
+export function resetTracking() {
+  let last = trackStack.pop()
+
+  shouldTrack = last === undefined ? true : last
+}
+
 
 export function track(target: object, type: TrackOpTypes, key: unknown) {
   log('effect track', target, type, key)

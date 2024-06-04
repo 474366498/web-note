@@ -2,7 +2,9 @@ import { extend, hasChanged, hasOwn, isArray, isIntegerKey, isObject, isSymbol }
 import { ReactiveFlags, Target, isReadonly, isShallow, reactive, reactiveMap, readonly, readonlyMap, shallowReactiveMap, shallowReadonlyMap, toRaw } from "./reactive"
 import { isRef } from "./ref"
 import { TrackOpTypes, TriggerOpTypes } from "./operations"
-import { ITERATE_KEY, track, trigger } from "./effect"
+import {
+  ITERATE_KEY, track, trigger, pauseTracking, resetTracking
+} from "./effect"
 import { makeMap } from "packages/shared/src/makeMap"
 
 
@@ -27,10 +29,28 @@ function createArrayInstrumentations() {
 
   ; (['includes', 'indexOf', 'lastIndexOf'] as const).forEach(key => {
     instrumentations[key] = function (this, ...args) {
-
+      const arr = toRaw(this)
+      for (let i = 0, l = this.length; i < l; i++) {
+        track(arr, TrackOpTypes.GET, i + '')
+      }
+      const res = arr[key](...args)
+      if (res === -1 || res === false) {
+        return arr[key](...args.map(toRaw))
+      } else {
+        return res
+      }
     }
   })
 
+    ;['push', 'pop', 'shift', 'unshift', 'splice'].forEach(key => {
+      instrumentations[key] = function (...args) {
+        //停止收集依赖 将shouldTrack变为false
+        pauseTracking()
+        const res = toRaw(this)[key].apply(this, args)
+        resetTracking()
+        return res
+      }
+    })
 
   return instrumentations
 }
@@ -227,3 +247,11 @@ export const shallowReadonlyHandlers: ProxyHandler<object> = extend(
   readonlyHandlers,
   { get: shallowReadonlyGet }
 )
+
+// function pauseTracking() {
+//   throw new Error("Function not implemented.")
+// }
+// function resetTracking() {
+//   throw new Error("Function not implemented.")
+// }
+
